@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Owner Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8;
+    --panel:#ffffff;
+    --ink:#0f1a14;
+    --ink-2:#4a5a51;
+    --muted:#8a978f;
+    --line:#eef0ec;
+    --sidebar:#0f2a1f;
+    --sidebar-2:#153a2b;
+    --accent:#b7f04a;   /* lime */
+    --accent-2:#8fd63a;
+    --green:#1f6f4a;
+    --green-dk:#123c2a;
+    --red:#e14b4b;
+    --chip:#f2f4f0;
+    --radius:18px;
+    --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+  .app{
+    display:grid;
+    grid-template-columns: 240px 1fr 300px;
+    gap:20px;
+    max-width:1360px;
+    margin:20px auto;
+    padding:0 20px;
+    align-items:start;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    background:var(--sidebar);
+    color:#cfe0d5;
+    border-radius:24px;
+    padding:22px 16px;
+    min-height:calc(100vh - 40px);
+    position:sticky;top:20px;
+    display:flex;flex-direction:column;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px;letter-spacing:.2px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{
+    display:flex;align-items:center;gap:12px;
+    padding:10px 12px;border-radius:10px;
+    font-size:14px;color:#c7d8cd;
+    position:relative;
+  }
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{
+    content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent);
+  }
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{
+    margin-left:auto;background:var(--accent);color:#0f2a1f;
+    font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px;
+  }
+  .profile{
+    margin-top:auto;display:flex;align-items:center;gap:10px;
+    padding:12px 10px;border-top:1px solid rgba(255,255,255,.06);
+  }
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* ---------- Header ---------- */
+  .header{
+    display:flex;align-items:center;gap:14px;padding:6px 4px 18px;
+  }
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{
+    margin-left:24px;flex:1;max-width:420px;
+    background:#fff;border-radius:999px;
+    display:flex;align-items:center;gap:10px;padding:10px 16px;
+    color:var(--muted);font-size:13px;box-shadow:var(--shadow);
+  }
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);
+    display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2);
+  }
+  .cta{
+    background:var(--sidebar);color:#fff;padding:10px 16px;border-radius:999px;
+    display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;
+    box-shadow:var(--shadow);
+  }
+  .cta .plus{
+    width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0f2a1f;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800;
+  }
+
+  /* ---------- Dashboard heading ---------- */
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+  .daterange{
+    background:#fff;border-radius:999px;padding:8px 14px;
+    display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Grid rows ---------- */
+  .row{display:grid;gap:16px}
+  .row.top{grid-template-columns:1.05fr 1fr 1fr}
+  .row.mid{grid-template-columns:1fr 1.35fr;margin-top:16px}
+  .card{
+    background:var(--panel);border-radius:var(--radius);padding:18px;
+    box-shadow:var(--shadow);
+  }
+
+  /* Update / promo card */
+  .promo{
+    background:var(--sidebar);color:#e8f4ec;border-radius:var(--radius);
+    padding:18px;position:relative;overflow:hidden;min-height:180px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .promo .tag{
+    display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);
+    padding:6px 10px;border-radius:999px;font-size:12px;color:#d7ecdd;width:max-content;
+  }
+  .promo .tag .dot{width:8px;height:8px;background:var(--accent);border-radius:50%}
+  .promo .date{color:#9fbfae;font-size:12px;margin-top:14px}
+  .promo .headline{font-size:16px;font-weight:600;margin:6px 0 0;line-height:1.35}
+  .promo .headline b{color:var(--accent)}
+  .promo .see{margin-top:10px;color:#cfe0d5;font-size:12px;display:inline-flex;align-items:center;gap:6px}
+  .promo .glow{
+    position:absolute;right:-30px;top:-30px;width:180px;height:180px;
+    background:radial-gradient(circle at 30% 30%, rgba(183,240,74,.35), transparent 60%);
+    filter:blur(2px);
+  }
+
+  /* KPI cards */
+  .kpi .label{font-size:13px;color:var(--ink-2);display:flex;align-items:center;justify-content:space-between}
+  .kpi .value{margin-top:14px;font-size:34px;font-weight:700;letter-spacing:-.02em}
+  .kpi .value .cur{color:var(--muted);font-weight:600;font-size:22px;margin-right:6px}
+  .kpi .foot{margin-top:12px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+  .delta{display:inline-flex;align-items:center;gap:4px;font-weight:600}
+  .delta.up{color:#1f8f4a}
+  .delta.down{color:var(--red)}
+  .kebab{color:var(--muted);letter-spacing:2px}
+
+  /* Transactions */
+  .list-card h3{margin:0 0 10px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+  .tx{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .tx:last-child{border-bottom:0}
+  .tx .thumb{width:40px;height:40px;border-radius:12px;background:var(--chip);flex:0 0 40px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .tx .meta{flex:1;min-width:0}
+  .tx .meta .name{font-size:13px;font-weight:600}
+  .tx .meta .date{font-size:11px;color:var(--muted);margin-top:2px}
+  .tx .right{text-align:right;font-size:11px}
+  .status{
+    display:inline-block;padding:3px 8px;border-radius:999px;font-weight:600;font-size:10px;
+  }
+  .status.completed{background:#e7f6ec;color:#1f8f4a}
+  .status.pending{background:#fdecec;color:#c94141}
+  .tx .code{color:var(--muted);margin-top:4px;letter-spacing:.06em}
+
+  /* Revenue bar chart */
+  .rev .top-row{display:flex;align-items:center;justify-content:space-between}
+  .legend{display:flex;gap:14px;color:var(--muted);font-size:12px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:10px;height:10px;border-radius:3px}
+  .rev .big{font-size:28px;font-weight:700;margin:6px 0 0}
+  .rev .big small{font-size:12px;color:#1f8f4a;font-weight:600;margin-left:8px}
+  .bars{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;align-items:end;height:170px;margin-top:14px;padding:0 4px}
+  .bar-group{display:flex;gap:6px;align-items:end;justify-content:center;height:100%;}
+  .bar{width:14px;border-radius:6px 6px 3px 3px;background:var(--green-dk)}
+  .bar.b{background:var(--accent)}
+  .rev .xax{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;color:var(--muted);font-size:11px;margin-top:8px;text-align:center}
+
+  /* Sales report */
+  .report h3{margin:0 0 14px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+  .hbar{display:flex;align-items:center;gap:12px;margin:14px 0}
+  .hbar .label{width:130px;font-size:12px;color:var(--ink-2)}
+  .hbar .track{flex:1;height:22px;background:#f0f3ed;border-radius:8px;position:relative;overflow:hidden}
+  .hbar .fill{height:100%;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;color:#0f2a1f;font-weight:700}
+  .hbar .fill.dk{background:var(--green-dk);color:#eaf7d3}
+  .hbar .fill.md{background:var(--accent-2);color:#0f2a1f}
+  .xaxis-h{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;padding-left:130px;padding-right:4px;margin-top:6px}
+
+  /* Right column */
+  .right-col{display:flex;flex-direction:column;gap:16px;position:sticky;top:20px}
+  .donut-card h3{margin:0 0 16px;font-size:15px;font-weight:600}
+  .donut-wrap{display:flex;justify-content:center;position:relative}
+  .donut-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:11px;color:var(--muted);
+  }
+  .donut-center b{font-size:22px;color:var(--ink);font-weight:700;margin-top:2px}
+  .donut-tips{color:var(--ink-2);font-size:12px;text-align:center;margin:16px 4px 12px;line-height:1.5}
+  .btn-outline{
+    display:block;text-align:center;padding:10px;border:1px solid var(--line);border-radius:12px;
+    font-size:13px;color:var(--ink);font-weight:600;
+  }
+  .legend-grid{display:flex;gap:14px;justify-content:center;color:var(--ink-2);font-size:12px;margin-top:14px}
+  .legend-grid span{display:inline-flex;align-items:center;gap:6px}
+  .legend-grid .sw{width:10px;height:10px;border-radius:3px}
+
+  .upsell{
+    background:#eaf1e6;border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;
+  }
+  .upsell .k{width:34px;height:34px;background:var(--accent);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#0f2a1f}
+  .upsell h4{margin:12px 0 8px;font-size:16px;line-height:1.3;color:#0f2a1f;font-weight:700}
+  .upsell p{margin:0 0 14px;font-size:12px;color:#3d5145;line-height:1.5}
+  .upsell .go{
+    display:block;text-align:center;padding:11px;border-radius:12px;background:var(--sidebar);color:#fff;font-weight:600;font-size:13px;
+  }
+  .upsell .spark{
+    position:absolute;right:-6px;top:8px;color:var(--accent);opacity:.9;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a class="active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+
+    <div class="profile">
+      <div class="avatar"></div>
+      <div>
+        <div class="who">Owner Account</div>
+        <div class="mail">hoanghuyho2810@gmail.com</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+    <div class="header">
+      <div class="h-title">Owner Dashboard <span class="caret">▾</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search anything in Demo_CSV…
+      </div>
+      <div class="h-actions">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600;font-family:inherit;border:0;cursor:pointer" title="Scope to a station"><span style="width:8px;height:8px;border-radius:50%;background:#0f2a1f;display:inline-block"></span>All stations<span style="color:var(--muted);margin-left:2px">▾</span></button>
+        <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></button>
+        <button class="cta">Upload today's CSV <span class="plus">+</span></button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Dashboard</h1>
+        <p>An easy way to track your business with care and precision.</p>
+      </div>
+      <div class="daterange">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        January 2026 – July 2026 ▾
+      </div>
+    </div>
+
+    <!-- Top row -->
+    <div class="row top">
+      <div class="promo">
+        <div class="glow"></div>
+        <div class="tag"><span class="dot"></span>Update</div>
+        <div>
+          <div class="date">Jul 28th 2026</div>
+          <div class="headline">Sales revenue increased <b>40% in 1 week</b></div>
+        </div>
+        <a class="see" href="#">See Statistics ›</a>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Net Income <span class="kebab">•••</span></div>
+        <div class="value"><span class="cur">$</span>193,000</div>
+        <div class="foot"><span class="delta up">▲ +35%</span> from last month</div>
+      </div>
+
+      <div class="card kpi">
+        <div class="label">Total Losses <span class="kebab">•••</span></div>
+        <div class="value"><span class="cur">$</span>32,000</div>
+        <div class="foot"><span class="delta down">▼ −24%</span> from last month</div>
+      </div>
+    </div>
+
+    <!-- Mid row -->
+    <div class="row mid">
+      <div class="card list-card">
+        <h3>Recent Uploads <span class="kebab">•••</span></h3>
+
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Daily sales — sales_2026-07-28.csv</div><div class="date">Jul 28th 2026</div></div>
+          <div class="right"><span class="status completed">Processed</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Inventory — inventory_2026-07-27.csv</div><div class="date">Jul 27th 2026</div></div>
+          <div class="right"><span class="status pending">Review</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Purchases — purchases_2026-07-26.csv</div><div class="date">Jul 26th 2026</div></div>
+          <div class="right"><span class="status pending">New metric</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Losses — losses_2026-07-25.csv</div><div class="date">Jul 25th 2026</div></div>
+          <div class="right"><span class="status completed">Processed</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Daily sales — sales_2026-07-24.csv</div><div class="date">Jul 24th 2026</div></div>
+          <div class="right"><span class="status completed">Processed</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+        <div class="tx"><div class="thumb">📄</div>
+          <div class="meta"><div class="name">Inventory — inventory_2026-07-23.csv</div><div class="date">Jul 23rd 2026</div></div>
+          <div class="right"><span class="status completed">Processed</span><div class="code">OJWEJS7ISNC</div></div>
+        </div>
+      </div>
+
+      <div class="card rev">
+        <div class="top-row">
+          <h3 style="margin:0;font-size:15px;font-weight:600">Revenue</h3>
+          <div class="legend">
+            <span><span class="sw" style="background:var(--green-dk)"></span>Income</span>
+            <span><span class="sw" style="background:var(--accent)"></span>Expenses</span>
+          </div>
+        </div>
+        <div class="big">$193,000 <small>▲ +35% from last month</small></div>
+        <div style="display:flex;gap:8px;margin:8px 0 6px;flex-wrap:wrap">
+          <div style="background:#f6f8f4;border-radius:10px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)"><span style="width:8px;height:8px;border-radius:50%;background:#3455b3"></span>Station A · <b style="color:var(--ink)">$118K</b> <span style="color:#1f8f4a">+14%</span></div>
+          <div style="background:#f6f8f4;border-radius:10px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)"><span style="width:8px;height:8px;border-radius:50%;background:#1f6f4a"></span>Station B · <b style="color:var(--ink)">$75K</b> <span style="color:#1f8f4a">+8%</span></div>
+        </div>
+
+        <div class="bars">
+          <div class="bar-group"><div class="bar" style="height:60%"></div><div class="bar b" style="height:38%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:72%"></div><div class="bar b" style="height:44%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:55%"></div><div class="bar b" style="height:35%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:82%"></div><div class="bar b" style="height:52%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:68%"></div><div class="bar b" style="height:40%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:90%"></div><div class="bar b" style="height:58%"></div></div>
+          <div class="bar-group"><div class="bar" style="height:78%"></div><div class="bar b" style="height:46%"></div></div>
+        </div>
+        <div class="xax"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      </div>
+    </div>
+
+    <!-- Sales report full width under mid -->
+    <div class="card report" style="margin-top:16px">
+      <h3>Metric Breakdown <span class="kebab">•••</span></h3>
+      <div class="hbar"><div class="label">Sales volume</div>
+        <div class="track"><div class="fill" style="width:82%">482</div></div>
+      </div>
+      <div class="hbar"><div class="label">Purchases</div>
+        <div class="track"><div class="fill dk" style="width:42%">233</div></div>
+      </div>
+      <div class="hbar"><div class="label">Inventory on hand</div>
+        <div class="track"><div class="fill md" style="width:55%">312</div></div>
+      </div>
+      <div class="hbar"><div class="label">Losses</div>
+        <div class="track"><div class="fill dk" style="width:12%">23</div></div>
+      </div>
+      <div class="xaxis-h"><span>0</span><span>100</span><span>200</span><span>300</span><span>400</span></div>
+    </div>
+  </main>
+
+  <!-- ============ RIGHT COLUMN ============ -->
+  <aside class="right-col">
+    <div class="card donut-card">
+      <h3>Total Metric Performance</h3>
+      <div class="donut-wrap">
+        <svg width="220" height="220" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#eef0ec" stroke-width="6"/>
+          <!-- Sales 68% -->
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#b7f04a" stroke-width="6"
+                  stroke-dasharray="68 32" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
+          <!-- Purchases 23% -->
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#123c2a" stroke-width="6"
+                  stroke-dasharray="23 77" stroke-dashoffset="-43" transform="rotate(-90 21 21)"/>
+          <!-- Losses 9% -->
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#f0a545" stroke-width="6"
+                  stroke-dasharray="9 91" stroke-dashoffset="-66" transform="rotate(-90 21 21)"/>
+          <text x="21" y="14" text-anchor="middle" font-size="2.6" fill="#0f2a1f" font-weight="700">16%</text>
+          <text x="34" y="20" text-anchor="middle" font-size="2.6" fill="#0f2a1f" font-weight="700">23%</text>
+          <text x="21" y="36" text-anchor="middle" font-size="2.6" fill="#0f2a1f" font-weight="700">68%</text>
+        </svg>
+        <div class="donut-center">Total Records<b>565K</b></div>
+      </div>
+      <p class="donut-tips">Here are some tips on how to improve your score.</p>
+      <a class="btn-outline" href="#">Guide Views</a>
+      <div class="legend-grid">
+        <span><span class="sw" style="background:var(--accent)"></span>Sales</span>
+        <span><span class="sw" style="background:var(--green-dk)"></span>Purchases</span>
+        <span><span class="sw" style="background:#f0a545"></span>Losses</span>
+      </div>
+    </div>
+
+    <div class="upsell">
+      <svg class="spark" width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
+      <div class="k">D</div>
+      <h4>Level up your business tracking to the next level.</h4>
+      <p>An easy way to manage sales, inventory, and losses with care and precision.</p>
+      <a class="go" href="#">Upgrade to Demo_CSV+</a>
+    </div>
+  </aside>
+
+</div>
+
+</body>
+</html>

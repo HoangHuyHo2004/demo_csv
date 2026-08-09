@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Alerts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8; --panel:#fff; --ink:#0f1a14; --ink-2:#4a5a51; --muted:#8a978f;
+    --line:#eef0ec; --sidebar:#0f2a1f; --sidebar-2:#153a2b;
+    --accent:#b7f04a; --green:#1f6f4a; --red:#c94141; --amber:#f0a545; --blue:#3455b3;
+    --chip:#f2f4f0;
+    --radius:18px; --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#f6f8f4;padding:1px 6px;border-radius:5px}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:20px;max-width:1360px;margin:20px auto;padding:0 20px;align-items:start}
+
+  /* Sidebar */
+  .sidebar{background:var(--sidebar);color:#cfe0d5;border-radius:24px;padding:22px 16px;min-height:calc(100vh - 40px);position:sticky;top:20px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#c7d8cd;position:relative}
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent)}
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{margin-left:auto;background:var(--accent);color:#0f2a1f;font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px}
+  .profile{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:14px;padding:6px 4px 18px}
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{margin-left:24px;flex:1;max-width:420px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--muted);font-size:13px;box-shadow:var(--shadow)}
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .cta{background:var(--sidebar);color:#fff;padding:10px 16px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+  .cta .plus{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+
+  /* Severity KPI strip */
+  .sev-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 4px 16px}
+  .sev-card{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;cursor:pointer;border:2px solid transparent}
+  .sev-card.active{border-color:var(--sidebar)}
+  .sev-card .ic{width:36px;height:36px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+  .sev-card.crit .ic{background:var(--red)}
+  .sev-card.warn .ic{background:var(--amber)}
+  .sev-card.info .ic{background:var(--blue)}
+  .sev-card.muted .ic{background:#8a978f}
+  .sev-card .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .sev-card .val{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  .sev-card .foot{font-size:11px;color:var(--ink-2);margin-top:2px}
+
+  /* Tabs */
+  .tabs{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:0 4px 12px}
+  .tabs button{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .tabs button.active{background:var(--sidebar);color:#fff}
+
+  /* Toolbar */
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);margin:0 4px 16px}
+  .toolbar .search-s{flex:1;min-width:180px;background:#f6f8f4;border-radius:10px;padding:8px 12px;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+  .toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:12px}
+  .toolbar .btn{padding:8px 12px;border-radius:10px;font-size:12px;font-weight:600}
+  .toolbar .btn.ghost{background:#f6f8f4;color:var(--ink-2)}
+  .toolbar .btn.primary{background:var(--sidebar);color:#fff}
+  .selcount{font-size:12px;color:var(--ink-2);margin-left:6px}
+
+  /* Layout: feed + drawer */
+  .work{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin:0 4px 24px}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+  .card-head h3{margin:0;font-size:15px;font-weight:600}
+  .kebab{color:var(--muted);letter-spacing:2px;margin-left:auto}
+  .subhead{padding:12px 18px 6px;display:flex;align-items:center;gap:8px;background:#fafbf8;border-bottom:1px solid var(--line)}
+  .subhead .sev-pill{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em}
+  .sev-pill.crit{background:#fdecec;color:var(--red)}
+  .sev-pill.warn{background:#fff0d6;color:#a4680d}
+  .sev-pill.info{background:#eaf1ff;color:var(--blue)}
+  .sev-pill.muted{background:#f2f4f0;color:#8a978f}
+  .subhead .count{margin-left:auto;font-size:11px;color:var(--muted)}
+  .subhead .bulk{font-size:11px;color:var(--sidebar);font-weight:600;margin-left:8px}
+
+  /* Alert row */
+  .alert{display:grid;grid-template-columns:24px auto 1fr auto;gap:12px;align-items:flex-start;padding:12px 18px;border-bottom:1px solid var(--line);cursor:pointer}
+  .alert:hover{background:#fafbf8}
+  .alert.sel{background:#f6faef}
+  .alert input[type=checkbox]{margin-top:4px}
+  .alert .icon{width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800;flex:0 0 32px}
+  .alert.crit .icon{background:var(--red)}
+  .alert.warn .icon{background:var(--amber)}
+  .alert.info .icon{background:var(--blue)}
+  .alert.muted .icon{background:#8a978f}
+  .alert .title{font-size:13px;font-weight:600;line-height:1.2}
+  .alert .rule{font-size:11px;color:var(--muted);margin-top:2px}
+  .alert .body{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;font-size:12px;color:var(--ink-2)}
+  .alert .vs{display:inline-flex;align-items:center;gap:4px}
+  .alert .vs b{color:var(--ink)}
+  .delta{font-weight:700}
+  .delta.up{color:#1f8f4a}
+  .delta.down{color:var(--red)}
+  .alert .ai{
+    margin-top:10px;padding:8px 10px;background:#f4f6ef;border-left:3px solid var(--accent);
+    border-radius:8px;font-size:12px;color:var(--ink-2);display:flex;gap:8px;align-items:flex-start
+  }
+  .alert .ai .lbl{font-size:10px;font-weight:800;color:#0f2a1f;background:var(--accent);padding:2px 6px;border-radius:4px;flex:0 0 auto}
+  .alert .meta{font-size:11px;color:var(--muted);margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}
+  .alert .meta a{color:var(--sidebar);text-decoration:underline;text-underline-offset:2px}
+  .alert .side{display:flex;flex-direction:column;gap:6px;align-items:flex-end;font-size:11px}
+  .alert .side .when{color:var(--muted)}
+  .alert .side svg{width:60px;height:22px}
+  .row-actions{display:flex;gap:6px;margin-top:4px}
+  .row-actions button{padding:5px 8px;border-radius:6px;font-size:10px;font-weight:700;color:var(--ink-2);background:#f6f8f4}
+  .row-actions button.pri{background:var(--sidebar);color:#fff}
+
+  /* Drawer */
+  .drawer .card-head{border-bottom:1px solid var(--line)}
+  .drawer .head-row{padding:14px 18px 8px}
+  .drawer h3{margin:0;font-size:15px}
+  .drawer .subline{color:var(--muted);font-size:11px;margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+  .drawer .close{color:var(--muted);font-size:18px;margin-left:auto;cursor:pointer}
+
+  .metric-strip{padding:0 18px 12px}
+  .metric-strip svg{width:100%;height:130px}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 18px 12px}
+  .stat{background:#f6f8f4;border-radius:10px;padding:10px}
+  .stat label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .stat .v{font-size:16px;font-weight:700;margin-top:4px}
+
+  .section{padding:12px 18px;border-top:1px solid var(--line)}
+  .section h4{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+  .ai-full{background:#f4f6ef;border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--ink)}
+  .ai-full b{color:#0f2a1f}
+  .ai-full ul{margin:6px 0 0 14px;padding:0;font-size:12px;color:var(--ink-2)}
+
+  /* Assign / snooze row */
+  .quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 12px}
+  .quick-row .kv{background:#f6f8f4;border-radius:10px;padding:10px}
+  .quick-row label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;display:block;margin-bottom:4px}
+  .quick-row select{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff}
+
+  /* Comments */
+  .thread{display:flex;flex-direction:column;gap:10px}
+  .comment{display:flex;gap:10px}
+  .comment .av{width:28px;height:28px;border-radius:50%;flex:0 0 28px}
+  .comment .av.acc{background:linear-gradient(135deg,#3455b3,#7fa2ff)}
+  .comment .av.own{background:linear-gradient(135deg,#b7f04a,#4bd48a)}
+  .comment .body{flex:1;background:#f6f8f4;border-radius:10px;padding:8px 10px;font-size:12px;color:var(--ink)}
+  .comment .who{font-weight:700;font-size:11px}
+  .comment .who small{color:var(--muted);font-weight:500;margin-left:6px}
+  .compose{display:flex;gap:8px;margin-top:8px}
+  .compose input{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff}
+  .compose button{background:var(--sidebar);color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600}
+
+  .drawer-actions{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line)}
+  .btn{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600}
+  .btn.ghost{background:#f6f8f4;color:var(--ink-2)}
+  .btn.primary{background:var(--sidebar);color:#fff}
+  .btn.danger{background:#fdecec;color:var(--red)}
+
+  /* Bottom row: notifications + rules overview */
+  .brow{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin:0 4px 24px}
+  .brow .card{padding:0}
+  .channels{display:flex;flex-direction:column;gap:10px;padding:12px 18px}
+  .channel{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px}
+  .channel .cic{width:36px;height:36px;border-radius:10px;background:#f6f8f4;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+  .channel .n{font-size:12px;font-weight:700}
+  .channel .d{font-size:11px;color:var(--muted);margin-top:2px}
+  .channel .st{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px}
+  .st.on{background:#e7f6ec;color:#1f8f4a}
+  .st.off{background:#f2f4f0;color:#8a978f}
+  .add-ch{display:block;text-align:center;padding:9px;border:1px dashed #cfd6cd;border-radius:10px;color:var(--ink-2);font-size:12px;font-weight:600;margin:0 18px 14px}
+
+  /* Rules overview */
+  table.rules{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+  table.rules th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)}
+  table.rules td{padding:10px;border-bottom:1px solid var(--line)}
+  table.rules tr:last-child td{border-bottom:0}
+  .toggle{position:relative;display:inline-block;width:32px;height:18px}
+  .toggle input{display:none}
+  .toggle span{position:absolute;inset:0;background:#d7ddd3;border-radius:20px;transition:.15s}
+  .toggle span::before{content:"";position:absolute;left:2px;top:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:.15s}
+  .toggle input:checked + span{background:var(--sidebar)}
+  .toggle input:checked + span::before{transform:translateX(14px)}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a class="active" href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 00 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar"></div>
+      <div><div class="who">Owner Account</div><div class="mail">hoanghuyho2810@gmail.com</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main>
+    <div class="header">
+      <div class="h-title">Alerts <span class="caret">▾</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search alerts by metric, rule, note…
+      </div>
+      <div class="h-actions">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600;font-family:inherit;border:0;cursor:pointer" title="Scope to a station"><span style="width:8px;height:8px;border-radius:50%;background:#0f2a1f;display:inline-block"></span>All stations<span style="color:var(--muted);margin-left:2px">▾</span></button>
+        <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <button class="cta">Notification settings <span class="plus">⚙</span></button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Alerts</h1>
+        <p>Active issues, historical resolutions, delivery, and rule overview — all in one place.</p>
+      </div>
+    </div>
+
+    <!-- Severity KPI strip (also filter chips) -->
+    <div class="sev-strip">
+      <div class="sev-card crit active">
+        <div class="ic">!</div>
+        <div><div class="lbl">Critical</div><div class="val">3</div><div class="foot">2 new in last 24h</div></div>
+      </div>
+      <div class="sev-card warn active">
+        <div class="ic">▲</div>
+        <div><div class="lbl">Warning</div><div class="val">7</div><div class="foot">4 new today</div></div>
+      </div>
+      <div class="sev-card info">
+        <div class="ic">i</div>
+        <div><div class="lbl">Info</div><div class="val">3</div><div class="foot">1 new</div></div>
+      </div>
+      <div class="sev-card muted">
+        <div class="ic">–</div>
+        <div><div class="lbl">Muted / Snoozed</div><div class="val">5</div><div class="foot">2 wake tomorrow</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="active">Active feed <span style="opacity:.6;margin-left:6px">13</span></button>
+      <button>History <span style="opacity:.6;margin-left:6px">142</span></button>
+      <button>Rules <span style="opacity:.6;margin-left:6px">18</span></button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-s">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search alerts…
+      </div>
+      <select><option>All stations</option><option>Station A · Quận 1</option><option>Station B · Thủ Đức</option></select>
+      <select><option>All metrics</option><option>sales_volume</option><option>losses</option><option>revenue</option><option>inventory_on_hand</option></select>
+      <select><option>All rules</option><option>Day-over-day %</option><option>Absolute floor/ceiling</option><option>Z-score anomaly</option></select>
+      <select><option>All statuses</option><option>Unacknowledged</option><option>Acknowledged</option><option>Snoozed</option></select>
+      <span class="selcount">2 selected</span>
+      <button class="btn ghost">✓ Ack</button>
+      <button class="btn ghost">💤 Snooze…</button>
+      <button class="btn ghost">✕ Dismiss</button>
+      <button class="btn primary">Assign…</button>
+    </div>
+
+    <!-- Feed + drawer -->
+    <div class="work">
+
+      <!-- Feed grouped by severity -->
+      <div class="card">
+        <div class="card-head"><h3>Active alerts — grouped by severity</h3><span class="kebab">•••</span></div>
+
+        <!-- Critical -->
+        <div class="subhead"><span class="sev-pill crit">Critical · 3</span> <span class="count">Highest priority</span> <button class="bulk">Ack all</button> <button class="bulk">Snooze all</button></div>
+
+        <div class="alert crit sel">
+          <input type="checkbox" checked>
+          <div class="icon">!</div>
+          <div>
+            <div class="title">Losses spiked above absolute ceiling <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
+            <div class="rule">Rule: <code>losses &gt; $500</code> (Station A threshold) · fired 08:12</div>
+            <div class="body">
+              <span class="vs">Today: <b>$980</b></span>
+              <span class="vs">Ceiling: <b>$500</b></span>
+              <span class="delta up">▲ +96%</span>
+              <span class="vs">30-day avg: <b>$450</b></span>
+            </div>
+            <div class="ai">
+              <span class="lbl">AI</span>
+              <div>Losses on Fridays run 2× the weekly mean historically — today's spike is 3σ above even that Friday baseline. Check produce spoilage or the 2026-07-25 supplier shipment.</div>
+            </div>
+            <div class="meta">
+              <span>2026-07-29 · 08:12</span>
+              <a href="uploads.html">→ upload sales_2026-07-29.csv</a>
+              <span>2 comments</span>
+            </div>
+          </div>
+          <div class="side">
+            <div class="when">2h ago</div>
+            <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,18 10,16 20,14 30,15 40,10 50,6 60,2"/></svg>
+            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+          </div>
+        </div>
+
+        <div class="alert crit">
+          <input type="checkbox" checked>
+          <div class="icon">!</div>
+          <div>
+            <div class="title">revenue unit-shift detected <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
+            <div class="rule">Rule: <code>Z-score &gt; 2.5</code> · fired 09:04</div>
+            <div class="body">
+              <span class="vs">Today: <b>$688,000</b></span>
+              <span class="vs">Expected: <b>~$6,880</b></span>
+              <span class="delta up">▲ 100×</span>
+            </div>
+            <div class="ai"><span class="lbl">AI</span><div>Values are exactly 100× the recent mean — very likely a decimal/currency unit change in the CSV, not a real spike. Re-check the 2026-07-15 upload column format.</div></div>
+            <div class="meta"><span>2026-07-29 · 09:04</span><a href="uploads.html">→ upload revenue_2026-07-29.csv</a></div>
+          </div>
+          <div class="side">
+            <div class="when">1h ago</div>
+            <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,18 10,17 20,18 30,15 40,4 50,3 60,2"/></svg>
+            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+          </div>
+        </div>
+
+        <div class="alert crit">
+          <input type="checkbox">
+          <div class="icon">!</div>
+          <div>
+            <div class="title">inventory_on_hand missing 3 days <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf7d3;color:#1f6f4a;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#1f6f4a"></span>Station B</span></div>
+            <div class="rule">Rule: <code>data health · missing days</code> · fired 10:00</div>
+            <div class="body">
+              <span class="vs">Missing: <b>2026-07-07, 07-14, 07-21</b></span>
+              <span class="vs">Pattern: <b>weekly (Mon)</b></span>
+            </div>
+            <div class="ai"><span class="lbl">AI</span><div>The gaps land on Mondays — likely the accountant is skipping the weekend inventory count. Consider changing the upload schedule or backfilling from paper logs.</div></div>
+            <div class="meta"><span>2026-07-29 · 10:00</span></div>
+          </div>
+          <div class="side">
+            <div class="when">Today</div>
+            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+          </div>
+        </div>
+
+        <!-- Warning -->
+        <div class="subhead"><span class="sev-pill warn">Warning · 7</span> <span class="count">Watch, no action forced</span> <button class="bulk">Ack all</button></div>
+
+        <div class="alert warn">
+          <input type="checkbox">
+          <div class="icon">▲</div>
+          <div>
+            <div class="title">purchases day-over-day change exceeded 20%</div>
+            <div class="rule">Rule: <code>DoD % &gt; 20%</code> · fired 07:41</div>
+            <div class="body">
+              <span class="vs">Today: <b>68</b></span>
+              <span class="vs">Yesterday: <b>38</b></span>
+              <span class="delta up">▲ +79%</span>
+            </div>
+            <div class="ai"><span class="lbl">AI</span><div>Purchases usually spike mid-week ahead of the weekend rush — this is within seasonal norms but larger than the last four Wednesdays.</div></div>
+            <div class="meta"><span>2026-07-29 · 07:41</span></div>
+          </div>
+          <div class="side">
+            <div class="when">3h ago</div>
+            <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#f0a545" stroke-width="1.6" points="0,14 10,12 20,15 30,13 40,10 50,8 60,4"/></svg>
+            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+          </div>
+        </div>
+
+        <div class="alert warn">
+          <input type="checkbox">
+          <div class="icon">▲</div>
+          <div>
+            <div class="title">sales_volume below week-over-week floor</div>
+            <div class="rule">Rule: <code>WoW % &lt; −10%</code> · fired 08:20</div>
+            <div class="body">
+              <span class="vs">This week: <b>412</b></span>
+              <span class="vs">Last week: <b>478</b></span>
+              <span class="delta down">▼ −13.8%</span>
+            </div>
+            <div class="meta"><span>2026-07-29 · 08:20</span><span>1 comment</span></div>
+          </div>
+          <div class="side">
+            <div class="when">2h ago</div>
+            <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#f0a545" stroke-width="1.6" points="0,4 10,6 20,8 30,10 40,13 50,14 60,16"/></svg>
+            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="subhead"><span class="sev-pill info">Info · 3</span> <span class="count">FYI only</span></div>
+
+        <div class="alert info">
+          <input type="checkbox">
+          <div class="icon">i</div>
+          <div>
+            <div class="title">New metric detected: <code>supplier_returns</code></div>
+            <div class="rule">Rule: <code>registry · new column</code></div>
+            <div class="body"><span class="vs">First seen: <b>2026-07-20</b></span><span class="vs">Uploads: <b>3</b></span></div>
+            <div class="meta"><a href="metrics.html">→ Confirm tracking</a></div>
+          </div>
+          <div class="side"><div class="when">9d ago</div><div class="row-actions"><button class="pri">Confirm</button><button>✕</button></div></div>
+        </div>
+
+        <!-- Muted / snoozed -->
+        <div class="subhead"><span class="sev-pill muted">Muted / Snoozed · 5</span> <span class="count">Not delivered until wake time</span></div>
+
+        <div class="alert muted">
+          <input type="checkbox">
+          <div class="icon">–</div>
+          <div>
+            <div class="title">cashier_count column dropped</div>
+            <div class="rule">Rule: <code>registry · column missing</code> · snoozed until 2026-08-05</div>
+            <div class="meta"><span>Muted by Owner · 4 days ago</span></div>
+          </div>
+          <div class="side"><div class="when">Snoozed</div><div class="row-actions"><button>Wake</button><button>✕</button></div></div>
+        </div>
+      </div>
+
+      <!-- Detail drawer -->
+      <div class="card drawer">
+        <div class="head-row" style="display:flex;align-items:flex-start;gap:10px">
+          <div>
+            <h3>Losses spiked above ceiling</h3>
+            <div class="subline">
+              <span><span class="sev-pill crit">Critical</span></span>
+              <span>Metric: <b>losses</b></span>
+              <span>Rule: <code>losses &gt; $500</code></span>
+              <span>Fired 2026-07-29 · 08:12</span>
+            </div>
+          </div>
+          <span class="close">✕</span>
+        </div>
+
+        <div class="metric-strip">
+          <svg viewBox="0 0 700 130" preserveAspectRatio="none">
+            <!-- ceiling line -->
+            <line x1="0" y1="70" x2="700" y2="70" stroke="#c94141" stroke-dasharray="4 4" stroke-width="1.5"/>
+            <text x="8" y="66" fill="#c94141" font-size="10" font-family="Inter" font-weight="700">Ceiling $500</text>
+            <!-- history -->
+            <polyline fill="none" stroke="#c94141" stroke-width="2" points="0,100 40,105 80,95 120,110 160,102 200,88 240,96 280,92 320,84 360,90 400,86 440,80 480,84 520,70 560,74 600,60 640,45 700,20"/>
+            <!-- point -->
+            <circle cx="700" cy="20" r="5" fill="#c94141"/>
+            <rect x="580" y="0" width="118" height="18" rx="4" fill="#0f2a1f"/>
+            <text x="639" y="13" text-anchor="middle" fill="#b7f04a" font-size="10" font-family="Inter" font-weight="700">Today · $980</text>
+          </svg>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><label>Today</label><div class="v">$980</div></div>
+          <div class="stat"><label>30-day avg</label><div class="v">$450</div></div>
+          <div class="stat"><label>vs avg</label><div class="v" style="color:var(--red)">+118%</div></div>
+        </div>
+
+        <div class="section">
+          <h4>AI explanation</h4>
+          <div class="ai-full">
+            <b>Why this fired.</b> Today's losses ($980) crossed the fixed ceiling of $500 and are 3σ above the 30-day rolling mean.
+            <ul>
+              <li>Fridays historically run ~2× the weekly loss average.</li>
+              <li>Today's value is above even that Friday baseline.</li>
+              <li>Likely candidates: produce spoilage, the 07-25 supplier shipment, or a mis-entered receipt.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="quick-row">
+          <div class="kv">
+            <label>Assign to</label>
+            <select><option>Unassigned</option><option>Accountant (Anna)</option><option>Owner (Huy)</option></select>
+          </div>
+          <div class="kv">
+            <label>Snooze</label>
+            <select><option>Don't snooze</option><option>1 hour</option><option>24 hours</option><option>3 days</option><option>1 week</option><option>Until value drops below ceiling</option></select>
+          </div>
+        </div>
+
+        <div class="section">
+          <h4>Notes thread · 2</h4>
+          <div class="thread">
+            <div class="comment">
+              <div class="av acc"></div>
+              <div class="body">
+                <div class="who">Anna (Accountant) <small>2026-07-29 · 09:15</small></div>
+                Checked \\ produce spoilage log — 12 kg mangoes tossed today. That accounts for ~$420 of the spike.
+              </div>
+            </div>
+            <div class="comment">
+              <div class="av own"></div>
+              <div class="body">
+                <div class="who">Huy (Owner) <small>2026-07-29 · 10:03</small></div>
+                Okay — let's not snooze, but recheck tomorrow. If it stays over ceiling 2 days in a row, page me.
+              </div>
+            </div>
+          </div>
+          <div class="compose">
+            <input type="text" placeholder="Add a note (@mention to assign)…" />
+            <button>Send</button>
+          </div>
+        </div>
+
+        <div class="drawer-actions">
+          <button class="btn danger">Dismiss</button>
+          <button class="btn ghost">Snooze 24h</button>
+          <button class="btn primary">Acknowledge</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row: notifications + rules overview -->
+    <div class="brow">
+
+      <div class="card">
+        <div class="card-head"><h3>Notification delivery</h3><span class="kebab">•••</span></div>
+        <div class="channels">
+          <div class="channel">
+            <div class="cic">✉️</div>
+            <div>
+              <div class="n">Email to owner</div>
+              <div class="d">hoanghuyho2810@gmail.com · Critical only · digest every 6h</div>
+            </div>
+            <span class="st on">On</span>
+          </div>
+          <div class="channel">
+            <div class="cic">💬</div>
+            <div>
+              <div class="n">Slack webhook</div>
+              <div class="d">#ops-alerts · Critical + Warning</div>
+            </div>
+            <span class="st on">On</span>
+          </div>
+          <div class="channel">
+            <div class="cic">🔗</div>
+            <div>
+              <div class="n">Generic webhook</div>
+              <div class="d">https://ops.example.com/hooks/demo_csv · not verified</div>
+            </div>
+            <span class="st off">Off</span>
+          </div>
+          <div class="channel">
+            <div class="cic">📱</div>
+            <div>
+              <div class="n">SMS</div>
+              <div class="d">Requires Twilio config</div>
+            </div>
+            <span class="st off">Off</span>
+          </div>
+        </div>
+        <button class="add-ch">＋ Add delivery channel</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Rules overview</h3><span class="kebab">•••</span></div>
+        <table class="rules">
+          <thead>
+            <tr><th>Metric</th><th>Rule</th><th>Threshold</th><th>Severity</th><th>Fires (30d)</th><th>Active</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>losses</b></td><td>Absolute ceiling</td><td>&gt; $500</td>
+              <td><span class="sev-pill crit">Critical</span></td><td>4</td>
+              <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+            </tr>
+            <tr>
+              <td><b>revenue</b></td><td>Z-score anomaly</td><td>σ &gt; 2.5</td>
+              <td><span class="sev-pill crit">Critical</span></td><td>2</td>
+              <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+            </tr>
+            <tr>
+              <td><b>sales_volume</b></td><td>Day-over-day %</td><td>|Δ| &gt; 20%</td>
+              <td><span class="sev-pill warn">Warning</span></td><td>7</td>
+              <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+            </tr>
+            <tr>
+              <td><b>inventory_on_hand</b></td><td>Absolute floor</td><td>&lt; 100</td>
+              <td><span class="sev-pill warn">Warning</span></td><td>1</td>
+              <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+            </tr>
+            <tr>
+              <td><b>purchases</b></td><td>Week-over-week %</td><td>|Δ| &gt; 15%</td>
+              <td><span class="sev-pill info">Info</span></td><td>3</td>
+              <td><label class="toggle"><input type="checkbox"><span></span></label></td>
+            </tr>
+            <tr>
+              <td><b>cashier_count</b></td><td>Column dropped</td><td>≥ 3 uploads missing</td>
+              <td><span class="sev-pill muted">Muted</span></td><td>1</td>
+              <td><label class="toggle"><input type="checkbox"><span></span></label></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll('.tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');});
+  });
+  document.querySelectorAll('.sev-card').forEach(c=>{
+    c.addEventListener('click',()=>c.classList.toggle('active'));
+  });
+  document.querySelectorAll('.alert').forEach(a=>{
+    a.addEventListener('click',(e)=>{
+      if(e.target.tagName==='INPUT' || e.target.tagName==='BUTTON' || e.target.tagName==='A') return;
+      document.querySelectorAll('.alert').forEach(x=>x.classList.remove('sel'));
+      a.classList.add('sel');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Stations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8; --panel:#fff; --ink:#0f1a14; --ink-2:#4a5a51; --muted:#8a978f;
+    --line:#eef0ec; --sidebar:#0f2a1f; --sidebar-2:#153a2b;
+    --accent:#b7f04a; --green:#1f6f4a; --red:#c94141; --amber:#f0a545; --blue:#3455b3; --purple:#7c5cff;
+    --chip:#f2f4f0;
+    --radius:18px; --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#f6f8f4;padding:1px 6px;border-radius:5px}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:20px;max-width:1360px;margin:20px auto;padding:0 20px;align-items:start}
+
+  /* Sidebar */
+  .sidebar{background:var(--sidebar);color:#cfe0d5;border-radius:24px;padding:22px 16px;min-height:calc(100vh - 40px);position:sticky;top:20px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#c7d8cd;position:relative}
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent)}
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{margin-left:auto;background:var(--accent);color:#0f2a1f;font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px}
+  .profile{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:14px;padding:6px 4px 18px}
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{margin-left:24px;flex:1;max-width:360px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--muted);font-size:13px;box-shadow:var(--shadow)}
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .scope{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600}
+  .scope .dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--sidebar)}
+  .scope .caret{color:var(--muted);margin-left:4px}
+  .cta{background:var(--sidebar);color:#fff;padding:10px 16px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+  .cta .plus{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 4px 16px}
+  .kpi{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+  .kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .kpi .val{font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.01em}
+  .kpi .foot{font-size:11px;color:var(--ink-2);margin-top:2px}
+
+  /* Station cards grid */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:0 4px 24px}
+  .stn{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .stn .stripe{height:6px}
+  .stn.a .stripe{background:#3455b3}
+  .stn.b .stripe{background:#1f6f4a}
+  .stn.c .stripe{background:#f0a545}
+  .stn.arch .stripe{background:#8a978f}
+  .stn .hd{padding:16px 18px 8px;display:flex;align-items:center;gap:12px}
+  .stn .ic{width:44px;height:44px;border-radius:12px;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+  .stn.a .ic{background:#3455b3}
+  .stn.b .ic{background:#1f6f4a}
+  .stn.c .ic{background:#f0a545}
+  .stn.arch .ic{background:#8a978f}
+  .stn h3{margin:0;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .stn .subd{font-size:12px;color:var(--muted);margin-top:2px}
+  .stn .badge-st{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em;background:#e7f6ec;color:#1f8f4a}
+  .stn.arch .badge-st{background:#f2f4f0;color:#8a978f}
+  .stn .actions{margin-left:auto;display:flex;gap:6px}
+  .stn .actions button{padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;color:var(--ink-2);background:#f6f8f4}
+  .stn .actions button.danger{background:#fdecec;color:var(--red)}
+  .stn .body{padding:8px 18px 16px}
+  .stn .row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+  .stat{background:#f6f8f4;border-radius:10px;padding:8px 10px}
+  .stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+  .stat .v{font-size:14px;font-weight:700;margin-top:2px}
+  .stat .d{font-size:10px;color:var(--ink-2);margin-top:2px}
+  .stn .members{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .pill{background:#f2f4f0;color:var(--ink-2);font-size:11px;padding:3px 8px;border-radius:999px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .avatar-sm{width:18px;height:18px;border-radius:50%}
+  .avatar-sm.acc{background:linear-gradient(135deg,#3455b3,#7fa2ff)}
+  .avatar-sm.own{background:linear-gradient(135deg,#b7f04a,#4bd48a)}
+  .avatar-sm.b{background:linear-gradient(135deg,#f0a545,#e8b980)}
+  .stn .spark{padding-top:2px}
+  .stn .spark svg{display:block;width:100%;height:60px}
+  .stn .foot{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-top:1px solid var(--line);background:#fafbf8;font-size:12px;color:var(--ink-2)}
+  .stn .foot a{color:var(--sidebar);font-weight:600}
+
+  /* Add station card */
+  .add-card{
+    background:#fff;border:2px dashed #cfd6cd;border-radius:var(--radius);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:36px;color:var(--ink-2);cursor:pointer;min-height:280px
+  }
+  .add-card .plus{width:52px;height:52px;border-radius:14px;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-bottom:10px}
+  .add-card h4{margin:0;font-size:15px;color:var(--ink)}
+  .add-card p{margin:4px 0 0;font-size:12px;color:var(--muted);text-align:center}
+
+  /* Comparison table */
+  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin:0 4px 16px}
+  .card-head{padding:14px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+  .card-head h3{margin:0;font-size:15px}
+  .kebab{color:var(--muted);letter-spacing:2px;margin-left:auto}
+  table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+  table.tbl th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:12px;background:#f6f8f4;border-bottom:1px solid var(--line)}
+  table.tbl td{padding:12px;border-bottom:1px solid var(--line)}
+  table.tbl tr:last-child td{border-bottom:0}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .delta{font-weight:700}
+  .delta.up{color:#1f8f4a}
+  .delta.down{color:var(--red)}
+  .stn-chip{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+  .stn-chip .d{width:8px;height:8px;border-radius:50%}
+  .rank{display:inline-block;width:22px;height:22px;background:var(--chip);color:var(--ink-2);border-radius:50%;text-align:center;font-weight:800;font-size:11px;line-height:22px}
+  .rank.top{background:var(--accent);color:#0f2a1f}
+
+  /* New station modal */
+  .modal-back{position:fixed;inset:0;background:rgba(15,26,20,.55);z-index:50;display:flex;align-items:center;justify-content:center}
+  .modal{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:520px;max-width:calc(100vw - 40px);padding:22px}
+  .modal .ic{width:44px;height:44px;border-radius:12px;background:#eaf7d3;color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin-bottom:10px}
+  .modal h3{margin:0 0 4px;font-size:16px;font-weight:700}
+  .modal p{margin:0 0 12px;color:var(--ink-2);font-size:13px}
+  .field2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .modal label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+  .modal input, .modal select{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8}
+  .modal .colors{display:flex;gap:6px}
+  .modal .sw{width:26px;height:26px;border-radius:8px;cursor:pointer;border:2px solid transparent}
+  .modal .sw.active{border-color:var(--sidebar);box-shadow:0 0 0 2px #fff inset}
+  .modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+  .modal button.pri{background:var(--sidebar);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600}
+  .modal button.ghost{background:#f6f8f4;color:var(--ink-2);padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar (shared) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a class="active" href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar"></div>
+      <div><div class="who">Owner Account</div><div class="mail">hoanghuyho2810@gmail.com</div></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="header">
+      <div class="h-title">Stations <span class="caret">▾</span></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search stations…</div>
+      <div class="h-actions">
+        <button class="scope"><span class="dot"></span><b>All stations</b><span class="caret">▾</span></button>
+        <button class="cta" onclick="document.getElementById('new-stn').style.display='flex'">＋ New station <span class="plus">＋</span></button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Stations</h1>
+        <p>Your business locations. Data, uploads, alerts, and accountants are scoped per station.</p>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="lbl">Active stations</div><div class="val">2</div><div class="foot">1 archived</div></div>
+      <div class="kpi"><div class="lbl">Combined revenue (MTD)</div><div class="val">$193K</div><div class="foot">+12% vs Jun</div></div>
+      <div class="kpi"><div class="lbl">Uploads today</div><div class="val">3</div><div class="foot">2 processed · 1 pending</div></div>
+      <div class="kpi"><div class="lbl">Active alerts across stations</div><div class="val">13</div><div class="foot">3 critical</div></div>
+    </div>
+
+    <!-- Station cards -->
+    <div class="grid">
+
+      <div class="stn a">
+        <div class="stripe"></div>
+        <div class="hd">
+          <div class="ic">⛽</div>
+          <div>
+            <h3>Station A · Quận 1 <span class="badge-st">Active</span></h3>
+            <div class="subd">142 Nguyễn Huệ, Q1, HCMC · UTC+7 · ₫ VND</div>
+          </div>
+          <div class="actions"><button>Edit</button><button>Transfer</button><button class="danger">Archive</button></div>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="stat"><div class="l">Revenue MTD</div><div class="v">$118K</div><div class="d" style="color:#1f8f4a">+14%</div></div>
+            <div class="stat"><div class="l">Uploads (30d)</div><div class="v">28/30</div><div class="d">93% on-time</div></div>
+            <div class="stat"><div class="l">Active alerts</div><div class="v">7</div><div class="d" style="color:var(--red)">2 crit</div></div>
+            <div class="stat"><div class="l">Data quality</div><div class="v">A−</div><div class="d">3 gaps</div></div>
+          </div>
+          <div class="members">
+            <span class="pill"><span class="avatar-sm own"></span>Owner: You</span>
+            <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn — Accountant</span>
+          </div>
+          <div class="spark">
+            <svg viewBox="0 0 600 60" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#3455b3" stroke-width="2" points="0,45 60,42 120,38 180,32 240,36 300,28 360,24 420,26 480,18 540,20 600,12"/>
+            </svg>
+          </div>
+        </div>
+        <div class="foot">
+          <span>Created Mar 4, 2026 · 128 upload days</span>
+          <a href="index.html">Open dashboard →</a>
+        </div>
+      </div>
+
+      <div class="stn b">
+        <div class="stripe"></div>
+        <div class="hd">
+          <div class="ic">⛽</div>
+          <div>
+            <h3>Station B · Thủ Đức <span class="badge-st">Active</span></h3>
+            <div class="subd">88 Võ Văn Ngân, Thủ Đức · UTC+7 · ₫ VND</div>
+          </div>
+          <div class="actions"><button>Edit</button><button>Transfer</button><button class="danger">Archive</button></div>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="stat"><div class="l">Revenue MTD</div><div class="v">$75K</div><div class="d" style="color:#1f8f4a">+8%</div></div>
+            <div class="stat"><div class="l">Uploads (30d)</div><div class="v">30/30</div><div class="d">100% on-time</div></div>
+            <div class="stat"><div class="l">Active alerts</div><div class="v">6</div><div class="d" style="color:var(--amber)">1 crit</div></div>
+            <div class="stat"><div class="l">Data quality</div><div class="v">A</div><div class="d">Healthy</div></div>
+          </div>
+          <div class="members">
+            <span class="pill"><span class="avatar-sm own"></span>Owner: You</span>
+            <span class="pill"><span class="avatar-sm b"></span>Bình Trần — Accountant</span>
+          </div>
+          <div class="spark">
+            <svg viewBox="0 0 600 60" preserveAspectRatio="none">
+              <polyline fill="none" stroke="#1f6f4a" stroke-width="2" points="0,40 60,38 120,42 180,36 240,30 300,32 360,26 420,28 480,22 540,18 600,20"/>
+            </svg>
+          </div>
+        </div>
+        <div class="foot">
+          <span>Created May 12, 2026 · 78 upload days</span>
+          <a href="index.html">Open dashboard →</a>
+        </div>
+      </div>
+
+      <div class="stn arch">
+        <div class="stripe"></div>
+        <div class="hd">
+          <div class="ic">⛽</div>
+          <div>
+            <h3>Station C · Bình Thạnh <span class="badge-st">Archived</span></h3>
+            <div class="subd">Sold Feb 2026 · read-only history</div>
+          </div>
+          <div class="actions"><button>Unarchive</button><button>Export</button></div>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="stat"><div class="l">Revenue lifetime</div><div class="v">$412K</div><div class="d">Sep 2023 – Feb 2026</div></div>
+            <div class="stat"><div class="l">Upload days</div><div class="v">867</div><div class="d">read-only</div></div>
+            <div class="stat"><div class="l">Alerts</div><div class="v">—</div><div class="d">Muted</div></div>
+            <div class="stat"><div class="l">Members</div><div class="v">0</div><div class="d">Cleared</div></div>
+          </div>
+        </div>
+        <div class="foot"><span>Archived Feb 21, 2026 · 148d cool-off period ended</span><a href="index.html">View history →</a></div>
+      </div>
+
+      <div class="add-card" onclick="document.getElementById('new-stn').style.display='flex'">
+        <div class="plus">＋</div>
+        <h4>Add a new station</h4>
+        <p>Create a location, choose a color, then invite its accountant.</p>
+      </div>
+
+    </div>
+
+    <!-- Comparison -->
+    <div class="card">
+      <div class="card-head"><h3>Compare stations · July 2026</h3><span class="kebab">•••</span></div>
+      <table class="tbl">
+        <thead>
+          <tr><th>Rank</th><th>Station</th><th class="num">Revenue</th><th class="num">Sales vol.</th><th class="num">Losses</th><th class="num">Margin</th><th class="num">On-time uploads</th><th>Data health</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rank top">1</span></td>
+            <td><span class="stn-chip"><span class="d" style="background:#3455b3"></span>Station A</span></td>
+            <td class="num">$118K <span class="delta up">+14%</span></td>
+            <td class="num">2,410</td>
+            <td class="num">$1,140 <span class="delta down">+18%</span></td>
+            <td class="num">43.1%</td>
+            <td class="num">93%</td>
+            <td>A−</td>
+          </tr>
+          <tr>
+            <td><span class="rank">2</span></td>
+            <td><span class="stn-chip"><span class="d" style="background:#1f6f4a"></span>Station B</span></td>
+            <td class="num">$75K <span class="delta up">+8%</span></td>
+            <td class="num">1,542</td>
+            <td class="num">$680 <span class="delta down">−12%</span></td>
+            <td class="num">45.6%</td>
+            <td class="num">100%</td>
+            <td>A</td>
+          </tr>
+          <tr style="background:#fafbf8">
+            <td></td>
+            <td><b>Combined</b></td>
+            <td class="num"><b>$193K</b> <span class="delta up">+12%</span></td>
+            <td class="num"><b>3,952</b></td>
+            <td class="num"><b>$1,820</b></td>
+            <td class="num"><b>44.0%</b></td>
+            <td class="num"><b>96%</b></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- New station modal -->
+<div class="modal-back" id="new-stn" style="display:none">
+  <div class="modal">
+    <div class="ic">⛽</div>
+    <h3>Add a new station</h3>
+    <p>Give it a name and set defaults. You can invite the accountant next.</p>
+
+    <div class="field2">
+      <div><label>Station name</label><input type="text" placeholder="e.g. Station D · Tân Bình"/></div>
+      <div><label>Short code</label><input type="text" placeholder="STN-D"/></div>
+    </div>
+    <div class="field2">
+      <div><label>Address</label><input type="text" placeholder="Street, ward, city"/></div>
+      <div><label>Timezone</label><select><option>Asia/Ho_Chi_Minh (UTC+7)</option><option>UTC</option></select></div>
+    </div>
+    <div class="field2">
+      <div><label>Currency</label><select><option>₫ VND</option><option>$ USD</option><option>€ EUR</option></select></div>
+      <div><label>Primary accountant</label><select><option>Invite later…</option><option>Anna Nguyễn</option><option>Bình Trần</option></select></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <label>Color</label>
+      <div class="colors">
+        <div class="sw" style="background:#3455b3"></div>
+        <div class="sw active" style="background:#1f6f4a"></div>
+        <div class="sw" style="background:#f0a545"></div>
+        <div class="sw" style="background:#7c5cff"></div>
+        <div class="sw" style="background:#c94141"></div>
+        <div class="sw" style="background:#b7f04a"></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="ghost" onclick="document.getElementById('new-stn').style.display='none'">Cancel</button>
+      <button class="pri" onclick="document.getElementById('new-stn').style.display='none'">Create station</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.sw').forEach(s=>s.addEventListener('click',()=>{document.querySelectorAll('.modal .sw').forEach(x=>x.classList.remove('active'));s.classList.add('active');}));
+</script>
+</body>
+</html>

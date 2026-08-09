@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Uploads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8; --panel:#fff; --ink:#0f1a14; --ink-2:#4a5a51; --muted:#8a978f;
+    --line:#eef0ec; --sidebar:#0f2a1f; --sidebar-2:#153a2b;
+    --accent:#b7f04a; --accent-2:#8fd63a; --green:#1f6f4a; --green-dk:#123c2a;
+    --red:#e14b4b; --amber:#f0a545; --chip:#f2f4f0;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:20px;max-width:1360px;margin:20px auto;padding:0 20px;align-items:start}
+
+  /* Sidebar (identical to index) */
+  .sidebar{background:var(--sidebar);color:#cfe0d5;border-radius:24px;padding:22px 16px;min-height:calc(100vh - 40px);position:sticky;top:20px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#c7d8cd;position:relative}
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent)}
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{margin-left:auto;background:var(--accent);color:#0f2a1f;font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px}
+  .profile{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:14px;padding:6px 4px 18px}
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{margin-left:24px;flex:1;max-width:420px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--muted);font-size:13px;box-shadow:var(--shadow)}
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .cta{background:var(--sidebar);color:#fff;padding:10px 16px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+  .cta .plus{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  /* Page head */
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+
+  /* Tabs */
+  .tabs{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:0 4px 16px}
+  .tabs button{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .tabs button.active{background:var(--sidebar);color:#fff}
+
+  /* Layout for uploads content */
+  .row{display:grid;gap:16px;grid-template-columns:1.55fr 1fr}
+  .card{background:var(--panel);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 12px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+  .kebab{color:var(--muted);letter-spacing:2px}
+
+  /* Dropzone */
+  .drop{
+    border:2px dashed #cfd6cd;border-radius:16px;background:#fafbf8;
+    padding:34px 20px;text-align:center;color:var(--ink-2);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .drop .icon{width:52px;height:52px;border-radius:14px;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center}
+  .drop b{color:var(--ink);font-size:15px}
+  .drop small{font-size:12px;color:var(--muted)}
+  .drop .browse{margin-top:8px;background:var(--sidebar);color:#fff;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600}
+
+  /* Selected files list */
+  .files{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+  .file{
+    display:grid;grid-template-columns:36px 1.5fr 1fr auto auto;gap:12px;align-items:center;
+    padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;
+  }
+  .file .thumb{width:36px;height:36px;border-radius:10px;background:var(--chip);display:inline-flex;align-items:center;justify-content:center}
+  .file .name{font-size:13px;font-weight:600;line-height:1.2}
+  .file .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .file select, .file input{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;
+    font:inherit;font-size:12px;color:var(--ink);
+  }
+  .file .status{display:inline-block;padding:3px 8px;border-radius:999px;font-weight:600;font-size:10px}
+  .status.ok{background:#e7f6ec;color:#1f8f4a}
+  .status.warn{background:#fff0d6;color:#a4680d}
+  .status.new{background:#eaf1ff;color:#3455b3}
+  .file .x{color:var(--muted);padding:4px}
+
+  /* Warning banner */
+  .warn-banner{
+    display:flex;gap:12px;align-items:flex-start;background:#fff6e6;border:1px solid #f4d9a0;
+    color:#6b4a13;padding:12px 14px;border-radius:12px;margin-top:14px;font-size:13px;
+  }
+  .warn-banner b{color:#6b4a13}
+  .warn-banner .icon{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--amber);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+  .diff{margin-top:8px;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#fff;border:1px solid #f4d9a0;border-radius:8px;padding:8px 10px}
+  .diff .old{color:#c94141;text-decoration:line-through}
+  .diff .new{color:#1f8f4a;font-weight:700}
+
+  /* Column mapping */
+  .mapping{margin-top:18px}
+  .mapping h4{margin:0 0 8px;font-size:13px;font-weight:600;color:var(--ink)}
+  .mapping .hint{font-size:11px;color:var(--muted);margin-bottom:10px}
+  table.map{width:100%;border-collapse:separate;border-spacing:0}
+  table.map th{
+    text-align:left;font-size:11px;color:var(--muted);font-weight:600;
+    padding:8px 10px;background:#f6f8f4;border-bottom:1px solid var(--line);
+  }
+  table.map th:first-child{border-top-left-radius:10px}
+  table.map th:last-child{border-top-right-radius:10px}
+  table.map td{padding:10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:middle}
+  table.map input[type=text], table.map select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;width:100%;background:#fff}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--chip);color:var(--ink-2)}
+  .pill.num{background:#eaf1ff;color:#3455b3}
+  .pill.txt{background:#f2f4f0;color:#4a5a51}
+  .pill.date{background:#fff0d6;color:#a4680d}
+  .toggle{position:relative;display:inline-block;width:34px;height:20px}
+  .toggle input{display:none}
+  .toggle span{position:absolute;inset:0;background:#d7ddd3;border-radius:20px;transition:.15s}
+  .toggle span::before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.15s}
+  .toggle input:checked + span{background:var(--sidebar)}
+  .toggle input:checked + span::before{transform:translateX(14px)}
+
+  /* Actions row */
+  .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+  .btn{padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600}
+  .btn.ghost{color:var(--ink-2);background:#fff;border:1px solid var(--line)}
+  .btn.primary{background:var(--sidebar);color:#fff}
+
+  /* Right column cards */
+  .cats .cat{
+    display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid var(--line)
+  }
+  .cats .cat:last-child{border-bottom:0}
+  .cat .icon{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+  .cat .n{font-size:13px;font-weight:600}
+  .cat .d{font-size:11px;color:var(--muted);margin-top:2px}
+  .cat .count{margin-left:auto;font-size:11px;color:var(--muted)}
+  .cat .edit{color:var(--muted);padding:4px}
+  .add-cat{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px dashed #cfd6cd;border-radius:10px;margin-top:8px;color:var(--ink-2);font-size:13px;font-weight:600;justify-content:center;width:100%}
+
+  /* History table */
+  .hist{margin-top:20px}
+  .hist .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .hist .toolbar .search-s{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .hist .toolbar select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:12px}
+  table.hist-t{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  table.hist-t th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:12px;background:#f6f8f4;border-bottom:1px solid var(--line)}
+  table.hist-t td{padding:12px;border-bottom:1px solid var(--line);font-size:12px}
+  table.hist-t tr:last-child td{border-bottom:0}
+  .row-actions{display:flex;gap:6px;justify-content:flex-end}
+  .row-actions button{padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;color:var(--ink-2);background:#f6f8f4}
+  .row-actions button.primary{background:var(--sidebar);color:#fff}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a class="active" href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar"></div>
+      <div><div class="who">Owner Account</div><div class="mail">hoanghuyho2810@gmail.com</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main>
+    <div class="header">
+      <div class="h-title">Uploads <span class="caret">▾</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search uploads, categories, filenames…
+      </div>
+      <div class="h-actions">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600;font-family:inherit;border:0;cursor:pointer" title="Scope to a station"><span style="width:8px;height:8px;border-radius:50%;background:#0f2a1f;display:inline-block"></span>All stations<span style="color:var(--muted);margin-left:2px">▾</span></button>
+        <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <button class="cta">Upload CSV <span class="plus">+</span></button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Uploads</h1>
+        <p>Upload daily CSVs, map columns to metrics, and manage data categories.</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="active">Upload</button>
+      <button>History</button>
+      <button>Categories</button>
+    </div>
+
+    <!-- Upload tab -->
+    <div class="row">
+
+      <!-- LEFT: dropzone + files + mapping -->
+      <div class="card">
+        <h3>Upload CSV files <span class="kebab">•••</span></h3>
+
+        <div class="drop">
+          <div class="icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M6 9l6-6 6 6M4 21h16"/></svg>
+          </div>
+          <b>Drop CSV files here</b>
+          <small>or click to browse — you can drop several at once (bulk upload supported)</small>
+          <button class="browse">Browse files</button>
+        </div>
+
+        <!-- Selected files (bulk) -->
+        <div class="files">
+          <div class="file">
+            <div class="thumb">📄</div>
+            <div>
+              <div class="name">sales_2026-07-29.csv</div>
+              <div class="sub">4.2 KB · 82 rows · detected date 2026-07-29 · <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A · from Anna</span></div>
+            </div>
+            <select>
+              <option>Sales (matched)</option>
+              <option>Purchases</option>
+              <option>Losses</option>
+              <option>Inventory</option>
+              <option>+ New category…</option>
+            </select>
+            <span class="status ok">Ready</span>
+            <button class="x">✕</button>
+          </div>
+
+          <div class="file">
+            <div class="thumb">📄</div>
+            <div>
+              <div class="name">inventory_2026-07-29.csv</div>
+              <div class="sub">2.1 KB · 45 rows · detected date 2026-07-29 · <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf7d3;color:#1f6f4a;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px"><span style="width:6px;height:6px;border-radius:50%;background:#1f6f4a"></span>Station B · from Bình</span></div>
+            </div>
+            <select>
+              <option>Inventory (matched)</option>
+              <option>Sales</option>
+              <option>Purchases</option>
+              <option>Losses</option>
+              <option>+ New category…</option>
+            </select>
+            <span class="status warn">Date exists</span>
+            <button class="x">✕</button>
+          </div>
+
+          <div class="file">
+            <div class="thumb">📄</div>
+            <div>
+              <div class="name">supplier_returns_2026-07-29.csv</div>
+              <div class="sub">1.4 KB · 12 rows · unknown category · <span style="display:inline-flex;align-items:center;gap:4px;background:#fff0d6;color:#a4680d;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px">⚠ Station not set — assign one</span></div>
+            </div>
+            <select>
+              <option>— Select category —</option>
+              <option>Sales</option>
+              <option>Purchases</option>
+              <option>Losses</option>
+              <option>Inventory</option>
+              <option>+ New category…</option>
+            </select>
+            <span class="status new">Needs category</span>
+            <button class="x">✕</button>
+          </div>
+        </div>
+
+        <!-- Duplicate-date warning -->
+        <div class="warn-banner">
+          <div class="icon">!</div>
+          <div>
+            <b>inventory_2026-07-29.csv</b> — a record for <b>Inventory</b> on <b>2026-07-29</b> already exists.
+            Uploading will overwrite. Preview of change:
+            <div class="diff">
+              inventory_on_hand: <span class="old">312</span> → <span class="new">298</span> &nbsp;·&nbsp;
+              losses: <span class="old">23</span> → <span class="new">27</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column mapping -->
+        <div class="mapping">
+          <h4>Column mapping — <span style="color:var(--muted);font-weight:500">sales_2026-07-29.csv</span></h4>
+          <div class="hint">Rename, exclude, mark the date column. Numeric columns become trackable metrics.</div>
+          <table class="map">
+            <thead>
+              <tr><th>Source column</th><th>Mapped name</th><th>Type</th><th style="text-align:center">Date column</th><th style="text-align:center">Include</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>date</code></td>
+                <td><input type="text" value="date"></td>
+                <td><span class="pill date">date</span></td>
+                <td style="text-align:center"><input type="radio" name="datecol" checked></td>
+                <td style="text-align:center"><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+              </tr>
+              <tr>
+                <td><code>sales_volume</code></td>
+                <td><input type="text" value="sales_volume"></td>
+                <td><span class="pill num">numeric</span></td>
+                <td style="text-align:center"><input type="radio" name="datecol"></td>
+                <td style="text-align:center"><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+              </tr>
+              <tr>
+                <td><code>revenue</code></td>
+                <td><input type="text" value="revenue"></td>
+                <td><span class="pill num">numeric</span></td>
+                <td style="text-align:center"><input type="radio" name="datecol"></td>
+                <td style="text-align:center"><label class="toggle"><input type="checkbox" checked><span></span></label></td>
+              </tr>
+              <tr>
+                <td><code>cashier</code></td>
+                <td><input type="text" value="cashier"></td>
+                <td><span class="pill txt">text</span></td>
+                <td style="text-align:center"><input type="radio" name="datecol" disabled></td>
+                <td style="text-align:center"><label class="toggle"><input type="checkbox"><span></span></label></td>
+              </tr>
+              <tr>
+                <td><code>notes</code></td>
+                <td><input type="text" value="notes"></td>
+                <td><span class="pill txt">text</span></td>
+                <td style="text-align:center"><input type="radio" name="datecol" disabled></td>
+                <td style="text-align:center"><label class="toggle"><input type="checkbox"><span></span></label></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost">Cancel</button>
+          <button class="btn ghost">Save as draft</button>
+          <button class="btn primary">Confirm & save 3 files</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: categories -->
+      <div class="card cats">
+        <h3>Data Categories <span class="kebab">•••</span></h3>
+
+        <div class="cat">
+          <div class="icon" style="background:#eaf7d3;color:#1f6f4a">💰</div>
+          <div><div class="n">Sales</div><div class="d">daily sales volume & revenue</div></div>
+          <div class="count">128 uploads</div>
+          <button class="edit">✎</button>
+        </div>
+        <div class="cat">
+          <div class="icon" style="background:#eaf1ff;color:#3455b3">📦</div>
+          <div><div class="n">Purchases</div><div class="d">supplier orders in</div></div>
+          <div class="count">104 uploads</div>
+          <button class="edit">✎</button>
+        </div>
+        <div class="cat">
+          <div class="icon" style="background:#fdecec;color:#c94141">📉</div>
+          <div><div class="n">Losses</div><div class="d">waste, shrinkage, damage</div></div>
+          <div class="count">96 uploads</div>
+          <button class="edit">✎</button>
+        </div>
+        <div class="cat">
+          <div class="icon" style="background:#fff0d6;color:#a4680d">🏬</div>
+          <div><div class="n">Inventory</div><div class="d">stock on hand snapshot</div></div>
+          <div class="count">128 uploads</div>
+          <button class="edit">✎</button>
+        </div>
+        <div class="cat">
+          <div class="icon" style="background:#f2f4f0;color:#4a5a51">🧾</div>
+          <div><div class="n">Custom: Supplier Returns</div><div class="d">added by accountant · Jul 20</div></div>
+          <div class="count">3 uploads</div>
+          <button class="edit">✎</button>
+        </div>
+
+        <button class="add-cat">＋ Add new category</button>
+      </div>
+    </div>
+
+    <!-- History preview -->
+    <div class="hist">
+      <div class="page-head" style="margin-top:8px">
+        <div>
+          <h1 style="font-size:20px">Upload History</h1>
+          <p>Every past upload — click to view, edit, or export.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          Search filename…
+        </div>
+        <select><option>All stations</option><option>Station A · Quận 1</option><option>Station B · Thủ Đức</option></select>
+        <select><option>All categories</option><option>Sales</option><option>Purchases</option><option>Losses</option><option>Inventory</option></select>
+        <select><option>Last 30 days</option><option>Last 7 days</option><option>This month</option><option>All time</option></select>
+        <select><option>All statuses</option><option>Processed</option><option>Overwritten</option><option>Draft</option></select>
+      </div>
+
+      <table class="hist-t">
+        <thead>
+          <tr>
+            <th>Date</th><th>Station</th><th>Category</th><th>Filename</th><th>Rows</th><th>Metrics</th><th>Status</th><th>Uploaded by</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-07-28</td><td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#3455b3"><span style="width:8px;height:8px;border-radius:50%;background:#3455b3"></span>Station A</span></td><td><span class="pill" style="background:#eaf7d3;color:#1f6f4a">Sales</span></td>
+            <td>sales_2026-07-28.csv</td><td>82</td><td>2</td>
+            <td><span class="status ok">Processed</span></td><td>Accountant</td>
+            <td><div class="row-actions"><button>View</button><button>Edit</button><button>⬇</button></div></td>
+          </tr>
+          <tr>
+            <td>2026-07-27</td><td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#1f6f4a"><span style="width:8px;height:8px;border-radius:50%;background:#1f6f4a"></span>Station B</span></td><td><span class="pill" style="background:#fff0d6;color:#a4680d">Inventory</span></td>
+            <td>inventory_2026-07-27.csv</td><td>45</td><td>3</td>
+            <td><span class="status warn">Overwritten</span></td><td>Accountant</td>
+            <td><div class="row-actions"><button>View</button><button>Edit</button><button>⬇</button></div></td>
+          </tr>
+          <tr>
+            <td>2026-07-26</td><td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#3455b3"><span style="width:8px;height:8px;border-radius:50%;background:#3455b3"></span>Station A</span></td><td><span class="pill" style="background:#eaf1ff;color:#3455b3">Purchases</span></td>
+            <td>purchases_2026-07-26.csv</td><td>36</td><td>2</td>
+            <td><span class="status new">New metric</span></td><td>Accountant</td>
+            <td><div class="row-actions"><button>View</button><button class="primary">Confirm</button><button>⬇</button></div></td>
+          </tr>
+          <tr>
+            <td>2026-07-25</td><td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#1f6f4a"><span style="width:8px;height:8px;border-radius:50%;background:#1f6f4a"></span>Station B</span></td><td><span class="pill" style="background:#fdecec;color:#c94141">Losses</span></td>
+            <td>losses_2026-07-25.csv</td><td>18</td><td>1</td>
+            <td><span class="status ok">Processed</span></td><td>Accountant</td>
+            <td><div class="row-actions"><button>View</button><button>Edit</button><button>⬇</button></div></td>
+          </tr>
+          <tr>
+            <td>2026-07-24</td><td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:#3455b3"><span style="width:8px;height:8px;border-radius:50%;background:#3455b3"></span>Station A</span></td><td><span class="pill" style="background:#eaf7d3;color:#1f6f4a">Sales</span></td>
+            <td>sales_2026-07-24.csv</td><td>77</td><td>2</td>
+            <td><span class="status ok">Processed</span></td><td>Accountant</td>
+            <td><div class="row-actions"><button>View</button><button>Edit</button><button>⬇</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Tab visual toggle only (prototype)
+  document.querySelectorAll('.tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

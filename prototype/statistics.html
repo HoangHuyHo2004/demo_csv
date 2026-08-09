@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Statistics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8; --panel:#fff; --ink:#0f1a14; --ink-2:#4a5a51; --muted:#8a978f;
+    --line:#eef0ec; --sidebar:#0f2a1f; --sidebar-2:#153a2b;
+    --accent:#b7f04a; --accent-2:#8fd63a; --green:#1f6f4a; --green-dk:#123c2a;
+    --red:#e14b4b; --amber:#f0a545; --blue:#3455b3; --chip:#f2f4f0;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:20px;max-width:1360px;margin:20px auto;padding:0 20px;align-items:start}
+
+  /* Sidebar */
+  .sidebar{background:var(--sidebar);color:#cfe0d5;border-radius:24px;padding:22px 16px;min-height:calc(100vh - 40px);position:sticky;top:20px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#c7d8cd;position:relative}
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent)}
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{margin-left:auto;background:var(--accent);color:#0f2a1f;font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px}
+  .profile{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:14px;padding:6px 4px 18px}
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{margin-left:24px;flex:1;max-width:420px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--muted);font-size:13px;box-shadow:var(--shadow)}
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .cta{background:var(--sidebar);color:#fff;padding:10px 16px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+  .cta .plus{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#0f2a1f;display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+
+  /* Range tabs (pill) */
+  .range-tabs{display:inline-flex;background:#fff;border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:0 4px 12px}
+  .range-tabs button{padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .range-tabs button.active{background:var(--sidebar);color:#fff}
+
+  /* Controls row */
+  .controls{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:#fff;border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);
+    margin:0 4px 16px;
+  }
+  .controls .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-right:4px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;
+    background:var(--chip);color:var(--ink-2);cursor:pointer;
+  }
+  .chip .dot{width:8px;height:8px;border-radius:50%}
+  .chip.active{background:var(--sidebar);color:#fff}
+  .chip.sales   .dot{background:#1f6f4a}
+  .chip.pur     .dot{background:#3455b3}
+  .chip.loss    .dot{background:#c94141}
+  .chip.inv     .dot{background:#a4680d}
+  .chip.custom  .dot{background:#7c5cff}
+
+  .picker{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 12px;background:#f6f8f4;border-radius:10px;font-size:12px;color:var(--ink-2);
+  }
+  .picker svg{width:14px;height:14px}
+  .divider{width:1px;height:22px;background:var(--line);margin:0 2px}
+
+  /* Chart type selector */
+  .charttype{display:inline-flex;background:#f6f8f4;border-radius:10px;padding:3px}
+  .charttype button{padding:6px 10px;border-radius:8px;font-size:12px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px}
+  .charttype button.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .charttype svg{width:14px;height:14px}
+
+  /* KPI tiles */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:0 4px 16px}
+  .kpi{background:#fff;border-radius:14px;padding:14px;box-shadow:var(--shadow);position:relative}
+  .kpi .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  .kpi .val{font-size:22px;font-weight:700;margin-top:6px;letter-spacing:-.01em}
+  .kpi .foot{font-size:11px;color:var(--ink-2);margin-top:4px}
+  .delta{display:inline-flex;align-items:center;gap:3px;font-weight:700}
+  .delta.up{color:#1f8f4a}
+  .delta.down{color:var(--red)}
+  .spark{position:absolute;right:10px;top:12px;opacity:.7}
+
+  /* Cards + rows */
+  .row{display:grid;gap:16px;margin:0 4px 16px}
+  .row.a{grid-template-columns:2.1fr 1fr}
+  .row.b{grid-template-columns:1fr 1fr}
+  .card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 4px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px}
+  .card .sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .kebab{color:var(--muted);letter-spacing:2px;margin-left:auto}
+  .legend{display:flex;gap:14px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:10px;height:10px;border-radius:3px}
+
+  /* Widget toggle chips */
+  .widget-toggle{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .widget-toggle .chip{background:#fff;border:1px solid var(--line);color:var(--ink-2)}
+  .widget-toggle .chip.on{background:var(--sidebar);color:#fff;border-color:var(--sidebar)}
+  .widget-toggle .chip .x{opacity:.6;font-size:14px;margin-left:2px}
+
+  /* Heatmap */
+  .heat{display:grid;grid-template-columns:20px repeat(31, 1fr);gap:3px;margin-top:8px}
+  .heat .cell{aspect-ratio:1/1;border-radius:3px;background:#eef1ec}
+  .heat .rowlbl{font-size:10px;color:var(--muted);align-self:center;text-align:right;padding-right:4px}
+  .heat-legend{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:10px;justify-content:flex-end}
+  .heat-legend .scale{display:flex;gap:2px}
+  .heat-legend .sw{width:14px;height:12px;border-radius:2px}
+
+  /* Delta table */
+  table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+  table.data th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:10px 8px;background:#f6f8f4;border-bottom:1px solid var(--line)}
+  table.data td{padding:10px 8px;border-bottom:1px solid var(--line)}
+  table.data tr:last-child td{border-bottom:0}
+  table.data .num{text-align:right;font-variant-numeric:tabular-nums}
+  .mini-spark{color:#1f6f4a}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700}
+  .pill.sales{background:#eaf7d3;color:#1f6f4a}
+  .pill.pur{background:#eaf1ff;color:#3455b3}
+  .pill.loss{background:#fdecec;color:#c94141}
+  .pill.inv{background:#fff0d6;color:#a4680d}
+
+  /* Ranking */
+  .rank{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .rank .col h4{margin:0 0 8px;font-size:13px;font-weight:600}
+  .rank .item{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line)}
+  .rank .item:last-child{border-bottom:0}
+  .rank .rk{width:22px;height:22px;border-radius:50%;background:var(--chip);color:var(--ink-2);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+  .rank .item.top .rk{background:var(--accent);color:#0f2a1f}
+  .rank .item.bot .rk{background:#fdecec;color:#c94141}
+  .rank .who{flex:1;font-size:12px}
+  .rank .val{font-weight:700;font-size:12px}
+
+  /* Raw table toolbar */
+  .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .toolbar .search-s{flex:1;background:#f6f8f4;border-radius:10px;padding:8px 12px;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+  .toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:12px}
+  .export{background:var(--sidebar);color:#fff;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a class="active" href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar"></div>
+      <div><div class="who">Owner Account</div><div class="mail">hoanghuyho2810@gmail.com</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main>
+    <div class="header">
+      <div class="h-title">Statistics <span class="caret">▾</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search metric, date, or category…
+      </div>
+      <div class="h-actions">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600;font-family:inherit;border:0;cursor:pointer" title="Scope to a station"><span style="width:8px;height:8px;border-radius:50%;background:#0f2a1f;display:inline-block"></span>All stations<span style="color:var(--muted);margin-left:2px">▾</span></button>
+        <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+        <button class="cta">Export report <span class="plus">↓</span></button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Statistics</h1>
+        <p>Explore your data by day, month, custom range, or across years.</p>
+      </div>
+    </div>
+
+    <!-- Range tabs -->
+    <div class="range-tabs">
+      <button>Daily</button>
+      <button class="active">Monthly</button>
+      <button>Custom compare</button>
+      <button>YTD / Rolling</button>
+      <button>Yearly</button>
+    </div>
+
+    <!-- Controls: date picker + category chips + chart type -->
+    <div class="controls">
+      <span class="lbl">Range</span>
+      <div class="picker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        July 2026 ▾
+      </div>
+      <div class="picker">vs Jun 2026 (auto) ▾</div>
+
+      <div class="divider"></div>
+
+      <span class="lbl">Categories</span>
+      <button class="chip sales active"><span class="dot"></span>Sales</button>
+      <button class="chip pur active"><span class="dot"></span>Purchases</button>
+      <button class="chip loss active"><span class="dot"></span>Losses</button>
+      <button class="chip inv"><span class="dot"></span>Inventory</button>
+      <button class="chip custom"><span class="dot"></span>Supplier Returns</button>
+
+      <div class="divider"></div>
+
+      <span class="lbl">Chart</span>
+      <div class="charttype">
+        <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg>Line</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 20V10M12 20V4M18 20v-7"/></svg>Bar</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="6" width="4" height="14"/><rect x="16" y="10" width="4" height="10"/></svg>Stacked</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="3" height="6"/><rect x="8" y="10" width="3" height="10"/><rect x="13" y="6" width="3" height="14"/><rect x="18" y="12" width="3" height="8"/></svg>Histogram</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/></svg>Heatmap</button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="17" r="1.5"/><circle cx="11" cy="12" r="1.5"/><circle cx="15" cy="14" r="1.5"/><circle cx="18" cy="8" r="1.5"/></svg>Scatter</button>
+      </div>
+    </div>
+
+    <!-- KPI tiles -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="lbl">Total sales</div>
+        <div class="val">$193K</div>
+        <div class="foot"><span class="delta up">▲ +12%</span> vs Jun</div>
+        <svg class="spark" width="60" height="26" viewBox="0 0 60 26"><polyline fill="none" stroke="#1f6f4a" stroke-width="1.6" points="0,20 10,16 20,18 30,10 40,12 50,6 60,8"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Avg / day</div>
+        <div class="val">$6.2K</div>
+        <div class="foot"><span class="delta up">▲ +4%</span> vs Jun</div>
+        <svg class="spark" width="60" height="26"><polyline fill="none" stroke="#3455b3" stroke-width="1.6" points="0,18 10,14 20,15 30,10 40,12 50,8 60,10"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Total purchases</div>
+        <div class="val">$104K</div>
+        <div class="foot"><span class="delta down">▼ −3%</span> vs Jun</div>
+        <svg class="spark" width="60" height="26"><polyline fill="none" stroke="#3455b3" stroke-width="1.6" points="0,10 10,14 20,12 30,18 40,14 50,20 60,18"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Losses</div>
+        <div class="val">$32K</div>
+        <div class="foot"><span class="delta down">▼ −24%</span> vs Jun</div>
+        <svg class="spark" width="60" height="26"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,8 10,10 20,14 30,12 40,16 50,18 60,20"/></svg>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Inventory (avg)</div>
+        <div class="val">312</div>
+        <div class="foot"><span class="delta up">▲ +8%</span> vs Jun</div>
+        <svg class="spark" width="60" height="26"><polyline fill="none" stroke="#a4680d" stroke-width="1.6" points="0,16 10,14 20,12 30,14 40,10 50,12 60,8"/></svg>
+      </div>
+    </div>
+
+    <!-- Widget toggle -->
+    <div class="controls" style="justify-content:flex-start">
+      <span class="lbl">Show sections</span>
+      <div class="widget-toggle">
+        <button class="chip on">KPI tiles <span class="x">×</span></button>
+        <button class="chip on">Trend chart <span class="x">×</span></button>
+        <button class="chip on">Stacked composition <span class="x">×</span></button>
+        <button class="chip on">Heatmap calendar <span class="x">×</span></button>
+        <button class="chip on">Correlation <span class="x">×</span></button>
+        <button class="chip on">Δ table <span class="x">×</span></button>
+        <button class="chip on">Top / bottom days <span class="x">×</span></button>
+        <button class="chip on">Raw data <span class="x">×</span></button>
+        <button class="chip">＋ Add widget</button>
+      </div>
+    </div>
+
+    <!-- Station leaderboard + comparison -->
+    <div class="card" style="margin:0 4px 16px;padding:18px">
+      <h3 style="margin:0 0 4px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px">Station leaderboard — July 2026 <span style="margin-left:auto;font-size:12px;font-weight:500;color:var(--muted)">Scope: All stations · click a row to drill in</span></h3>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Combined totals + per-station breakdown. Toggle the header scope to filter the rest of the page.</div>
+      <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:12px">
+        <thead>
+          <tr style="color:var(--muted);text-align:left;font-size:11px">
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Rank</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Station</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Revenue</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Sales vol</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Losses</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Margin</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">On-time %</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Trend</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="cursor:pointer">
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><span style="display:inline-block;width:22px;height:22px;background:var(--accent);color:#0f2a1f;border-radius:50%;text-align:center;font-weight:800;font-size:11px;line-height:22px">1</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#3455b3"></span>Station A · Quận 1</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">$118K <span style="color:#1f8f4a;font-weight:700">+14%</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">2,410</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">$1,140 <span style="color:var(--red);font-weight:700">+18%</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">43.1%</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">93%</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><svg width="70" height="20"><polyline fill="none" stroke="#3455b3" stroke-width="1.5" points="0,16 10,14 20,12 30,10 40,12 50,7 60,9 70,4"/></svg></td>
+          </tr>
+          <tr style="cursor:pointer">
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><span style="display:inline-block;width:22px;height:22px;background:#f2f4f0;color:var(--ink-2);border-radius:50%;text-align:center;font-weight:800;font-size:11px;line-height:22px">2</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#1f6f4a"></span>Station B · Thủ Đức</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">$75K <span style="color:#1f8f4a;font-weight:700">+8%</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">1,542</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">$680 <span style="color:#1f8f4a;font-weight:700">−12%</span></td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">45.6%</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">100%</td>
+            <td style="padding:10px;border-bottom:1px solid var(--line)"><svg width="70" height="20"><polyline fill="none" stroke="#1f6f4a" stroke-width="1.5" points="0,15 10,13 20,14 30,9 40,11 50,6 60,8 70,3"/></svg></td>
+          </tr>
+          <tr style="background:#fafbf8;font-weight:700">
+            <td style="padding:10px"></td>
+            <td style="padding:10px">Combined</td>
+            <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">$193K <span style="color:#1f8f4a">+12%</span></td>
+            <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">3,952</td>
+            <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">$1,820</td>
+            <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">44.0%</td>
+            <td style="padding:10px;text-align:right">96%</td>
+            <td style="padding:10px">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Trend chart + stacked -->
+    <div class="row a">
+      <div class="card">
+        <h3>Metric trend — July 2026 <span class="kebab">•••</span></h3>
+        <div class="sub">Daily values for selected metrics. Hover for details.</div>
+        <div class="legend" style="margin-bottom:8px">
+          <span><span class="sw" style="background:#1f6f4a"></span>Sales</span>
+          <span><span class="sw" style="background:#3455b3"></span>Purchases</span>
+          <span><span class="sw" style="background:#c94141"></span>Losses</span>
+        </div>
+        <svg viewBox="0 0 700 260" width="100%" height="260">
+          <!-- gridlines -->
+          <g stroke="#eef0ec" stroke-width="1">
+            <line x1="40" y1="30"  x2="690" y2="30"/>
+            <line x1="40" y1="90"  x2="690" y2="90"/>
+            <line x1="40" y1="150" x2="690" y2="150"/>
+            <line x1="40" y1="210" x2="690" y2="210"/>
+          </g>
+          <!-- y labels -->
+          <g fill="#8a978f" font-size="10" font-family="Inter">
+            <text x="8" y="34">$10k</text><text x="10" y="94">$7k</text><text x="10" y="154">$4k</text><text x="10" y="214">$1k</text>
+          </g>
+          <!-- x labels -->
+          <g fill="#8a978f" font-size="10" font-family="Inter" text-anchor="middle">
+            <text x="60" y="240">1</text><text x="150" y="240">5</text><text x="260" y="240">10</text><text x="370" y="240">15</text><text x="480" y="240">20</text><text x="590" y="240">25</text><text x="680" y="240">30</text>
+          </g>
+          <!-- sales area -->
+          <path d="M40,180 L70,150 L110,155 L150,120 L200,130 L260,90 L320,110 L370,60 L430,90 L480,50 L540,80 L590,40 L650,60 L690,45 L690,220 L40,220 Z" fill="#1f6f4a" fill-opacity=".12"/>
+          <polyline fill="none" stroke="#1f6f4a" stroke-width="2.2" points="40,180 70,150 110,155 150,120 200,130 260,90 320,110 370,60 430,90 480,50 540,80 590,40 650,60 690,45"/>
+          <!-- purchases -->
+          <polyline fill="none" stroke="#3455b3" stroke-width="2" stroke-dasharray="0" points="40,160 70,170 110,150 150,155 200,140 260,150 320,135 370,140 430,120 480,130 540,120 590,110 650,120 690,105"/>
+          <!-- losses -->
+          <polyline fill="none" stroke="#c94141" stroke-width="2" points="40,205 70,200 110,198 150,190 200,192 260,180 320,175 370,178 430,170 480,165 540,168 590,160 650,155 690,158"/>
+          <!-- annotation -->
+          <circle cx="480" cy="50" r="4" fill="#1f6f4a"/>
+          <rect x="440" y="18" width="90" height="24" rx="6" fill="#0f2a1f"/>
+          <text x="485" y="34" text-anchor="middle" fill="#b7f04a" font-size="10" font-family="Inter" font-weight="700">Jul 20 · $9.3k</text>
+        </svg>
+      </div>
+
+      <div class="card">
+        <h3>Stacked composition <span class="kebab">•••</span></h3>
+        <div class="sub">Weekly category share, July 2026.</div>
+        <div class="legend" style="margin-bottom:8px">
+          <span><span class="sw" style="background:#1f6f4a"></span>Sales</span>
+          <span><span class="sw" style="background:#3455b3"></span>Purchases</span>
+          <span><span class="sw" style="background:#c94141"></span>Losses</span>
+        </div>
+        <svg viewBox="0 0 260 240" width="100%" height="240">
+          <g fill="#8a978f" font-size="10" font-family="Inter" text-anchor="middle">
+            <text x="40" y="230">W1</text><text x="90" y="230">W2</text><text x="140" y="230">W3</text><text x="190" y="230">W4</text><text x="240" y="230">W5</text>
+          </g>
+          <!-- W1 -->
+          <rect x="20" y="130" width="40" height="80" fill="#1f6f4a" rx="4"/>
+          <rect x="20" y="80"  width="40" height="50" fill="#3455b3"/>
+          <rect x="20" y="60"  width="40" height="20" fill="#c94141" rx="4"/>
+          <!-- W2 -->
+          <rect x="70" y="110" width="40" height="100" fill="#1f6f4a" rx="4"/>
+          <rect x="70" y="70"  width="40" height="40"  fill="#3455b3"/>
+          <rect x="70" y="55"  width="40" height="15"  fill="#c94141" rx="4"/>
+          <!-- W3 -->
+          <rect x="120" y="100" width="40" height="110" fill="#1f6f4a" rx="4"/>
+          <rect x="120" y="60"  width="40" height="40"  fill="#3455b3"/>
+          <rect x="120" y="48"  width="40" height="12"  fill="#c94141" rx="4"/>
+          <!-- W4 -->
+          <rect x="170" y="90"  width="40" height="120" fill="#1f6f4a" rx="4"/>
+          <rect x="170" y="55"  width="40" height="35"  fill="#3455b3"/>
+          <rect x="170" y="45"  width="40" height="10"  fill="#c94141" rx="4"/>
+          <!-- W5 -->
+          <rect x="220" y="85"  width="40" height="125" fill="#1f6f4a" rx="4"/>
+          <rect x="220" y="52"  width="40" height="33"  fill="#3455b3"/>
+          <rect x="220" y="42"  width="40" height="10"  fill="#c94141" rx="4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Heatmap + Correlation -->
+    <div class="row b">
+      <div class="card">
+        <h3>Calendar heatmap — Sales <span class="kebab">•••</span></h3>
+        <div class="sub">Each cell = one day. Darker = higher sales.</div>
+        <div class="heat" id="heat"></div>
+        <div class="heat-legend">
+          Less
+          <div class="scale">
+            <div class="sw" style="background:#eef1ec"></div>
+            <div class="sw" style="background:#d0e6b8"></div>
+            <div class="sw" style="background:#a9d76d"></div>
+            <div class="sw" style="background:#7fbf3e"></div>
+            <div class="sw" style="background:#4e8f1f"></div>
+            <div class="sw" style="background:#1f6f4a"></div>
+          </div>
+          More
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Purchases vs Sales (correlation) <span class="kebab">•••</span></h3>
+        <div class="sub">Each dot = one day in July. Trendline shows relationship.</div>
+        <svg viewBox="0 0 400 240" width="100%" height="240">
+          <g stroke="#eef0ec"><line x1="40" y1="30" x2="390" y2="30"/><line x1="40" y1="100" x2="390" y2="100"/><line x1="40" y1="170" x2="390" y2="170"/><line x1="40" y1="210" x2="390" y2="210"/></g>
+          <g fill="#8a978f" font-size="10" font-family="Inter">
+            <text x="6" y="34">10k</text><text x="10" y="104">6k</text><text x="10" y="174">2k</text>
+            <text x="200" y="230" text-anchor="middle">Purchases →</text>
+          </g>
+          <line x1="60" y1="200" x2="380" y2="60" stroke="#0f2a1f" stroke-dasharray="4 4" stroke-width="1.5"/>
+          <g fill="#1f6f4a">
+            <circle cx="70" cy="190" r="4"/><circle cx="95" cy="180" r="4"/><circle cx="120" cy="170" r="4"/>
+            <circle cx="150" cy="150" r="4"/><circle cx="170" cy="160" r="4"/><circle cx="200" cy="130" r="4"/>
+            <circle cx="220" cy="140" r="4"/><circle cx="245" cy="110" r="4"/><circle cx="270" cy="120" r="4"/>
+            <circle cx="290" cy="90"  r="4"/><circle cx="315" cy="100" r="4"/><circle cx="340" cy="70"  r="4"/>
+            <circle cx="360" cy="80"  r="4"/><circle cx="380" cy="55"  r="4"/>
+          </g>
+          <text x="380" y="45" text-anchor="end" fill="#0f2a1f" font-size="10" font-weight="700">r = 0.86</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Delta table + ranking -->
+    <div class="row b">
+      <div class="card">
+        <h3>Period-over-period Δ <span class="kebab">•••</span></h3>
+        <div class="sub">July 2026 vs June 2026.</div>
+        <table class="data">
+          <thead>
+            <tr><th>Metric</th><th>Category</th><th class="num">Current</th><th class="num">Previous</th><th class="num">Δ</th><th class="num">Δ %</th><th>Trend</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>sales_volume</td><td><span class="pill sales">Sales</span></td><td class="num">482</td><td class="num">430</td><td class="num">+52</td><td class="num"><span class="delta up">+12%</span></td>
+              <td><svg width="70" height="20"><polyline fill="none" stroke="#1f6f4a" stroke-width="1.5" points="0,16 10,14 20,15 30,10 40,12 50,7 60,9 70,4"/></svg></td></tr>
+            <tr><td>revenue</td><td><span class="pill sales">Sales</span></td><td class="num">$193K</td><td class="num">$172K</td><td class="num">+$21K</td><td class="num"><span class="delta up">+12%</span></td>
+              <td><svg width="70" height="20"><polyline fill="none" stroke="#1f6f4a" stroke-width="1.5" points="0,15 10,13 20,14 30,9 40,11 50,6 60,8 70,3"/></svg></td></tr>
+            <tr><td>purchases</td><td><span class="pill pur">Purchases</span></td><td class="num">233</td><td class="num">241</td><td class="num">−8</td><td class="num"><span class="delta down">−3%</span></td>
+              <td><svg width="70" height="20"><polyline fill="none" stroke="#3455b3" stroke-width="1.5" points="0,8 10,10 20,9 30,12 40,10 50,14 60,12 70,15"/></svg></td></tr>
+            <tr><td>losses</td><td><span class="pill loss">Losses</span></td><td class="num">23</td><td class="num">30</td><td class="num">−7</td><td class="num"><span class="delta down">−24%</span></td>
+              <td><svg width="70" height="20"><polyline fill="none" stroke="#c94141" stroke-width="1.5" points="0,4 10,6 20,8 30,7 40,10 50,12 60,14 70,16"/></svg></td></tr>
+            <tr><td>inventory_on_hand</td><td><span class="pill inv">Inventory</span></td><td class="num">312</td><td class="num">289</td><td class="num">+23</td><td class="num"><span class="delta up">+8%</span></td>
+              <td><svg width="70" height="20"><polyline fill="none" stroke="#a4680d" stroke-width="1.5" points="0,14 10,12 20,10 30,12 40,8 50,10 60,6 70,4"/></svg></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Top / bottom days <span class="kebab">•••</span></h3>
+        <div class="sub">Best sales & worst loss days in the selected range.</div>
+        <div class="rank">
+          <div class="col">
+            <h4>Top 5 sales days</h4>
+            <div class="item top"><div class="rk">1</div><div class="who">Jul 26 — Sat</div><div class="val">$9,820</div></div>
+            <div class="item top"><div class="rk">2</div><div class="who">Jul 20 — Sun</div><div class="val">$9,340</div></div>
+            <div class="item top"><div class="rk">3</div><div class="who">Jul 27 — Sun</div><div class="val">$8,910</div></div>
+            <div class="item top"><div class="rk">4</div><div class="who">Jul 13 — Sun</div><div class="val">$8,540</div></div>
+            <div class="item top"><div class="rk">5</div><div class="who">Jul 06 — Sun</div><div class="val">$8,120</div></div>
+          </div>
+          <div class="col">
+            <h4>Bottom 5 loss days</h4>
+            <div class="item bot"><div class="rk">1</div><div class="who">Jul 11 — Fri</div><div class="val">$1,420</div></div>
+            <div class="item bot"><div class="rk">2</div><div class="who">Jul 04 — Fri</div><div class="val">$1,280</div></div>
+            <div class="item bot"><div class="rk">3</div><div class="who">Jul 18 — Fri</div><div class="val">$1,110</div></div>
+            <div class="item bot"><div class="rk">4</div><div class="who">Jul 25 — Fri</div><div class="val">$980</div></div>
+            <div class="item bot"><div class="rk">5</div><div class="who">Jul 02 — Wed</div><div class="val">$840</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw data table -->
+    <div class="card" style="margin:0 4px 24px">
+      <h3>Raw daily data <span class="kebab">•••</span></h3>
+      <div class="sub">Sortable per-day values. Export to CSV or Excel.</div>
+      <div class="toolbar">
+        <div class="search-s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          Search date…
+        </div>
+        <select><option>All metrics</option><option>Sales only</option><option>Purchases only</option></select>
+        <select><option>July 2026</option><option>June 2026</option></select>
+        <button class="export">⬇ Export CSV</button>
+        <button class="export" style="background:#fff;color:var(--ink);border:1px solid var(--line)">⬇ Export XLSX</button>
+      </div>
+      <table class="data">
+        <thead>
+          <tr><th>Date</th><th>Weekday</th><th class="num">Sales</th><th class="num">Revenue</th><th class="num">Purchases</th><th class="num">Losses</th><th class="num">Inventory</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2026-07-29</td><td>Wed</td><td class="num">76</td><td class="num">$6,410</td><td class="num">42</td><td class="num">3</td><td class="num">298</td></tr>
+          <tr><td>2026-07-28</td><td>Tue</td><td class="num">82</td><td class="num">$6,880</td><td class="num">38</td><td class="num">4</td><td class="num">312</td></tr>
+          <tr><td>2026-07-27</td><td>Mon</td><td class="num">64</td><td class="num">$5,220</td><td class="num">51</td><td class="num">2</td><td class="num">308</td></tr>
+          <tr><td>2026-07-26</td><td>Sun</td><td class="num">118</td><td class="num">$9,820</td><td class="num">28</td><td class="num">1</td><td class="num">274</td></tr>
+          <tr><td>2026-07-25</td><td>Sat</td><td class="num">92</td><td class="num">$7,610</td><td class="num">35</td><td class="num">3</td><td class="num">290</td></tr>
+          <tr><td>2026-07-24</td><td>Fri</td><td class="num">58</td><td class="num">$4,910</td><td class="num">62</td><td class="num">5</td><td class="num">310</td></tr>
+          <tr><td>2026-07-23</td><td>Thu</td><td class="num">71</td><td class="num">$5,970</td><td class="num">44</td><td class="num">2</td><td class="num">318</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Build heatmap (7 rows x 31 cols placeholder)
+  const heat = document.getElementById('heat');
+  const rowlabels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const shades = ['#eef1ec','#d0e6b8','#a9d76d','#7fbf3e','#4e8f1f','#1f6f4a'];
+  // header row (empty corner + day numbers)
+  heat.innerHTML = '';
+  const headerRow = document.createElement('div');
+  // We'll just render rows: rowlabel + 31 cells
+  for(let r=0;r<7;r++){
+    const lbl = document.createElement('div');
+    lbl.className='rowlbl'; lbl.textContent=rowlabels[r];
+    heat.appendChild(lbl);
+    for(let c=0;c<31;c++){
+      const cell = document.createElement('div');
+      cell.className='cell';
+      // pseudo-random shade weighted toward weekends higher for Sales
+      let idx = Math.floor(Math.random()*4);
+      if(r>=5) idx = Math.min(5, idx+2); // Sat/Sun darker
+      cell.style.background = shades[idx];
+      heat.appendChild(cell);
+    }
+  }
+
+  // Range tabs + chart type toggle
+  document.querySelectorAll('.range-tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{document.querySelectorAll('.range-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');});
+  });
+  document.querySelectorAll('.charttype button').forEach(b=>{
+    b.addEventListener('click',()=>{document.querySelectorAll('.charttype button').forEach(x=>x.classList.remove('active'));b.classList.add('active');});
+  });
+  document.querySelectorAll('.controls .chip').forEach(b=>{
+    b.addEventListener('click',()=>b.classList.toggle('active'));
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Demo_CSV — Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e9ebe8; --panel:#fff; --ink:#0f1a14; --ink-2:#4a5a51; --muted:#8a978f;
+    --line:#eef0ec; --sidebar:#0f2a1f; --sidebar-2:#153a2b;
+    --accent:#b7f04a; --green:#1f6f4a; --red:#c94141; --amber:#f0a545; --blue:#3455b3; --purple:#7c5cff;
+    --chip:#f2f4f0;
+    --radius:18px; --shadow:0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#f6f8f4;padding:1px 6px;border-radius:5px}
+
+  .app{display:grid;grid-template-columns:240px 1fr;gap:20px;max-width:1360px;margin:20px auto;padding:0 20px;align-items:start}
+
+  /* Sidebar */
+  .sidebar{background:var(--sidebar);color:#cfe0d5;border-radius:24px;padding:22px 16px;min-height:calc(100vh - 40px);position:sticky;top:20px;display:flex;flex-direction:column}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px}
+  .brand-mark{width:26px;height:26px;color:var(--accent)}
+  .brand-name{font-weight:700;color:#fff;font-size:18px}
+  .side-label{font-size:11px;color:#7f9a8b;letter-spacing:.18em;padding:12px 10px 8px;text-transform:uppercase}
+  .nav{display:flex;flex-direction:column;gap:2px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:14px;color:#c7d8cd;position:relative}
+  .nav a:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav a.active{background:var(--sidebar-2);color:#fff}
+  .nav a.active::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--accent)}
+  .nav svg{width:18px;height:18px;flex:0 0 18px;opacity:.9}
+  .badge{margin-left:auto;background:var(--accent);color:#0f2a1f;font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px}
+  .profile{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#b7f04a,#4bd48a);flex:0 0 36px}
+  .profile .who{font-size:13px;color:#fff;font-weight:600;line-height:1.1}
+  .profile .mail{font-size:11px;color:#8ea89a}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:14px;padding:6px 4px 18px}
+  .h-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}
+  .h-title .caret{color:var(--muted)}
+  .search{margin-left:24px;flex:1;max-width:420px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:10px;padding:10px 16px;color:var(--muted);font-size:13px;box-shadow:var(--shadow)}
+  .search svg{width:16px;height:16px}
+  .h-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .icon-btn{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .owner-only{background:#eaf7d3;color:var(--green);padding:6px 12px;border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;display:inline-flex;align-items:center;gap:6px}
+
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;margin:0 4px 16px}
+  .page-head h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .page-head p{margin:6px 0 0;color:var(--ink-2);font-size:13px}
+
+  /* Security score hero */
+  .posture{
+    background:linear-gradient(135deg,#0f2a1f, #1a4a34);color:#fff;border-radius:20px;padding:22px 24px;
+    margin:0 4px 16px;display:grid;grid-template-columns:200px 1fr;gap:24px;box-shadow:var(--shadow)
+  }
+  .score-ring{position:relative;width:170px;height:170px;margin:auto}
+  .score-ring svg{transform:rotate(-90deg)}
+  .score-ring .v{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .score-ring .v .n{font-size:38px;font-weight:800;letter-spacing:-.02em}
+  .score-ring .v .l{font-size:11px;color:#a9c2b3;text-transform:uppercase;letter-spacing:.14em}
+  .posture .heads .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#a9c2b3}
+  .posture h2{margin:6px 0 4px;font-size:20px;font-weight:700}
+  .posture p{margin:0;font-size:13px;color:#cfe0d5;line-height:1.55}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .chk{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);padding:8px 12px;border-radius:10px;font-size:12px}
+  .chk .st{width:16px;height:16px;border-radius:50%;flex:0 0 16px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+  .chk.ok .st{background:var(--accent);color:#0f2a1f}
+  .chk.warn .st{background:var(--amber);color:#0f2a1f}
+  .chk.bad .st{background:var(--red);color:#fff}
+  .chk .fix{margin-left:auto;color:var(--accent);font-weight:700;font-size:11px}
+
+  /* Layout: sub-nav + panel */
+  .settings{display:grid;grid-template-columns:220px 1fr;gap:16px;margin:0 4px 24px;align-items:start}
+  .subnav{background:#fff;border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);position:sticky;top:20px}
+  .subnav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13px;color:var(--ink-2);font-weight:500;cursor:pointer}
+  .subnav a svg{width:16px;height:16px;color:var(--muted);flex:0 0 16px}
+  .subnav a:hover{background:#f6f8f4;color:var(--ink)}
+  .subnav a.active{background:var(--sidebar);color:#fff}
+  .subnav a.active svg{color:var(--accent)}
+  .subnav .sep{height:1px;background:var(--line);margin:6px 8px}
+  .subnav .owner-tag{margin-left:auto;font-size:9px;font-weight:800;background:#eaf7d3;color:var(--green);padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em}
+
+  .panel{display:flex;flex-direction:column;gap:16px}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-head{padding:16px 20px 4px;display:flex;align-items:center;gap:10px}
+  .card-head h3{margin:0;font-size:15px;font-weight:600}
+  .card-head .owner-only{margin-left:auto}
+  .card .sub{font-size:12px;color:var(--muted);padding:0 20px 14px}
+  .card .body{padding:0 20px 18px}
+  .kebab{color:var(--muted);letter-spacing:2px;margin-left:auto}
+
+  /* Roles: side-by-side comparison */
+  .roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .role-card{border:1px solid var(--line);border-radius:14px;padding:14px}
+  .role-card.owner{border-color:var(--green);background:linear-gradient(135deg,#eaf7d3,#fff)}
+  .role-card.acc{border-color:var(--blue);background:linear-gradient(135deg,#eaf1ff,#fff)}
+  .role-card .hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .role-card .ic{width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+  .role-card.owner .ic{background:var(--green)}
+  .role-card.acc .ic{background:var(--blue)}
+  .role-card h4{margin:0;font-size:14px}
+  .role-card .u{font-size:11px;color:var(--muted)}
+  .role-card ul{margin:0;padding:0;list-style:none}
+  .role-card li{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;color:var(--ink-2)}
+  .role-card li .y{color:var(--green);font-weight:800}
+  .role-card li .n{color:var(--red);font-weight:800}
+  .role-card .members{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .role-card .pill{background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .avatar-sm{width:20px;height:20px;border-radius:50%}
+  .avatar-sm.acc{background:linear-gradient(135deg,#3455b3,#7fa2ff)}
+  .avatar-sm.own{background:linear-gradient(135deg,#b7f04a,#4bd48a)}
+
+  /* Team + delegate */
+  table.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;margin-top:10px}
+  table.tbl th{text-align:left;font-size:11px;color:var(--muted);font-weight:600;padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)}
+  table.tbl td{padding:10px;border-bottom:1px solid var(--line)}
+  table.tbl tr:last-child td{border-bottom:0}
+  .role-pill{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.08em}
+  .role-pill.owner{background:#eaf7d3;color:var(--green)}
+  .role-pill.acc{background:#eaf1ff;color:var(--blue)}
+  .st{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em}
+  .st.ok{background:#e7f6ec;color:#1f8f4a}
+  .st.warn{background:#fff0d6;color:#a4680d}
+  .st.crit{background:#fdecec;color:var(--red)}
+  .st.info{background:#eaf1ff;color:var(--blue)}
+  .st.off{background:#f2f4f0;color:var(--muted)}
+  .row-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;background:#f6f8f4;color:var(--ink-2)}
+  .row-btn.pri{background:var(--sidebar);color:#fff}
+  .row-btn.danger{background:#fdecec;color:var(--red)}
+
+  /* Field rows */
+  .field{display:grid;grid-template-columns:200px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+  .field:first-of-type{border-top:0}
+  .field .lbl{font-size:12px;color:var(--ink);font-weight:600}
+  .field .lbl small{display:block;color:var(--muted);font-weight:500;margin-top:2px;font-size:11px}
+  .field .val{font-size:13px;color:var(--ink)}
+  .field .val input, .field .val select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8;width:100%;max-width:280px}
+  .field .action button{padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;background:#f6f8f4;color:var(--ink-2)}
+  .field .action button.pri{background:var(--sidebar);color:#fff}
+
+  .toggle{position:relative;display:inline-block;width:34px;height:20px}
+  .toggle input{display:none}
+  .toggle span{position:absolute;inset:0;background:#d7ddd3;border-radius:20px;transition:.15s}
+  .toggle span::before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.15s}
+  .toggle input:checked + span{background:var(--sidebar)}
+  .toggle input:checked + span::before{transform:translateX(14px)}
+
+  /* 2FA card body */
+  .twofa{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:14px 0;align-items:center}
+  .qr{width:130px;height:130px;background:#fff;border:1px solid var(--line);border-radius:12px;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);gap:2px;padding:8px}
+  .qr div{background:#0f1a14;border-radius:1px}
+  .qr div.o{background:transparent}
+  .backup{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+  .code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f6f8f4;padding:6px 8px;border-radius:6px;text-align:center;font-weight:700}
+
+  /* Audit log */
+  .audit{padding:0}
+  .audit-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .audit-row:last-child{border-bottom:0}
+  .audit-row .aic{width:30px;height:30px;border-radius:8px;background:#f6f8f4;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+  .audit-row.crit .aic{background:#fdecec}
+  .audit-row.warn .aic{background:#fff0d6}
+  .audit-row.info .aic{background:#eaf1ff}
+  .audit-row .t{font-size:12px;font-weight:700}
+  .audit-row .d{font-size:11px;color:var(--ink-2);margin-top:2px;line-height:1.4}
+  .audit-row .m{font-size:10px;color:var(--muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+  .audit-row .when{font-size:11px;color:var(--muted);white-space:nowrap}
+
+  /* IP list */
+  .ip-list{display:flex;flex-direction:column;gap:8px}
+  .ip{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;padding:10px 12px;background:#fafbf8;border:1px solid var(--line);border-radius:10px;align-items:center}
+  .ip .ic{width:28px;height:28px;border-radius:8px;background:#eaf7d3;color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+  .ip .n{font-size:12px;font-weight:700;font-family:ui-monospace,Menlo,monospace}
+  .ip .l{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* API tokens */
+  .tok{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;align-items:center;margin-bottom:8px}
+  .tok .ic{width:32px;height:32px;border-radius:8px;background:var(--sidebar);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+  .tok .n{font-size:12px;font-weight:700}
+  .tok .d{font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,monospace;margin-top:2px}
+
+  /* Danger zone */
+  .danger-zone{border:1px solid #f4d9a0;border-radius:14px;padding:14px;background:#fff8ea;margin-top:10px}
+  .danger-zone h4{margin:0 0 4px;font-size:13px;color:#a4680d}
+  .danger-zone p{margin:0 0 10px;font-size:12px;color:var(--ink-2)}
+  .danger-zone button{background:var(--red);color:#fff;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700}
+
+  /* Delegate modal */
+  .modal-back{position:fixed;inset:0;background:rgba(15,26,20,.55);z-index:50;display:flex;align-items:center;justify-content:center}
+  .modal{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:460px;max-width:calc(100vw - 40px);padding:22px}
+  .modal .ic{width:42px;height:42px;border-radius:12px;background:#eaf7d3;color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin-bottom:12px}
+  .modal h3{margin:0 0 4px;font-size:16px;font-weight:700}
+  .modal p{margin:0 0 14px;color:var(--ink-2);font-size:13px;line-height:1.5}
+  .modal .who{background:#f6f8f4;border-radius:10px;padding:10px 12px;font-size:12px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .modal select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;margin-bottom:6px;background:#fafbf8}
+  .modal .warn{font-size:11px;color:#a4680d;background:#fff8ea;border-radius:8px;padding:8px 10px;margin-bottom:12px}
+  .modal input[type=password]{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:14px;background:#fafbf8;margin-bottom:12px;letter-spacing:.15em}
+  .modal .actions{display:flex;gap:8px;justify-content:flex-end}
+  .modal button.pri{background:var(--sidebar);color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600}
+  .modal button.ghost{background:#f6f8f4;color:var(--ink-2);padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <div class="brand-name">Demo_CSV</div>
+    </div>
+    <div class="side-label">Menu</div>
+    <nav class="nav">
+      <a href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Overview</a>
+      <a href="statistics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Statistics</a>
+      <a href="metrics.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6M17 11a3 3 0 100-6M23 21c-.6-2.4-2.3-4-4-4.8"/></svg>Metrics</a>
+      <a href="stations.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>Stations<span class="badge">2</span></a>
+      <a href="uploads.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-6L12 5H4v14h16V7z"/></svg>Uploads</a>
+      <a href="alerts.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Alerts<span class="badge">13</span></a>
+      <a href="insights.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z"/></svg>Insights</a>
+    </nav>
+    <div class="side-label">General</div>
+    <nav class="nav">
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</a>
+      <a class="active" href="security.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>Security</a>
+    </nav>
+    <div class="profile">
+      <div class="avatar"></div>
+      <div><div class="who">Owner Account</div><div class="mail">hoanghuyho2810@gmail.com</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main>
+    <div class="header">
+      <div class="h-title">Security <span class="caret">▾</span></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        Search a permission, user, IP, or event…
+      </div>
+      <div class="h-actions">
+        <button style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:13px;color:var(--ink);font-weight:600;font-family:inherit;border:0;cursor:pointer" title="Scope to a station"><span style="width:8px;height:8px;border-radius:50%;background:#0f2a1f;display:inline-block"></span>All stations<span style="color:var(--muted);margin-left:2px">▾</span></button>
+        <span class="owner-only">🔒 Owner view</span>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Security</h1>
+        <p>Roles, sign-in security, sessions, audit log, access controls, and API tokens — all in one place.</p>
+      </div>
+    </div>
+
+    <!-- Security posture hero -->
+    <div class="posture">
+      <div class="score-ring">
+        <svg width="170" height="170" viewBox="0 0 170 170">
+          <circle cx="85" cy="85" r="72" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="14"/>
+          <circle cx="85" cy="85" r="72" fill="none" stroke="#b7f04a" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="452" stroke-dashoffset="120"/>
+        </svg>
+        <div class="v"><div class="n">73</div><div class="l">Security score</div></div>
+      </div>
+      <div class="heads">
+        <div class="lbl">Security posture</div>
+        <h2>Good, with two things to tighten</h2>
+        <p>Owner account is secured with 2FA and a strong password. Accountant hasn't enabled 2FA yet, and IP allowlist is off. Fixing those two moves your score to <b>92</b>.</p>
+        <div class="checks">
+          <div class="chk ok"><span class="st">✓</span>2FA enabled (Owner)</div>
+          <div class="chk warn"><span class="st">!</span>2FA missing (Accountant)<span class="fix">→ Enforce</span></div>
+          <div class="chk ok"><span class="st">✓</span>Password policy set</div>
+          <div class="chk bad"><span class="st">✕</span>IP allowlist off<span class="fix">→ Configure</span></div>
+          <div class="chk ok"><span class="st">✓</span>Audit log enabled</div>
+          <div class="chk ok"><span class="st">✓</span>Auto-backups running</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-nav + panel -->
+    <div class="settings">
+      <aside class="subnav">
+        <a class="active" href="#roles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M17 11a3 3 0 100-6"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6"/></svg>Roles & permissions <span class="owner-tag">Owner</span></a>
+        <a href="#signin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Sign-in security</a>
+        <a href="#sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Sessions & devices</a>
+        <a href="#history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Login history</a>
+        <div class="sep"></div>
+        <a href="#audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>Audit log <span class="owner-tag">Owner</span></a>
+        <a href="#access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>IP & geo access <span class="owner-tag">Owner</span></a>
+        <a href="#tokens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="15" r="3"/><path d="M9 13l10-10 3 3-3 3 3 3-3 3-3-3-3 3"/></svg>API tokens</a>
+        <a href="#retention"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/></svg>Data retention <span class="owner-tag">Owner</span></a>
+      </aside>
+
+      <div class="panel">
+
+        <!-- Roles & permissions -->
+        <div class="card" id="roles">
+          <div class="card-head"><h3>Roles & permissions</h3><span class="owner-only">Owner only</span></div>
+          <div class="sub">Owner controls who has access. Delegate the Accountant role from here.</div>
+          <div class="body">
+
+            <!-- Two-role comparison -->
+            <div class="roles-grid">
+              <div class="role-card owner">
+                <div class="hd">
+                  <div class="ic">👑</div>
+                  <div><h4>Owner</h4><div class="u">1 user</div></div>
+                </div>
+                <ul>
+                  <li><span class="y">✓</span> Upload, edit, delete data</li>
+                  <li><span class="y">✓</span> Configure metrics, thresholds, alerts</li>
+                  <li><span class="y">✓</span> Reveal sensitive fields (with password)</li>
+                  <li><span class="y">✓</span> Manage roles & invite users</li>
+                  <li><span class="y">✓</span> Export data · view audit log</li>
+                  <li><span class="y">✓</span> Manage integrations & API keys</li>
+                  <li><span class="y">✓</span> Wipe database</li>
+                </ul>
+                <div class="members">
+                  <span class="pill"><span class="avatar-sm own"></span>Hoàng Huy Hồ (you)</span>
+                </div>
+              </div>
+
+              <div class="role-card acc">
+                <div class="hd">
+                  <div class="ic">🧾</div>
+                  <div><h4>Accountant</h4><div class="u">1 user</div></div>
+                </div>
+                <ul>
+                  <li><span class="y">✓</span> Upload CSVs</li>
+                  <li><span class="y">✓</span> View metrics, charts, alerts</li>
+                  <li><span class="y">✓</span> Add notes / comments on alerts</li>
+                  <li><span class="n">✗</span> Cannot delete data</li>
+                  <li><span class="n">✗</span> Cannot reveal sensitive fields</li>
+                  <li><span class="n">✗</span> Cannot manage roles or keys</li>
+                  <li><span class="n">✗</span> Cannot wipe database</li>
+                </ul>
+                <div class="members">
+                  <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Team table with delegate -->
+            <h4 style="margin:18px 0 4px;font-size:13px">Team members</h4>
+            <table class="tbl">
+              <thead><tr><th>User</th><th>Role</th><th>Stations</th><th>2FA</th><th>Last active</th><th>Delegated by</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="avatar-sm own" style="display:inline-block;vertical-align:middle;margin-right:8px"></span>Hoàng Huy Hồ (you)</td>
+                  <td><span class="role-pill owner">Owner</span></td>
+                  <td><span style="font-size:10px;font-weight:700;color:var(--ink-2)">All stations</span></td>
+                  <td><span class="st ok">On</span></td>
+                  <td>Active now</td>
+                  <td>—</td>
+                  <td style="text-align:right"><button class="row-btn">Edit</button></td>
+                </tr>
+                <tr>
+                  <td><span class="avatar-sm acc" style="display:inline-block;vertical-align:middle;margin-right:8px"></span>Anna Nguyễn</td>
+                  <td><span class="role-pill acc">Accountant</span></td>
+                  <td><span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#3455b3;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#3455b3"></span>Station A</span></td>
+                  <td><span class="st warn">Off</span></td>
+                  <td>3h ago</td>
+                  <td>You · 2026-03-04</td>
+                  <td style="text-align:right">
+                    <button class="row-btn">Change role</button>
+                    <button class="row-btn danger">Revoke</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="avatar-sm" style="display:inline-block;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#f0a545,#e8b980)"></span>Bình Trần</td>
+                  <td><span class="role-pill acc">Accountant</span></td>
+                  <td><span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#1f6f4a;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#1f6f4a"></span>Station B</span></td>
+                  <td><span class="st ok">On</span></td>
+                  <td>1h ago</td>
+                  <td>You · 2026-05-12</td>
+                  <td style="text-align:right">
+                    <button class="row-btn">Change role</button>
+                    <button class="row-btn danger">Revoke</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <input type="email" placeholder="teammate@email.com" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff"><option>Accountant</option><option>Owner</option></select>
+              <button class="row-btn pri" onclick="document.getElementById('delegate-modal').style.display='flex'">Delegate role</button>
+            </div>
+
+            <!-- Guardrails -->
+            <h4 style="margin:20px 0 4px;font-size:13px">Guardrails</h4>
+            <div class="field">
+              <div class="lbl">Require 2FA for Accountants<small>Accountants must set up 2FA to sign in.</small></div>
+              <div class="val"><label class="toggle"><input type="checkbox"><span></span></label> <span style="font-size:12px;color:var(--muted);margin-left:8px">Off</span></div>
+              <div class="action"><button class="row-btn pri">Enforce</button></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Second-Owner rule<small>Prevents locking yourself out.</small></div>
+              <div class="val" style="font-size:12px;color:var(--ink-2)">Only 1 Owner today. Consider promoting a second person.</div>
+              <div class="action"><button class="row-btn">Add second Owner</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign-in security -->
+        <div class="card" id="signin">
+          <div class="card-head"><h3>Sign-in security</h3></div>
+          <div class="sub">Two-factor authentication and password policy.</div>
+          <div class="body">
+            <!-- 2FA -->
+            <h4 style="margin:6px 0;font-size:13px">Two-factor authentication (TOTP)</h4>
+            <div class="twofa">
+              <div class="qr" id="qr"></div>
+              <div>
+                <div style="font-size:13px;margin-bottom:6px">Scan with Google Authenticator, 1Password, or Authy.</div>
+                <div style="font-size:11px;color:var(--muted)">Secret: <code>JBSWY3DPEHPK3PXP</code></div>
+                <div style="margin-top:10px;font-size:12px;font-weight:700">Backup codes (one-time use)</div>
+                <div class="backup">
+                  <div class="code">a1b2-c3d4</div><div class="code">e5f6-g7h8</div>
+                  <div class="code">i9j0-k1l2</div><div class="code">m3n4-o5p6</div>
+                  <div class="code">q7r8-s9t0</div><div class="code">u1v2-w3x4</div>
+                  <div class="code">y5z6-a7b8</div><div class="code">c9d0-e1f2</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button class="row-btn">⬇ Download codes</button>
+                  <button class="row-btn pri">Verify & enable</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password policy -->
+            <h4 style="margin:14px 0 4px;font-size:13px">Password policy · applies to all users</h4>
+            <div class="field">
+              <div class="lbl">Minimum length<small>Enforced on new passwords.</small></div>
+              <div class="val"><select><option>12 characters</option><option>10</option><option>14</option><option>16</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Complexity<small>Uppercase, number, symbol.</small></div>
+              <div class="val" style="display:flex;gap:16px;font-size:12px">
+                <label style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" checked/> Uppercase</label>
+                <label style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" checked/> Number</label>
+                <label style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox"/> Symbol</label>
+              </div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Rotation<small>Force change every N days.</small></div>
+              <div class="val"><select><option>Never</option><option>90 days</option><option>180 days</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Require MFA for Owner<small>Owner cannot disable 2FA once enabled.</small></div>
+              <div class="val"><label class="toggle"><input type="checkbox" checked><span></span></label> <span style="font-size:12px;color:var(--ink-2);margin-left:8px">Required</span></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Lock account after<small>Consecutive failed sign-in attempts.</small></div>
+              <div class="val"><select><option>5 attempts</option><option>3 attempts</option><option>10 attempts</option></select></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sessions & devices -->
+        <div class="card" id="sessions">
+          <div class="card-head"><h3>Sessions & devices</h3></div>
+          <div class="sub">Every device currently signed in. Sign out any of them.</div>
+          <div class="body">
+            <table class="tbl">
+              <thead><tr><th>Device</th><th>User</th><th>IP · Location</th><th>Signed in</th><th>Last active</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>💻 Windows · Chrome 129<br/><span style="font-size:10px;color:var(--muted)">This device</span></td>
+                  <td>Hoàng Huy Hồ (Owner)</td>
+                  <td><code>171.245.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
+                  <td>2026-07-29 07:44</td>
+                  <td><span class="st ok">Now</span></td>
+                  <td style="text-align:right"><button class="row-btn">Current</button></td>
+                </tr>
+                <tr>
+                  <td>📱 iPhone · Safari</td>
+                  <td>Hoàng Huy Hồ (Owner)</td>
+                  <td><code>171.245.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
+                  <td>2026-07-27 22:10</td>
+                  <td>2 days ago</td>
+                  <td style="text-align:right"><button class="row-btn danger">Sign out</button></td>
+                </tr>
+                <tr>
+                  <td>💻 macOS · Chrome 129</td>
+                  <td>Anna Nguyễn (Accountant)</td>
+                  <td><code>171.244.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
+                  <td>2026-07-29 06:20</td>
+                  <td>3h ago</td>
+                  <td style="text-align:right"><button class="row-btn danger">Sign out</button></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="text-align:right;margin-top:10px">
+              <button class="row-btn danger">Sign out every other device</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Login history -->
+        <div class="card" id="history">
+          <div class="card-head"><h3>Login history & failed attempts</h3></div>
+          <div class="sub">Successful and failed sign-ins over the last 30 days.</div>
+          <div class="body">
+            <table class="tbl">
+              <thead><tr><th>When</th><th>User</th><th>IP · Location</th><th>Device</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Jul 29 · 07:44</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st ok">Success</span></td></tr>
+                <tr><td>Jul 29 · 06:20</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok">Success</span></td></tr>
+                <tr><td>Jul 28 · 23:14</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · <b style="color:var(--red)">Warsaw, PL</b></td><td>Linux · curl</td><td><span class="st crit">Failed — bad password</span></td></tr>
+                <tr><td>Jul 28 · 23:13</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · Warsaw, PL</td><td>Linux · curl</td><td><span class="st crit">Failed — bad password</span></td></tr>
+                <tr><td>Jul 28 · 09:03</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok">Success</span></td></tr>
+                <tr><td>Jul 27 · 22:10</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>iPhone · Safari</td><td><span class="st ok">Success</span></td></tr>
+                <tr><td>Jul 26 · 14:33</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st warn">2FA prompted</span></td></tr>
+              </tbody>
+            </table>
+            <div style="margin-top:10px;font-size:11px;color:var(--muted)">Suspicious IP <code>203.14.•.•</code> failed 2 times overnight. Consider enabling the IP allowlist below.</div>
+          </div>
+        </div>
+
+        <!-- Audit log -->
+        <div class="card" id="audit">
+          <div class="card-head"><h3>Audit log</h3><span class="owner-only">Owner only</span></div>
+          <div class="sub">Every sensitive action, with who / when / before → after.</div>
+          <div class="audit">
+            <div class="audit-row crit">
+              <div class="aic">🗑</div>
+              <div>
+                <div class="t">Attempted database wipe · blocked</div>
+                <div class="d"><b>Anna Nguyễn</b> tried <code>DELETE FROM metrics</code> from the Data panel. Blocked by role guardrail.</div>
+                <div class="m"><span>IP 171.244.•.•</span><span>Accountant</span></div>
+              </div>
+              <div class="when">2026-07-29 · 08:04</div>
+            </div>
+            <div class="audit-row warn">
+              <div class="aic">🔑</div>
+              <div>
+                <div class="t">Revealed sensitive field: <code>Anthropic API key</code></div>
+                <div class="d"><b>Hoàng Huy Hồ</b> revealed the API key for 30 seconds. Verified with password.</div>
+                <div class="m"><span>IP 171.245.•.•</span><span>Owner</span></div>
+              </div>
+              <div class="when">2026-07-29 · 07:52</div>
+            </div>
+            <div class="audit-row info">
+              <div class="aic">👥</div>
+              <div>
+                <div class="t">Role delegated · Anna → Accountant</div>
+                <div class="d">Invitation sent by <b>Hoàng Huy Hồ</b>. Anna accepted at 09:03.</div>
+                <div class="m"><span>Diff: role → Accountant</span></div>
+              </div>
+              <div class="when">2026-03-04 · 08:41</div>
+            </div>
+            <div class="audit-row info">
+              <div class="aic">🧾</div>
+              <div>
+                <div class="t">Data exported: metrics_2026-07-29.csv</div>
+                <div class="d"><b>Hoàng Huy Hồ</b> downloaded a full CSV (14 metrics · 148 days).</div>
+              </div>
+              <div class="when">2026-07-28 · 22:11</div>
+            </div>
+            <div class="audit-row info">
+              <div class="aic">📤</div>
+              <div>
+                <div class="t">Upload overwritten: inventory_2026-07-27.csv</div>
+                <div class="d"><b>Anna Nguyễn</b> re-uploaded, confirmed overwrite. 3 values changed.</div>
+                <div class="m"><span>inventory_on_hand: 312 → 298</span></div>
+              </div>
+              <div class="when">2026-07-28 · 14:20</div>
+            </div>
+            <div class="audit-row info">
+              <div class="aic">⚙</div>
+              <div>
+                <div class="t">Rule updated: losses ceiling $600 → $500</div>
+                <div class="d"><b>Hoàng Huy Hồ</b> tightened the loss ceiling.</div>
+              </div>
+              <div class="when">2026-07-25 · 10:44</div>
+            </div>
+          </div>
+          <div style="padding:12px 20px;background:#fafbf8;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2)">
+            <span>Retention: 365 days · 1,842 events total</span>
+            <span><button class="row-btn">⬇ Export log</button> <button class="row-btn">Filter…</button></span>
+          </div>
+        </div>
+
+        <!-- IP allowlist / geo -->
+        <div class="card" id="access">
+          <div class="card-head"><h3>IP allowlist & geo restrictions</h3><span class="owner-only">Owner only</span></div>
+          <div class="sub">Only allow sign-in from listed IPs, or block countries.</div>
+          <div class="body">
+            <div class="field">
+              <div class="lbl">Enable IP allowlist<small>Turning on blocks every IP not listed.</small></div>
+              <div class="val"><label class="toggle"><input type="checkbox"><span></span></label> <span style="font-size:12px;color:var(--muted);margin-left:8px">Off</span></div>
+              <div></div>
+            </div>
+
+            <div class="ip-list" style="margin-top:8px">
+              <div class="ip">
+                <div class="ic">🏢</div>
+                <div><div class="n">171.245.32.0/24</div><div class="l">Office network · HCMC · added by Owner</div></div>
+                <span class="st ok">Allowed</span>
+                <button class="row-btn danger">Remove</button>
+              </div>
+              <div class="ip">
+                <div class="ic">🏠</div>
+                <div><div class="n">116.109.•.•</div><div class="l">Home · HCMC · Anna's laptop</div></div>
+                <span class="st ok">Allowed</span>
+                <button class="row-btn danger">Remove</button>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+              <input type="text" placeholder="e.g. 203.0.113.0/24 or single IP" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <input type="text" placeholder="Label (Office, Home…)" style="width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <button class="row-btn pri">＋ Add IP</button>
+            </div>
+
+            <h4 style="margin:16px 0 6px;font-size:13px">Geo blocks</h4>
+            <div class="field">
+              <div class="lbl">Block countries<small>Sign-in refused from these regions.</small></div>
+              <div class="val" style="display:flex;flex-wrap:wrap;gap:6px">
+                <span class="pill" style="padding:4px 10px">🇷🇺 Russia ✕</span>
+                <span class="pill" style="padding:4px 10px">🇰🇵 North Korea ✕</span>
+                <span class="pill" style="padding:4px 10px">＋ Add country</span>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API tokens -->
+        <div class="card" id="tokens">
+          <div class="card-head"><h3>API tokens</h3></div>
+          <div class="sub">Personal-access tokens for scripts or third-party tools. Scoped and expiring.</div>
+          <div class="body">
+            <div class="tok">
+              <div class="ic">T1</div>
+              <div>
+                <div class="n">nightly-export</div>
+                <div class="d">demo_csv_pat_••••••••••••••••8a2f</div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);text-align:right">Scope: <b>read:metrics</b><br/>Expires: 2026-12-31</div>
+              <div style="display:flex;gap:6px"><button class="row-btn">Rotate</button><button class="row-btn danger">Revoke</button></div>
+            </div>
+            <div class="tok">
+              <div class="ic">T2</div>
+              <div>
+                <div class="n">zapier-webhook</div>
+                <div class="d">demo_csv_pat_••••••••••••••••11cd</div>
+              </div>
+              <div style="font-size:11px;color:var(--muted);text-align:right">Scope: <b>write:uploads</b><br/>Expires: 2026-09-15</div>
+              <div style="display:flex;gap:6px"><button class="row-btn">Rotate</button><button class="row-btn danger">Revoke</button></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:8px;margin-top:12px">
+              <input type="text" placeholder="Token name (e.g. bi-report)" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff">
+                <option>Scope: read:metrics</option>
+                <option>Scope: read:all</option>
+                <option>Scope: write:uploads</option>
+                <option>Scope: admin (Owner only)</option>
+              </select>
+              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff">
+                <option>Expires in 30 days</option><option>90 days</option><option>1 year</option><option>Never (not recommended)</option>
+              </select>
+              <button class="row-btn pri">＋ Create token</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data retention -->
+        <div class="card" id="retention">
+          <div class="card-head"><h3>Data retention & auto-delete</h3><span class="owner-only">Owner only</span></div>
+          <div class="sub">Keep aggregates forever. Delete raw CSVs and old audit events on a schedule.</div>
+          <div class="body">
+            <div class="field">
+              <div class="lbl">Raw CSV uploads<small>Original files as uploaded.</small></div>
+              <div class="val" style="max-width:280px"><select><option>Delete after 180 days</option><option>Delete after 90 days</option><option>Delete after 365 days</option><option>Keep forever</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Metric history<small>Long/tidy rows in the DB.</small></div>
+              <div class="val" style="max-width:280px"><select><option>Keep forever</option><option>Delete after 5 years</option><option>Delete after 2 years</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Audit log<small>Balances forensics vs privacy.</small></div>
+              <div class="val" style="max-width:280px"><select><option>365 days</option><option>90 days</option><option>2 years</option><option>Forever</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Login history<small>Successful and failed attempts.</small></div>
+              <div class="val" style="max-width:280px"><select><option>90 days</option><option>30 days</option><option>1 year</option></select></div>
+              <div></div>
+            </div>
+            <div class="field">
+              <div class="lbl">Legal hold<small>Freeze deletion for specific date ranges.</small></div>
+              <div class="val" style="font-size:12px;color:var(--ink-2)">No active holds.</div>
+              <div class="action"><button class="row-btn">Add hold</button></div>
+            </div>
+
+            <div class="danger-zone">
+              <h4>⚠ Purge now</h4>
+              <p>Immediately apply the rules above: this will delete <b>34 raw CSV files</b> older than 180 days and <b>1,203 audit events</b> older than 365 days. Requires typing "PURGE" and re-entering your password.</p>
+              <button>Purge older-than-policy data</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Delegate role modal -->
+<div class="modal-back" id="delegate-modal" style="display:none">
+  <div class="modal">
+    <div class="ic">👥</div>
+    <h3>Delegate a role</h3>
+    <p>Assign a permission set to another user. You can revoke this at any time.</p>
+    <div class="who"><span class="avatar-sm acc"></span><b>Anna Nguyễn</b> · anna@demo-csv.app</div>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Role</label>
+    <select>
+      <option>Accountant — upload, view, comment</option>
+      <option>Owner — full access (adds a co-Owner)</option>
+    </select>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block">Station access</label>
+    <select>
+      <option>Only Station A · Quận 1</option>
+      <option>Only Station B · Thủ Đức</option>
+      <option>Station A + B (multi-station accountant)</option>
+      <option>All stations (Owner promotion)</option>
+    </select>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block">Optional expiry</label>
+    <select>
+      <option>No expiry</option><option>30 days</option><option>90 days</option><option>1 year</option>
+    </select>
+    <div class="warn" style="margin-top:12px">Promoting to Owner grants ability to manage roles, keys, and wipe data. Requires your password to confirm.</div>
+    <input type="password" placeholder="Enter your password" value="••••••••" />
+    <div class="actions">
+      <button class="ghost" onclick="document.getElementById('delegate-modal').style.display='none'">Cancel</button>
+      <button class="pri" onclick="document.getElementById('delegate-modal').style.display='none'">Delegate role</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Fake QR code
+  const qr = document.getElementById('qr');
+  const pat = [1,1,1,1,1,1,1,1, 1,0,1,0,1,0,0,1, 1,0,1,1,0,1,0,1, 1,0,1,0,1,1,1,1, 1,0,0,1,0,1,0,1, 1,0,1,0,0,0,1,1, 1,1,1,1,1,0,0,1, 0,1,0,1,1,1,1,1];
+  qr.innerHTML = '';
+  pat.forEach(v=>{const d=document.createElement('div');if(!v)d.className='o';qr.appendChild(d);});
+
+  // Sub-nav highlight
+  document.querySelectorAll('.subnav a').forEach(a=>{
+    a.addEventListener('click',()=>{document.querySelectorAll('.subnav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');});
+  });
+</script>
+</body>
+</html>
