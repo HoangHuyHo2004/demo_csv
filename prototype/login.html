@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Demo_CSV — Sign in</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15"/></svg>
+      <span>Demo_CSV</span>
+    </div>
+
+    <div class="auth-tabs">
+      <button type="button" class="active" data-mode="signin">Sign in</button>
+      <button type="button" data-mode="signup">Create account</button>
+    </div>
+
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-notice" id="auth-notice"></div>
+
+    <form id="auth-form">
+      <div class="auth-field" id="field-name" style="display:none">
+        <label for="display-name">Name</label>
+        <input type="text" id="display-name" name="displayName" autocomplete="name" />
+      </div>
+      <div class="auth-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email" required />
+      </div>
+      <div class="auth-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required minlength="6" />
+      </div>
+      <button type="submit" class="auth-submit" id="auth-submit">Sign in</button>
+      <div class="auth-hint" id="auth-hint">Still waking up the database — free-tier projects pause after inactivity. Hang tight…</div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="assets/js/login.js"></script>
+</body>
+</html>
