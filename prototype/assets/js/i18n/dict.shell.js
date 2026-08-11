@@ -1,0 +1,42 @@
+// Sidebar nav, header search placeholder pattern, profile block, and the
+// station scope switcher -- all rendered from shared JS (shell.js,
+// scope-ui.js) and shown on every page behind the login wall.
+export const en = {
+  'shell.nav.overview': 'Overview',
+  'shell.nav.statistics': 'Statistics',
+  'shell.nav.metrics': 'Metrics',
+  'shell.nav.stations': 'Stations',
+  'shell.nav.uploads': 'Uploads',
+  'shell.nav.alerts': 'Alerts',
+  'shell.nav.insights': 'Insights',
+  'shell.nav.settings': 'Settings',
+  'shell.nav.security': 'Security',
+  'shell.menuLabel': 'Menu',
+  'shell.generalLabel': 'General',
+  'shell.signOut': 'Sign out',
+  'shell.ownerAccount': 'Owner Account',
+  'shell.scopeAllStations': 'All stations',
+  'shell.scopeNoStationAccess': 'No station access',
+  'shell.scopeNoStationsYet': 'No stations yet',
+  'shell.ownerView': 'Owner view',
+};
+
+export const vi = {
+  'shell.nav.overview': 'Tổng quan',
+  'shell.nav.statistics': 'Thống kê',
+  'shell.nav.metrics': 'Chỉ số',
+  'shell.nav.stations': 'Trạm',
+  'shell.nav.uploads': 'Tải lên',
+  'shell.nav.alerts': 'Cảnh báo',
+  'shell.nav.insights': 'Phân tích',
+  'shell.nav.settings': 'Cài đặt',
+  'shell.nav.security': 'Bảo mật',
+  'shell.menuLabel': 'Menu',
+  'shell.generalLabel': 'Chung',
+  'shell.signOut': 'Đăng xuất',
+  'shell.ownerAccount': 'Tài khoản chủ sở hữu',
+  'shell.scopeAllStations': 'Tất cả trạm',
+  'shell.scopeNoStationAccess': 'Không có quyền truy cập trạm',
+  'shell.scopeNoStationsYet': 'Chưa có trạm nào',
+  'shell.ownerView': 'Chế độ xem chủ sở hữu',
+};

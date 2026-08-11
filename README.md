@@ -1,8 +1,8 @@
 # Demo_CSV
 
 A daily-CSV business tracker for a small business with multiple stations (e.g. petrol
-stations). An accountant uploads a CSV per station per day; the app parses it, stores it,
-and renders trend dashboards for the owner.
+stations). An accountant uploads a CSV or Excel (.xlsx/.xls) file per station per day;
+the app parses it, stores it, and renders trend dashboards for the owner.
 
 **Live site:** https://hoanghuyho2004.github.io/demo_csv/
 **Backend:** Supabase project `demo-csv` (ap-southeast-1)
@@ -37,13 +37,16 @@ prototype/
       scope.js / scope-ui.js   the "station scope" switcher in the header
       first-run.js             first-owner bootstrap flow (index.html only)
       data.js                  every Supabase query in the app lives here
-      csv.js                   CSV parsing, type inference, number/date normalization
+      csv.js                   CSV/XLSX parsing, type inference, number/date normalization
       upload.js                uploads.html controller (dropzone, save/overwrite, history)
       dashboard.js              index.html controller
       statistics.js             statistics.html controller
       charts.js                 hand-rolled SVG geometry helpers
       fmt.js                    number/currency formatting, metric display conventions
       empty.js                  empty-state helpers
+      i18n.js                   English/Vietnamese translation engine (see below)
+      i18n/dict.*.js             one translation dictionary per page, plus dict.common.js
+                                  and dict.shell.js for strings shared across pages
 supabase/
   migrations/                  every SQL migration applied to the project, in order
 ```
@@ -109,6 +112,23 @@ can see or change.
 The key that must **never** appear in this repository is the `service_role` key. That
 one bypasses Row Level Security entirely and belongs only on a trusted server, which
 this static site does not have.
+
+## Language (English / Vietnamese)
+
+Every page behind the login wall (not `login.html` itself, which stays English) supports
+switching between English and Vietnamese from Settings → Language & locale. The choice is
+per-user (`localStorage` keyed by user id, not global), so a shared browser with two
+accounts never leaks one person's language into the other's session, and it applies
+instantly without a page reload.
+
+Static text is marked with a `data-i18n="key"` attribute and translated by a small
+sweep (`applyTranslations()` in `assets/js/i18n.js`) that runs after auth resolves.
+Text generated from JavaScript (KPI labels, upload status, empty states, etc.) calls
+`t('key')` directly at render time and re-renders on a language-change event, since a
+one-time DOM sweep can't reach text that doesn't exist yet. Every dictionary key is
+duplicated in both `en` and `vi` — English isn't a fallback default baked into the
+markup, it's translated the same way Vietnamese is, so the two stay symmetric by
+construction rather than by convention.
 
 ## What's wired vs. what's a mockup
 

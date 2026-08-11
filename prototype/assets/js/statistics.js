@@ -10,8 +10,10 @@ import { polylinePoints, areaPath, sparkline, heatCells, pearsonR } from './char
 import {
   formatNumber, formatCompact, formatCurrencyCompact, percentDelta, formatDelta,
   displayMetricName, metricColor, isoDateNDaysAgo, dateRangeDays,
+  formatDateDMY, formatDateShortDMY, weekdayLabel,
 } from './fmt.js';
 import { emptyTableRow, emptyCardHtml } from './empty.js';
+import { t, onChange as onLanguageChange } from './i18n.js';
 
 let stations = [];
 
@@ -27,6 +29,7 @@ async function init() {
 
   await render();
   scope.onChange(() => render());
+  onLanguageChange(() => render());
 }
 
 async function render() {
@@ -140,7 +143,7 @@ function renderLeaderboard(currentRows, previousRows, registry, uploads, days) {
 
   const visibleStations = stations.length ? stations : [];
   if (visibleStations.length === 0) {
-    tbody.innerHTML = emptyTableRow(8, 'No stations accessible yet.');
+    tbody.innerHTML = emptyTableRow(8, t('empty.noStationsAccessible'));
     return;
   }
 
@@ -188,7 +191,7 @@ function renderLeaderboard(currentRows, previousRows, registry, uploads, days) {
   rowsHtml.push(`
     <tr style="background:#fafbf8;font-weight:700">
       <td style="padding:10px"></td>
-      <td style="padding:10px">Combined</td>
+      <td style="padding:10px">${escapeHtml(t('statistics.leaderboard.combined'))}</td>
       <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(totals.revenue)}</td>
       <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatNumber(totals.sales)}</td>
       <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(totals.losses)}</td>
@@ -202,7 +205,8 @@ function renderLeaderboard(currentRows, previousRows, registry, uploads, days) {
   const scopeLabelEl = document.getElementById('leaderboard-scope-label');
   if (scopeLabelEl) {
     const cur = scope.current();
-    scopeLabelEl.textContent = `Scope: ${cur.mode === 'all' ? 'All stations' : cur.station?.name || '—'} · last 30 days`;
+    const scopeName = cur.mode === 'all' ? t('shell.scopeAllStations') : cur.station?.name || '—';
+    scopeLabelEl.textContent = t('statistics.leaderboard.scopeLabel', { scope: scopeName });
   }
 }
 
@@ -221,7 +225,7 @@ function renderTrendChart(currentRows, registry, days) {
   const plotH = h - pad.t - pad.b;
 
   if (top.length === 0) {
-    svg.parentElement.querySelector('.sub').textContent = 'No metrics tracked in this period yet.';
+    svg.parentElement.querySelector('.sub').textContent = t('empty.noMetricsTrackedPeriod');
     svg.innerHTML = '';
     if (legendEl) legendEl.innerHTML = '';
     return;
@@ -264,14 +268,14 @@ function renderTrendChart(currentRows, registry, days) {
   if (peakIdx >= 0) {
     const x = pad.l + (days.length > 1 ? (plotW / (days.length - 1)) * peakIdx : plotW / 2);
     const y = pad.t + plotH - (peakVal / maxVal) * plotH;
-    const label = `${new Date(days[peakIdx] + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })} · ${formatCompact(peakVal)}`;
+    const label = `${formatDateShortDMY(days[peakIdx])} · ${formatCompact(peakVal)}`;
     svgContent += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${primary.color}"/>`;
     svgContent += `<rect x="${Math.max(pad.l, x - 55).toFixed(1)}" y="${Math.max(0, y - 32).toFixed(1)}" width="110" height="24" rx="6" fill="#0f2a1f"/>`;
     svgContent += `<text x="${Math.max(pad.l, x - 55).toFixed(1) - -55}" y="${Math.max(0, y - 32).toFixed(1) - -16}" text-anchor="middle" fill="#b7f04a" font-size="10" font-family="Inter" font-weight="700">${escapeHtml(label)}</text>`;
   }
 
   svg.innerHTML = svgContent;
-  svg.parentElement.querySelector('.sub').textContent = 'Daily values for the last 30 days.';
+  svg.parentElement.querySelector('.sub').textContent = t('statistics.trend.sub');
 
   if (legendEl) {
     legendEl.innerHTML = seriesList.map((s) => `<span><span class="sw" style="background:${s.color}"></span>${escapeHtml(displayMetricName(s.name))}</span>`).join('');
@@ -360,7 +364,7 @@ function renderHeatmap(currentRows, days) {
   const metricName = top[0];
   if (!metricName) {
     heatEl.innerHTML = '';
-    heatEl.parentElement.querySelector('.sub').textContent = 'No data yet.';
+    heatEl.parentElement.querySelector('.sub').textContent = t('empty.noDataYet');
     return;
   }
   if (titleEl) titleEl.textContent = displayMetricName(metricName);
@@ -384,7 +388,10 @@ function renderHeatmap(currentRows, days) {
   heatEl.style.gridTemplateRows = `repeat(7, 1fr)`;
   heatEl.innerHTML = '';
 
-  const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const weekdayNames = [
+    t('statistics.weekday.mon'), t('statistics.weekday.tue'), t('statistics.weekday.wed'),
+    t('statistics.weekday.thu'), t('statistics.weekday.fri'), t('statistics.weekday.sat'), t('statistics.weekday.sun'),
+  ];
   for (let wd = 0; wd < 7; wd++) {
     const lbl = document.createElement('div');
     lbl.className = 'rowlbl';
@@ -421,10 +428,10 @@ function renderCorrelation(currentRows, days) {
 
   if (!xName || !yName || xName === yName) {
     svg.innerHTML = '';
-    if (titleEl) titleEl.textContent = 'Not enough distinct metrics yet';
+    if (titleEl) titleEl.textContent = t('statistics.correlation.notEnoughMetrics');
     return;
   }
-  if (titleEl) titleEl.textContent = `${displayMetricName(xName)} vs ${displayMetricName(yName)}`;
+  if (titleEl) titleEl.textContent = t('statistics.correlation.titleFormat', { x: displayMetricName(xName), y: displayMetricName(yName) });
 
   const xs = seriesByDay(currentRows, xName, days);
   const ys = seriesByDay(currentRows, yName, days);
@@ -480,7 +487,7 @@ function renderDeltaTable(currentRows, previousRows, registry, days) {
   if (!tbody) return;
   const names = [...new Set(currentRows.map((r) => r.metric_name))].slice(0, 6);
   if (names.length === 0) {
-    tbody.innerHTML = emptyTableRow(7, 'No metrics tracked yet.');
+    tbody.innerHTML = emptyTableRow(7, t('empty.noMetricsTrackedYet'));
     return;
   }
   tbody.innerHTML = names.map((name) => {
@@ -518,21 +525,21 @@ function renderTopBottomDays(currentRows, days) {
     const top5 = [...series].sort((a, b) => b.value - a.value).slice(0, 5);
     topEl.innerHTML = top5.length
       ? top5.map((x, i) => rankItemHtml(i + 1, x.date, x.value, true)).join('')
-      : emptyCardHtml('No data yet.');
-    document.getElementById('top-days-heading').textContent = `Top 5 ${displayMetricName(primary)} days`;
+      : emptyCardHtml(t('empty.noDataYet'));
+    document.getElementById('top-days-heading').textContent = t('statistics.topBottom.topMetricDays', { metric: displayMetricName(primary) });
   } else {
-    topEl.innerHTML = emptyCardHtml('No data yet.');
+    topEl.innerHTML = emptyCardHtml(t('empty.noDataYet'));
   }
 
   const lossSeries = days.map((d) => ({ date: d, value: seriesByDayValue(currentRows, 'losses', d) })).filter((x) => x.value !== null);
   const bottom5 = [...lossSeries].sort((a, b) => a.value - b.value).slice(0, 5);
   botEl.innerHTML = bottom5.length
     ? bottom5.map((x, i) => rankItemHtml(i + 1, x.date, x.value, false)).join('')
-    : emptyCardHtml('No losses tracked yet.');
+    : emptyCardHtml(t('empty.noLossesTracked'));
 }
 
 function rankItemHtml(rank, date, value, isTop) {
-  const label = new Date(date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short', timeZone: 'UTC' });
+  const label = `${formatDateShortDMY(date)} · ${weekdayLabel(date)}`;
   return `<div class="item ${isTop ? 'top' : 'bot'}"><div class="rk">${rank}</div><div class="who">${escapeHtml(label)}</div><div class="val">${formatCurrencyCompact(value)}</div></div>`;
 }
 
@@ -547,16 +554,16 @@ function renderRawTable(currentRows, days) {
   const reversedDays = [...days].reverse();
   const hasAny = currentRows.length > 0;
   if (!hasAny) {
-    tbody.innerHTML = emptyTableRow(7, 'No data yet.');
+    tbody.innerHTML = emptyTableRow(7, t('empty.noDataYet'));
     return;
   }
   tbody.innerHTML = reversedDays.map((d) => {
-    const weekday = new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+    const weekday = weekdayLabel(d);
     const cells = cols.map((c) => {
       const v = seriesByDayValue(currentRows, c, d);
       return `<td class="num">${v === null ? '—' : (c === 'revenue' ? formatCurrencyCompact(v) : formatNumber(v))}</td>`;
     }).join('');
-    return `<tr><td>${d}</td><td>${weekday}</td>${cells}</tr>`;
+    return `<tr><td>${formatDateDMY(d)}</td><td>${weekday}</td>${cells}</tr>`;
   }).join('');
 }
 

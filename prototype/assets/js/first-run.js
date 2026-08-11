@@ -7,6 +7,7 @@
 import { requireSession, clearProfileCache } from './auth.js';
 import { supabase } from './supabase-client.js';
 import { listStations } from './data.js';
+import { t, onChange as onLanguageChange } from './i18n.js';
 
 (async function () {
   const result = await requireSession();
@@ -20,17 +21,28 @@ import { listStations } from './data.js';
 
   const host = document.createElement('div');
   document.body.appendChild(host);
+
+  // Tracks which step is on screen so a mid-setup language switch
+  // re-renders the same step (with whatever the visitor already typed
+  // into the station-name/code fields preserved) instead of silently
+  // staying in English.
+  let step = 1;
+  let draftName = '';
+  let draftCode = '';
+
   renderStep1();
+  onLanguageChange(() => { step === 1 ? renderStep1() : renderStep2(); });
 
   function renderStep1() {
+    step = 1;
     host.innerHTML = `
       <div class="first-run">
         <div class="first-run__card">
           <div class="first-run__icon">⛽</div>
-          <h2>Set up Demo_CSV</h2>
-          <p>No one owns this workspace yet. Become the Owner to get full access and create your first station.</p>
+          <h2>${t('firstRun.step1.heading')}</h2>
+          <p>${t('firstRun.step1.body')}</p>
           <div class="first-run__error" id="fr-error"></div>
-          <button type="button" class="first-run__cta" id="fr-become-owner">Become the Owner</button>
+          <button type="button" class="first-run__cta" id="fr-become-owner">${t('firstRun.step1.cta')}</button>
         </div>
       </div>`;
     document.getElementById('fr-become-owner').addEventListener('click', becomeOwner);
@@ -41,16 +53,16 @@ import { listStations } from './data.js';
     const errEl = document.getElementById('fr-error');
     errEl.classList.remove('show');
     btn.disabled = true;
-    btn.textContent = 'Setting up…';
+    btn.textContent = t('firstRun.step1.ctaBusy');
 
     const { error } = await supabase.rpc('bootstrap_first_owner');
     if (error) {
       errEl.textContent = /already exists/i.test(error.message)
-        ? 'An owner already exists for this workspace. Ask them to add you to a station.'
+        ? t('firstRun.step1.errorOwnerExists')
         : error.message;
       errEl.classList.add('show');
       btn.disabled = false;
-      btn.textContent = 'Become the Owner';
+      btn.textContent = t('firstRun.step1.cta');
       return;
     }
 
@@ -65,24 +77,27 @@ import { listStations } from './data.js';
   }
 
   function renderStep2() {
+    step = 2;
     host.innerHTML = `
       <div class="first-run">
         <div class="first-run__card">
           <div class="first-run__icon">⛽</div>
-          <h2>Create your first station</h2>
-          <p>You're the Owner now. Add a location to start tracking data.</p>
+          <h2>${t('firstRun.step2.heading')}</h2>
+          <p>${t('firstRun.step2.body')}</p>
           <div class="first-run__error" id="fr-error"></div>
           <div class="first-run__field">
-            <label for="fr-name">Station name</label>
-            <input type="text" id="fr-name" placeholder="e.g. Station A · Quận 1" />
+            <label for="fr-name">${t('firstRun.step2.nameLabel')}</label>
+            <input type="text" id="fr-name" placeholder="${t('firstRun.step2.namePlaceholder')}" value="${escapeHtmlAttr(draftName)}" />
           </div>
           <div class="first-run__field">
-            <label for="fr-code">Short code</label>
-            <input type="text" id="fr-code" placeholder="STN-A" />
+            <label for="fr-code">${t('firstRun.step2.codeLabel')}</label>
+            <input type="text" id="fr-code" placeholder="${t('firstRun.step2.codePlaceholder')}" value="${escapeHtmlAttr(draftCode)}" />
           </div>
-          <button type="button" class="first-run__cta" id="fr-create-station">Create station</button>
+          <button type="button" class="first-run__cta" id="fr-create-station">${t('firstRun.step2.cta')}</button>
         </div>
       </div>`;
+    document.getElementById('fr-name').addEventListener('input', (e) => { draftName = e.target.value; });
+    document.getElementById('fr-code').addEventListener('input', (e) => { draftCode = e.target.value; });
     document.getElementById('fr-create-station').addEventListener('click', createStation);
   }
 
@@ -94,13 +109,13 @@ import { listStations } from './data.js';
     errEl.classList.remove('show');
 
     if (!name) {
-      errEl.textContent = 'Station name is required.';
+      errEl.textContent = t('firstRun.step2.errorNameRequired');
       errEl.classList.add('show');
       return;
     }
 
     btn.disabled = true;
-    btn.textContent = 'Creating…';
+    btn.textContent = t('firstRun.step2.ctaBusy');
     const { error } = await supabase.from('stations').insert({
       name,
       code: code || null,
@@ -110,9 +125,15 @@ import { listStations } from './data.js';
       errEl.textContent = error.message;
       errEl.classList.add('show');
       btn.disabled = false;
-      btn.textContent = 'Create station';
+      btn.textContent = t('firstRun.step2.cta');
       return;
     }
     location.reload();
   }
 })();
+
+function escapeHtmlAttr(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}

@@ -4,6 +4,7 @@
 // flag it, so keep them small, pure, and easy to reason about in
 // isolation.
 import Papa from 'https://esm.sh/papaparse@5.4.1';
+import * as XLSX from 'https://esm.sh/xlsx@0.18.5';
 
 // worker:true is deliberately NOT used here. Papa's worker mode reloads
 // the library inside a Worker context by URL, which is unreliable when
@@ -12,6 +13,10 @@ import Papa from 'https://esm.sh/papaparse@5.4.1';
 // main thread instead -- fine at the file sizes this app expects (single
 // daily CSVs, not bulk historical dumps).
 export function parseFile(file) {
+  return /\.xlsx?$/i.test(file.name) ? parseSpreadsheet(file) : parseCsv(file);
+}
+
+function parseCsv(file) {
   return new Promise((resolve) => {
     Papa.parse(file, {
       header: true,
@@ -30,6 +35,25 @@ export function parseFile(file) {
       },
     });
   });
+}
+
+// Reads the first sheet only -- multi-sheet workbooks aren't a case this
+// app's daily-upload model needs to support. raw:false formats each cell
+// through its own display format (so a date cell comes out as text, not a
+// JS Date or an Excel serial number), which lets the exact same
+// normalizeNumber()/toISODate() parsing used for CSV text work unchanged
+// here -- one parsing path for both file types instead of two.
+async function parseSpreadsheet(file) {
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const headerRow = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false })[0] || [];
+    const rows = XLSX.utils.sheet_to_json(sheet, { raw: false, defval: '' });
+    return { headers: headerRow, rows, rowCount: rows.length, errors: [] };
+  } catch (err) {
+    return { headers: [], rows: [], rowCount: 0, errors: [{ message: err.message }] };
+  }
 }
 
 // Accepts "1,234,567.89", "1.234.567,89", "₫1.234", "(500)" (negative),

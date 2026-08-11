@@ -5,8 +5,9 @@ import { requireSession } from './auth.js';
 import * as scope from './scope.js';
 import { loadMetricDaily, listStations, listUploads, getMetricsRegistry } from './data.js';
 import { barPercents, donutSegments } from './charts.js';
-import { formatNumber, formatCompact, formatCurrencyCompact, percentDelta, formatDelta, displayMetricName, metricColor, isoDateNDaysAgo } from './fmt.js';
+import { formatNumber, formatCompact, formatCurrencyCompact, percentDelta, formatDelta, displayMetricName, metricColor, isoDateNDaysAgo, formatDateDMY, weekdayLabel } from './fmt.js';
 import { emptyTableRow, emptyCardHtml } from './empty.js';
+import { t, onChange as onLanguageChange } from './i18n.js';
 
 let stations = [];
 let currentUserId = null;
@@ -25,6 +26,7 @@ async function init() {
 
   await render();
   scope.onChange(() => render());
+  onLanguageChange(() => render());
 }
 
 async function render() {
@@ -113,7 +115,7 @@ function renderRevenueCard(currentRows, previousRows, registry) {
 
   const bigEl = document.getElementById('revenue-big');
   if (bigEl) {
-    bigEl.innerHTML = `${total === null ? '—' : formatCurrencyCompact(total)} <small>${pct === null ? '' : formatDelta(pct) + ' vs prior period'}</small>`;
+    bigEl.innerHTML = `${total === null ? '—' : formatCurrencyCompact(total)} <small>${pct === null ? '' : formatDelta(pct) + ' ' + t('index.revenue.vsPriorPeriod')}</small>`;
   }
 
   const chipsEl = document.getElementById('revenue-station-chips');
@@ -122,7 +124,7 @@ function renderRevenueCard(currentRows, previousRows, registry) {
     const chips = stations
       .filter((s) => byStation[s.id])
       .map((s) => `<div style="background:#f6f8f4;border-radius:10px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)"><span style="width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${escapeHtml(s.name)} · <b style="color:var(--ink)">${formatCurrencyCompact(byStation[s.id])}</b></div>`);
-    chipsEl.innerHTML = chips.join('') || '<span style="font-size:11px;color:var(--muted)">No station breakdown yet.</span>';
+    chipsEl.innerHTML = chips.join('') || `<span style="font-size:11px;color:var(--muted)">${t('index.revenue.noStationBreakdown')}</span>`;
   }
 
   renderRevenueBars(currentRows, registry);
@@ -148,7 +150,7 @@ function renderRevenueBars(currentRows, registry) {
     </div>`).join('');
 
   if (xaxEl) {
-    xaxEl.innerHTML = days.map((d) => `<span>${new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' })}</span>`).join('');
+    xaxEl.innerHTML = days.map((d) => `<span>${weekdayLabel(d)}</span>`).join('');
   }
 }
 
@@ -167,7 +169,7 @@ function renderMetricBreakdown(currentRows, registry) {
   if (!container) return;
   const top = topMetrics(currentRows, registry, 4);
   if (top.length === 0) {
-    container.innerHTML = emptyCardHtml('No metrics tracked in this period yet.');
+    container.innerHTML = emptyCardHtml(t('empty.noMetricsTrackedPeriod'));
     return;
   }
   const max = top[0].value || 1;
@@ -204,9 +206,9 @@ function renderDonut(currentRows, registry) {
 
   if (top.length === 0) {
     circles.forEach((c) => c.setAttribute('stroke-dasharray', '0 100'));
-    texts.forEach((t) => { t.textContent = ''; });
+    texts.forEach((el) => { el.textContent = ''; });
     if (centerEl) centerEl.textContent = '—';
-    if (legendEl) legendEl.innerHTML = '<span style="color:var(--muted)">No data yet</span>';
+    if (legendEl) legendEl.innerHTML = `<span style="color:var(--muted)">${t('empty.noDataYet')}</span>`;
     return;
   }
 
@@ -219,8 +221,8 @@ function renderDonut(currentRows, registry) {
     c.setAttribute('stroke', seg.color);
     c.setAttribute('stroke-dasharray', seg.dasharray);
     c.setAttribute('stroke-dashoffset', String(seg.dashoffset));
-    const t = texts[i];
-    if (t) t.textContent = seg.pct >= 1 ? `${Math.round(seg.pct)}%` : '';
+    const textEl = texts[i];
+    if (textEl) textEl.textContent = seg.pct >= 1 ? `${Math.round(seg.pct)}%` : '';
   });
   // Zero-out any leftover segment slots when fewer than 3 metrics exist.
   for (let i = segs.length; i < circles.length; i++) {
@@ -243,16 +245,16 @@ async function renderRecentUploads(stationIds) {
   if (!listEl) return;
   const uploads = await listUploads({ stationIds, limit: 6 });
   if (uploads.length === 0) {
-    listEl.innerHTML = emptyCardHtml('No uploads yet — head to Uploads to add your first CSV.');
+    listEl.innerHTML = emptyCardHtml(t('empty.noUploadsYet'));
     return;
   }
   listEl.innerHTML = uploads.map((u) => {
     const statusClass = u.status === 'processed' ? 'completed' : u.status === 'error' ? 'pending' : 'pending';
-    const dateLabel = new Date(u.upload_date + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    const dateLabel = formatDateDMY(u.upload_date);
     return `
       <div class="tx"><div class="thumb">📄</div>
         <div class="meta"><div class="name">${escapeHtml(u.category)} — ${escapeHtml(u.filename)}</div><div class="date">${dateLabel}</div></div>
-        <div class="right"><span class="status ${statusClass}">${escapeHtml(u.status)}</span><div class="code">${escapeHtml(u.station_id ? u.station_id.slice(0, 8).toUpperCase() : '')}</div></div>
+        <div class="right"><span class="status ${statusClass}">${escapeHtml(statusLabel(u.status))}</span><div class="code">${escapeHtml(u.station_id ? u.station_id.slice(0, 8).toUpperCase() : '')}</div></div>
       </div>`;
   }).join('');
 }
@@ -261,4 +263,13 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
+}
+
+// Upload status codes are a fixed, known set -- translate via the shared
+// common.* keys rather than leaving raw DB values ("processed", "error")
+// on screen. Unrecognized values (shouldn't happen) fall back to the raw
+// string so nothing silently disappears.
+function statusLabel(status) {
+  const key = { processed: 'common.processed', overwritten: 'common.overwritten', pending: 'common.pending', error: 'common.error' }[status];
+  return key ? t(key) : status;
 }

@@ -19,26 +19,26 @@
 
   <main>
     <div class="header">
-      <div class="h-title">Stations <span class="caret">▾</span></div>
-      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search stations…</div>
+      <div class="h-title"><span data-i18n="shell.nav.stations">Stations</span> <span class="caret">▾</span></div>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="stations.searchPlaceholder">Search stations…</span></div>
       <div class="h-actions">
-        <button class="scope"><span class="dot"></span><b>All stations</b><span class="caret">▾</span></button>
-        <button class="cta" onclick="document.getElementById('new-stn').style.display='flex'">＋ New station <span class="plus">＋</span></button>
+        <button class="scope"><span class="dot"></span><b data-i18n="shell.scopeAllStations">All stations</b><span class="caret">▾</span></button>
+        <button class="cta" onclick="document.getElementById('new-stn').style.display='flex'"><span data-i18n="stations.newStation">＋ New station</span> <span class="plus">＋</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Stations</h1>
-        <p>Your business locations. Data, uploads, alerts, and accountants are scoped per station.</p>
+        <h1 data-i18n="shell.nav.stations">Stations</h1>
+        <p data-i18n="stations.pageDesc">Your business locations. Data, uploads, alerts, and accountants are scoped per station.</p>
       </div>
     </div>
 
     <div class="kpis">
-      <div class="kpi"><div class="lbl">Active stations</div><div class="val">2</div><div class="foot">1 archived</div></div>
-      <div class="kpi"><div class="lbl">Combined revenue (MTD)</div><div class="val">$193K</div><div class="foot">+12% vs Jun</div></div>
-      <div class="kpi"><div class="lbl">Uploads today</div><div class="val">3</div><div class="foot">2 processed · 1 pending</div></div>
-      <div class="kpi"><div class="lbl">Active alerts across stations</div><div class="val">13</div><div class="foot">3 critical</div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.activeStations">Active stations</div><div class="val">2</div><div class="foot" data-i18n="stations.kpi.archived1">1 archived</div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.combinedRevenue">Combined revenue (MTD)</div><div class="val">$193K</div><div class="foot">+12% <span data-i18n="stations.kpi.vsJun">vs Jun</span></div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.uploadsToday">Uploads today</div><div class="val">3</div><div class="foot">2 <span data-i18n="stations.kpi.processedPending">processed · 1 pending</span></div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.activeAlerts">Active alerts across stations</div><div class="val">13</div><div class="foot" data-i18n="stations.kpi.critical3">3 critical</div></div>
     </div>
 
     <!-- Station cards -->
@@ -49,21 +49,21 @@
         <div class="hd">
           <div class="ic">⛽</div>
           <div>
-            <h3>Station A · Quận 1 <span class="badge-st">Active</span></h3>
+            <h3>Station A · Quận 1 <span class="badge-st" data-i18n="stations.status.active">Active</span></h3>
             <div class="subd">142 Nguyễn Huệ, Q1, HCMC · UTC+7 · ₫ VND</div>
           </div>
-          <div class="actions"><button>Edit</button><button>Transfer</button><button class="danger">Archive</button></div>
+          <div class="actions"><button data-i18n="stations.edit">Edit</button><button data-i18n="stations.transfer">Transfer</button><button class="danger" data-i18n="stations.archive">Archive</button></div>
         </div>
         <div class="body">
           <div class="row">
-            <div class="stat"><div class="l">Revenue MTD</div><div class="v">$118K</div><div class="d" style="color:#1f8f4a">+14%</div></div>
-            <div class="stat"><div class="l">Uploads (30d)</div><div class="v">28/30</div><div class="d">93% on-time</div></div>
-            <div class="stat"><div class="l">Active alerts</div><div class="v">7</div><div class="d" style="color:var(--red)">2 crit</div></div>
-            <div class="stat"><div class="l">Data quality</div><div class="v">A−</div><div class="d">3 gaps</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.revenueMtd">Revenue MTD</div><div class="v">$118K</div><div class="d" style="color:#1f8f4a">+14%</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.uploads30d">Uploads (30d)</div><div class="v">28/30</div><div class="d">93% <span data-i18n="stations.onTime">on-time</span></div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.activeAlerts">Active alerts</div><div class="v">7</div><div class="d" style="color:var(--red)">2 <span data-i18n="stations.crit">crit</span></div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.dataQuality">Data quality</div><div class="v">A−</div><div class="d">3 <span data-i18n="stations.gaps">gaps</span></div></div>
           </div>
           <div class="members">
-            <span class="pill"><span class="avatar-sm own"></span>Owner: You</span>
-            <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn — Accountant</span>
+            <span class="pill"><span class="avatar-sm own"></span><span data-i18n="common.owner">Owner</span>: <span data-i18n="stations.you">You</span></span>
+            <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn — <span data-i18n="common.accountant">Accountant</span></span>
           </div>
           <div class="spark">
             <svg viewBox="0 0 600 60" preserveAspectRatio="none">
@@ -72,8 +72,8 @@
           </div>
         </div>
         <div class="foot">
-          <span>Created Mar 4, 2026 · 128 upload days</span>
-          <a href="index.html">Open dashboard →</a>
+          <span><span data-i18n="stations.created">Created</span> Mar 4, 2026 · 128 <span data-i18n="stations.uploadDaysSuffix">upload days</span></span>
+          <a href="index.html" data-i18n="stations.openDashboard">Open dashboard →</a>
         </div>
       </div>
 
@@ -82,21 +82,21 @@
         <div class="hd">
           <div class="ic">⛽</div>
           <div>
-            <h3>Station B · Thủ Đức <span class="badge-st">Active</span></h3>
+            <h3>Station B · Thủ Đức <span class="badge-st" data-i18n="stations.status.active">Active</span></h3>
             <div class="subd">88 Võ Văn Ngân, Thủ Đức · UTC+7 · ₫ VND</div>
           </div>
-          <div class="actions"><button>Edit</button><button>Transfer</button><button class="danger">Archive</button></div>
+          <div class="actions"><button data-i18n="stations.edit">Edit</button><button data-i18n="stations.transfer">Transfer</button><button class="danger" data-i18n="stations.archive">Archive</button></div>
         </div>
         <div class="body">
           <div class="row">
-            <div class="stat"><div class="l">Revenue MTD</div><div class="v">$75K</div><div class="d" style="color:#1f8f4a">+8%</div></div>
-            <div class="stat"><div class="l">Uploads (30d)</div><div class="v">30/30</div><div class="d">100% on-time</div></div>
-            <div class="stat"><div class="l">Active alerts</div><div class="v">6</div><div class="d" style="color:var(--amber)">1 crit</div></div>
-            <div class="stat"><div class="l">Data quality</div><div class="v">A</div><div class="d">Healthy</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.revenueMtd">Revenue MTD</div><div class="v">$75K</div><div class="d" style="color:#1f8f4a">+8%</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.uploads30d">Uploads (30d)</div><div class="v">30/30</div><div class="d">100% <span data-i18n="stations.onTime">on-time</span></div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.activeAlerts">Active alerts</div><div class="v">6</div><div class="d" style="color:var(--amber)">1 <span data-i18n="stations.crit">crit</span></div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.dataQuality">Data quality</div><div class="v">A</div><div class="d" data-i18n="stations.healthy">Healthy</div></div>
           </div>
           <div class="members">
-            <span class="pill"><span class="avatar-sm own"></span>Owner: You</span>
-            <span class="pill"><span class="avatar-sm b"></span>Bình Trần — Accountant</span>
+            <span class="pill"><span class="avatar-sm own"></span><span data-i18n="common.owner">Owner</span>: <span data-i18n="stations.you">You</span></span>
+            <span class="pill"><span class="avatar-sm b"></span>Bình Trần — <span data-i18n="common.accountant">Accountant</span></span>
           </div>
           <div class="spark">
             <svg viewBox="0 0 600 60" preserveAspectRatio="none">
@@ -105,8 +105,8 @@
           </div>
         </div>
         <div class="foot">
-          <span>Created May 12, 2026 · 78 upload days</span>
-          <a href="index.html">Open dashboard →</a>
+          <span><span data-i18n="stations.created">Created</span> May 12, 2026 · 78 <span data-i18n="stations.uploadDaysSuffix">upload days</span></span>
+          <a href="index.html" data-i18n="stations.openDashboard">Open dashboard →</a>
         </div>
       </div>
 
@@ -115,36 +115,36 @@
         <div class="hd">
           <div class="ic">⛽</div>
           <div>
-            <h3>Station C · Bình Thạnh <span class="badge-st">Archived</span></h3>
-            <div class="subd">Sold Feb 2026 · read-only history</div>
+            <h3>Station C · Bình Thạnh <span class="badge-st" data-i18n="stations.status.archived">Archived</span></h3>
+            <div class="subd">Sold Feb 2026 · <span data-i18n="stations.readOnly">read-only</span> history</div>
           </div>
-          <div class="actions"><button>Unarchive</button><button>Export</button></div>
+          <div class="actions"><button data-i18n="stations.unarchive">Unarchive</button><button data-i18n="common.export">Export</button></div>
         </div>
         <div class="body">
           <div class="row">
-            <div class="stat"><div class="l">Revenue lifetime</div><div class="v">$412K</div><div class="d">Sep 2023 – Feb 2026</div></div>
-            <div class="stat"><div class="l">Upload days</div><div class="v">867</div><div class="d">read-only</div></div>
-            <div class="stat"><div class="l">Alerts</div><div class="v">—</div><div class="d">Muted</div></div>
-            <div class="stat"><div class="l">Members</div><div class="v">0</div><div class="d">Cleared</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.revenueLifetime">Revenue lifetime</div><div class="v">$412K</div><div class="d">Sep 2023 – Feb 2026</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.uploadDays">Upload days</div><div class="v">867</div><div class="d" data-i18n="stations.readOnly">read-only</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.alerts">Alerts</div><div class="v">—</div><div class="d" data-i18n="stations.muted">Muted</div></div>
+            <div class="stat"><div class="l" data-i18n="stations.stat.members">Members</div><div class="v">0</div><div class="d" data-i18n="stations.cleared">Cleared</div></div>
           </div>
         </div>
-        <div class="foot"><span>Archived Feb 21, 2026 · 148d cool-off period ended</span><a href="index.html">View history →</a></div>
+        <div class="foot"><span><span data-i18n="stations.archivedLabel">Archived</span> Feb 21, 2026 · 148d <span data-i18n="stations.coolOffEnded">cool-off period ended</span></span><a href="index.html" data-i18n="stations.viewHistory">View history →</a></div>
       </div>
 
       <div class="add-card" onclick="document.getElementById('new-stn').style.display='flex'">
         <div class="plus">＋</div>
-        <h4>Add a new station</h4>
-        <p>Create a location, choose a color, then invite its accountant.</p>
+        <h4 data-i18n="stations.addCard.title">Add a new station</h4>
+        <p data-i18n="stations.addCard.desc">Create a location, choose a color, then invite its accountant.</p>
       </div>
 
     </div>
 
     <!-- Comparison -->
     <div class="card">
-      <div class="card-head"><h3>Compare stations · July 2026</h3><span class="kebab">•••</span></div>
+      <div class="card-head"><h3 data-i18n="stations.compare.title">Compare stations · July 2026</h3><span class="kebab">•••</span></div>
       <table class="tbl">
         <thead>
-          <tr><th>Rank</th><th>Station</th><th class="num">Revenue</th><th class="num">Sales vol.</th><th class="num">Losses</th><th class="num">Margin</th><th class="num">On-time uploads</th><th>Data health</th></tr>
+          <tr><th data-i18n="stations.th.rank">Rank</th><th data-i18n="stations.th.station">Station</th><th class="num" data-i18n="stations.th.revenue">Revenue</th><th class="num" data-i18n="stations.th.salesVol">Sales vol.</th><th class="num" data-i18n="stations.th.losses">Losses</th><th class="num" data-i18n="stations.th.margin">Margin</th><th class="num" data-i18n="stations.th.onTimeUploads">On-time uploads</th><th data-i18n="stations.th.dataHealth">Data health</th></tr>
         </thead>
         <tbody>
           <tr>
@@ -169,7 +169,7 @@
           </tr>
           <tr style="background:#fafbf8">
             <td></td>
-            <td><b>Combined</b></td>
+            <td><b data-i18n="stations.combined">Combined</b></td>
             <td class="num"><b>$193K</b> <span class="delta up">+12%</span></td>
             <td class="num"><b>3,952</b></td>
             <td class="num"><b>$1,820</b></td>
@@ -188,23 +188,23 @@
 <div class="modal-back" id="new-stn" style="display:none">
   <div class="modal">
     <div class="ic">⛽</div>
-    <h3>Add a new station</h3>
-    <p>Give it a name and set defaults. You can invite the accountant next.</p>
+    <h3 data-i18n="stations.addCard.title">Add a new station</h3>
+    <p data-i18n="stations.modal.desc">Give it a name and set defaults. You can invite the accountant next.</p>
 
     <div class="field2">
-      <div><label>Station name</label><input type="text" placeholder="e.g. Station D · Tân Bình"/></div>
-      <div><label>Short code</label><input type="text" placeholder="STN-D"/></div>
+      <div><label data-i18n="stations.field.name">Station name</label><input type="text" placeholder="e.g. Station D · Tân Bình" data-i18n-placeholder="stations.field.namePlaceholder"/></div>
+      <div><label data-i18n="stations.field.shortCode">Short code</label><input type="text" placeholder="STN-D" data-i18n-placeholder="stations.field.shortCodePlaceholder"/></div>
     </div>
     <div class="field2">
-      <div><label>Address</label><input type="text" placeholder="Street, ward, city"/></div>
-      <div><label>Timezone</label><select><option>Asia/Ho_Chi_Minh (UTC+7)</option><option>UTC</option></select></div>
+      <div><label data-i18n="stations.field.address">Address</label><input type="text" placeholder="Street, ward, city" data-i18n-placeholder="stations.field.addressPlaceholder"/></div>
+      <div><label data-i18n="stations.field.timezone">Timezone</label><select><option data-i18n="stations.tz.hcm">Asia/Ho_Chi_Minh (UTC+7)</option><option data-i18n="stations.tz.utc">UTC</option></select></div>
     </div>
     <div class="field2">
-      <div><label>Currency</label><select><option>₫ VND</option><option>$ USD</option><option>€ EUR</option></select></div>
-      <div><label>Primary accountant</label><select><option>Invite later…</option><option>Anna Nguyễn</option><option>Bình Trần</option></select></div>
+      <div><label data-i18n="stations.field.currency">Currency</label><select><option data-i18n="stations.currency.vnd">₫ VND</option><option data-i18n="stations.currency.usd">$ USD</option><option data-i18n="stations.currency.eur">€ EUR</option></select></div>
+      <div><label data-i18n="stations.field.accountant">Primary accountant</label><select><option data-i18n="stations.accountant.inviteLater">Invite later…</option><option>Anna Nguyễn</option><option>Bình Trần</option></select></div>
     </div>
     <div style="margin-bottom:12px">
-      <label>Color</label>
+      <label data-i18n="stations.field.color">Color</label>
       <div class="colors">
         <div class="sw" style="background:#3455b3"></div>
         <div class="sw active" style="background:#1f6f4a"></div>
@@ -215,8 +215,8 @@
       </div>
     </div>
     <div class="actions">
-      <button class="ghost" onclick="document.getElementById('new-stn').style.display='none'">Cancel</button>
-      <button class="pri" onclick="document.getElementById('new-stn').style.display='none'">Create station</button>
+      <button class="ghost" onclick="document.getElementById('new-stn').style.display='none'" data-i18n="common.cancel">Cancel</button>
+      <button class="pri" onclick="document.getElementById('new-stn').style.display='none'" data-i18n="stations.createStation">Create station</button>
     </div>
   </div>
 </div>

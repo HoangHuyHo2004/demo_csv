@@ -20,141 +20,141 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Statistics <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.statistics">Statistics</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search metric, date, or category…
+        <span data-i18n="statistics.header.searchPlaceholder">Search metric, date, or category…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
-        <button class="cta">Export report <span class="plus">↓</span></button>
+        <button class="cta"><span data-i18n="statistics.header.exportReport">Export report</span> <span class="plus">↓</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Statistics</h1>
-        <p>Explore your data by day, month, custom range, or across years.</p>
+        <h1 data-i18n="shell.nav.statistics">Statistics</h1>
+        <p data-i18n="statistics.page.desc">Explore your data by day, month, custom range, or across years.</p>
       </div>
     </div>
 
     <!-- Range tabs -->
     <div class="range-tabs">
-      <button>Daily</button>
-      <button class="active">Monthly</button>
-      <button>Custom compare</button>
-      <button>YTD / Rolling</button>
-      <button>Yearly</button>
+      <button data-i18n="statistics.rangeTabs.daily">Daily</button>
+      <button class="active" data-i18n="statistics.rangeTabs.monthly">Monthly</button>
+      <button data-i18n="statistics.rangeTabs.customCompare">Custom compare</button>
+      <button data-i18n="statistics.rangeTabs.ytdRolling">YTD / Rolling</button>
+      <button data-i18n="statistics.rangeTabs.yearly">Yearly</button>
     </div>
 
     <!-- Controls: date picker + category chips + chart type -->
     <div class="controls">
-      <span class="lbl">Range</span>
+      <span class="lbl" data-i18n="statistics.controls.range">Range</span>
       <div class="picker">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        July 2026 ▾
+        <span data-i18n="statistics.controls.julyPicker">July 2026 ▾</span>
       </div>
-      <div class="picker">vs Jun 2026 (auto) ▾</div>
+      <div class="picker" data-i18n="statistics.controls.vsJunPicker">vs Jun 2026 (auto) ▾</div>
 
       <div class="divider"></div>
 
-      <span class="lbl">Categories</span>
-      <button class="chip sales active"><span class="dot"></span>Sales</button>
-      <button class="chip pur active"><span class="dot"></span>Purchases</button>
-      <button class="chip loss active"><span class="dot"></span>Losses</button>
-      <button class="chip inv"><span class="dot"></span>Inventory</button>
-      <button class="chip custom"><span class="dot"></span>Supplier Returns</button>
+      <span class="lbl" data-i18n="statistics.controls.categories">Categories</span>
+      <button class="chip sales active"><span class="dot"></span><span data-i18n="statistics.categories.sales">Sales</span></button>
+      <button class="chip pur active"><span class="dot"></span><span data-i18n="statistics.categories.purchases">Purchases</span></button>
+      <button class="chip loss active"><span class="dot"></span><span data-i18n="statistics.categories.losses">Losses</span></button>
+      <button class="chip inv"><span class="dot"></span><span data-i18n="statistics.categories.inventory">Inventory</span></button>
+      <button class="chip custom"><span class="dot"></span><span data-i18n="statistics.categories.supplierReturns">Supplier Returns</span></button>
 
       <div class="divider"></div>
 
-      <span class="lbl">Chart</span>
+      <span class="lbl" data-i18n="statistics.controls.chart">Chart</span>
       <div class="charttype">
-        <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg>Line</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 20V10M12 20V4M18 20v-7"/></svg>Bar</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="6" width="4" height="14"/><rect x="16" y="10" width="4" height="10"/></svg>Stacked</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="3" height="6"/><rect x="8" y="10" width="3" height="10"/><rect x="13" y="6" width="3" height="14"/><rect x="18" y="12" width="3" height="8"/></svg>Histogram</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/></svg>Heatmap</button>
-        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="17" r="1.5"/><circle cx="11" cy="12" r="1.5"/><circle cx="15" cy="14" r="1.5"/><circle cx="18" cy="8" r="1.5"/></svg>Scatter</button>
+        <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg><span data-i18n="statistics.chartType.line">Line</span></button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 20V10M12 20V4M18 20v-7"/></svg><span data-i18n="statistics.chartType.bar">Bar</span></button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="12" width="4" height="8"/><rect x="10" y="6" width="4" height="14"/><rect x="16" y="10" width="4" height="10"/></svg><span data-i18n="statistics.chartType.stacked">Stacked</span></button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="14" width="3" height="6"/><rect x="8" y="10" width="3" height="10"/><rect x="13" y="6" width="3" height="14"/><rect x="18" y="12" width="3" height="8"/></svg><span data-i18n="statistics.chartType.histogram">Histogram</span></button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="3" y="15" width="6" height="6"/><rect x="15" y="15" width="6" height="6"/></svg><span data-i18n="statistics.chartType.heatmap">Heatmap</span></button>
+        <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="17" r="1.5"/><circle cx="11" cy="12" r="1.5"/><circle cx="15" cy="14" r="1.5"/><circle cx="18" cy="8" r="1.5"/></svg><span data-i18n="statistics.chartType.scatter">Scatter</span></button>
       </div>
     </div>
 
     <!-- KPI tiles -->
     <div class="kpis">
       <div class="kpi" id="kpi-total-sales">
-        <div class="lbl">Total sales</div>
+        <div class="lbl" data-i18n="statistics.kpi.totalSales">Total sales</div>
         <div class="val" data-f="val">—</div>
-        <div class="foot"><span class="delta" data-f="delta">—</span> vs prior 30d</div>
+        <div class="foot"><span class="delta" data-f="delta">—</span> <span data-i18n="statistics.kpi.vsPrior30d">vs prior 30d</span></div>
         <svg class="spark" width="60" height="26" viewBox="0 0 60 26"><polyline data-f="spark" fill="none" stroke="#1f6f4a" stroke-width="1.6" points=""/></svg>
       </div>
       <div class="kpi" id="kpi-avg-day">
-        <div class="lbl">Avg / day</div>
+        <div class="lbl" data-i18n="statistics.kpi.avgPerDay">Avg / day</div>
         <div class="val" data-f="val">—</div>
-        <div class="foot"><span class="delta" data-f="delta">—</span> vs prior 30d</div>
+        <div class="foot"><span class="delta" data-f="delta">—</span> <span data-i18n="statistics.kpi.vsPrior30d">vs prior 30d</span></div>
         <svg class="spark" width="60" height="26"><polyline data-f="spark" fill="none" stroke="#3455b3" stroke-width="1.6" points=""/></svg>
       </div>
       <div class="kpi" id="kpi-total-purchases">
-        <div class="lbl">Total purchases</div>
+        <div class="lbl" data-i18n="statistics.kpi.totalPurchases">Total purchases</div>
         <div class="val" data-f="val">—</div>
-        <div class="foot"><span class="delta" data-f="delta">—</span> vs prior 30d</div>
+        <div class="foot"><span class="delta" data-f="delta">—</span> <span data-i18n="statistics.kpi.vsPrior30d">vs prior 30d</span></div>
         <svg class="spark" width="60" height="26"><polyline data-f="spark" fill="none" stroke="#3455b3" stroke-width="1.6" points=""/></svg>
       </div>
       <div class="kpi" id="kpi-losses">
-        <div class="lbl">Losses</div>
+        <div class="lbl" data-i18n="statistics.kpi.losses">Losses</div>
         <div class="val" data-f="val">—</div>
-        <div class="foot"><span class="delta" data-f="delta">—</span> vs prior 30d</div>
+        <div class="foot"><span class="delta" data-f="delta">—</span> <span data-i18n="statistics.kpi.vsPrior30d">vs prior 30d</span></div>
         <svg class="spark" width="60" height="26"><polyline data-f="spark" fill="none" stroke="#c94141" stroke-width="1.6" points=""/></svg>
       </div>
       <div class="kpi" id="kpi-inventory-avg">
-        <div class="lbl">Inventory (avg)</div>
+        <div class="lbl" data-i18n="statistics.kpi.inventoryAvg">Inventory (avg)</div>
         <div class="val" data-f="val">—</div>
-        <div class="foot"><span class="delta" data-f="delta">—</span> vs prior 30d</div>
+        <div class="foot"><span class="delta" data-f="delta">—</span> <span data-i18n="statistics.kpi.vsPrior30d">vs prior 30d</span></div>
         <svg class="spark" width="60" height="26"><polyline data-f="spark" fill="none" stroke="#a4680d" stroke-width="1.6" points=""/></svg>
       </div>
     </div>
 
     <!-- Widget toggle -->
     <div class="controls" style="justify-content:flex-start">
-      <span class="lbl">Show sections</span>
+      <span class="lbl" data-i18n="statistics.widgetToggle.showSections">Show sections</span>
       <div class="widget-toggle">
-        <button class="chip on">KPI tiles <span class="x">×</span></button>
-        <button class="chip on">Trend chart <span class="x">×</span></button>
-        <button class="chip on">Stacked composition <span class="x">×</span></button>
-        <button class="chip on">Heatmap calendar <span class="x">×</span></button>
-        <button class="chip on">Correlation <span class="x">×</span></button>
-        <button class="chip on">Δ table <span class="x">×</span></button>
-        <button class="chip on">Top / bottom days <span class="x">×</span></button>
-        <button class="chip on">Raw data <span class="x">×</span></button>
-        <button class="chip">＋ Add widget</button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.kpiTiles">KPI tiles</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.trendChart">Trend chart</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.stackedComposition">Stacked composition</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.heatmapCalendar">Heatmap calendar</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.correlation">Correlation</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.deltaTable">Δ table</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.topBottomDays">Top / bottom days</span> <span class="x">×</span></button>
+        <button class="chip on"><span data-i18n="statistics.widgetToggle.rawData">Raw data</span> <span class="x">×</span></button>
+        <button class="chip" data-i18n="statistics.widgetToggle.addWidget">＋ Add widget</button>
       </div>
     </div>
 
     <!-- Station leaderboard + comparison -->
     <div class="card" style="margin:0 4px 16px;padding:18px">
-      <h3 style="margin:0 0 4px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px">Station leaderboard — last 30 days <span id="leaderboard-scope-label" style="margin-left:auto;font-size:12px;font-weight:500;color:var(--muted)">Scope: All stations</span></h3>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Combined totals + per-station breakdown. Toggle the header scope to filter the rest of the page.</div>
+      <h3 style="margin:0 0 4px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px"><span data-i18n="statistics.leaderboard.title">Station leaderboard — last 30 days</span> <span id="leaderboard-scope-label" style="margin-left:auto;font-size:12px;font-weight:500;color:var(--muted)" data-i18n="statistics.leaderboard.scopeAllDefault">Scope: All stations</span></h3>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px" data-i18n="statistics.leaderboard.desc">Combined totals + per-station breakdown. Toggle the header scope to filter the rest of the page.</div>
       <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:12px">
         <thead>
           <tr style="color:var(--muted);text-align:left;font-size:11px">
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Rank</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Station</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Revenue</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Sales vol</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Losses</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Margin</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right">Coverage %</th>
-            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)">Trend</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)" data-i18n="statistics.leaderboard.colRank">Rank</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)" data-i18n="statistics.leaderboard.colStation">Station</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right" data-i18n="statistics.leaderboard.colRevenue">Revenue</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right" data-i18n="statistics.leaderboard.colSalesVol">Sales vol</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right" data-i18n="statistics.leaderboard.colLosses">Losses</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right" data-i18n="statistics.leaderboard.colMargin">Margin</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line);text-align:right" data-i18n="statistics.leaderboard.colCoverage">Coverage %</th>
+            <th style="padding:10px;background:#f6f8f4;border-bottom:1px solid var(--line)" data-i18n="statistics.leaderboard.colTrend">Trend</th>
           </tr>
         </thead>
         <tbody id="leaderboard-tbody">
-          <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr>
+          <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px" data-i18n="common.loading">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -162,15 +162,15 @@
     <!-- Trend chart + stacked -->
     <div class="row a">
       <div class="card">
-        <h3>Metric trend <span class="kebab">•••</span></h3>
-        <div class="sub">Daily values for the last 30 days.</div>
+        <h3><span data-i18n="statistics.trend.title">Metric trend</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.trend.sub">Daily values for the last 30 days.</div>
         <div class="legend" id="trend-legend" style="margin-bottom:8px"></div>
         <svg id="trend-svg" viewBox="0 0 700 260" width="100%" height="260"></svg>
       </div>
 
       <div class="card">
-        <h3>Stacked composition <span class="kebab">•••</span></h3>
-        <div class="sub">Weekly totals, last 30 days.</div>
+        <h3><span data-i18n="statistics.stacked.title">Stacked composition</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.stacked.sub">Weekly totals, last 30 days.</div>
         <div class="legend" id="stacked-legend" style="margin-bottom:8px"></div>
         <svg id="stacked-svg" viewBox="0 0 260 240" width="100%" height="240"></svg>
       </div>
@@ -179,11 +179,11 @@
     <!-- Heatmap + Correlation -->
     <div class="row b">
       <div class="card">
-        <h3>Calendar heatmap — <span id="heat-title">Sales</span> <span class="kebab">•••</span></h3>
-        <div class="sub">Each cell = one day, last 30 days. Darker = higher.</div>
+        <h3><span data-i18n="statistics.heatmap.titlePrefix">Calendar heatmap —</span> <span id="heat-title">Sales</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.heatmap.sub">Each cell = one day, last 30 days. Darker = higher.</div>
         <div class="heat" id="heat"></div>
         <div class="heat-legend">
-          Less
+          <span data-i18n="statistics.heatmap.less">Less</span>
           <div class="scale">
             <div class="sw" style="background:#eef1ec"></div>
             <div class="sw" style="background:#d0e6b8"></div>
@@ -192,13 +192,13 @@
             <div class="sw" style="background:#4e8f1f"></div>
             <div class="sw" style="background:#1f6f4a"></div>
           </div>
-          More
+          <span data-i18n="statistics.heatmap.more">More</span>
         </div>
       </div>
 
       <div class="card">
-        <h3 id="correlation-title">Correlation <span class="kebab">•••</span></h3>
-        <div class="sub">Each dot = one day, last 30 days. Trendline shows relationship.</div>
+        <h3 id="correlation-title"><span data-i18n="statistics.correlation.title">Correlation</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.correlation.sub">Each dot = one day, last 30 days. Trendline shows relationship.</div>
         <svg id="correlation-svg" viewBox="0 0 400 240" width="100%" height="240"></svg>
         <div style="text-align:right;font-size:11px;font-weight:700;color:#0f2a1f" id="correlation-r"></div>
       </div>
@@ -207,28 +207,28 @@
     <!-- Delta table + ranking -->
     <div class="row b">
       <div class="card">
-        <h3>Period-over-period Δ <span class="kebab">•••</span></h3>
-        <div class="sub">Last 30 days vs prior 30 days.</div>
+        <h3><span data-i18n="statistics.delta.title">Period-over-period Δ</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.delta.sub">Last 30 days vs prior 30 days.</div>
         <table class="data">
           <thead>
-            <tr><th>Metric</th><th>Category</th><th class="num">Current</th><th class="num">Previous</th><th class="num">Δ</th><th class="num">Δ %</th><th>Trend</th></tr>
+            <tr><th data-i18n="statistics.delta.colMetric">Metric</th><th data-i18n="statistics.delta.colCategory">Category</th><th class="num" data-i18n="statistics.delta.colCurrent">Current</th><th class="num" data-i18n="statistics.delta.colPrevious">Previous</th><th class="num">Δ</th><th class="num" data-i18n="statistics.delta.colDeltaPct">Δ %</th><th data-i18n="statistics.delta.colTrend">Trend</th></tr>
           </thead>
           <tbody id="delta-tbody">
-            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr>
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px" data-i18n="common.loading">Loading…</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="card">
-        <h3>Top / bottom days <span class="kebab">•••</span></h3>
-        <div class="sub">Best day & worst-loss day in the last 30 days.</div>
+        <h3><span data-i18n="statistics.topBottom.title">Top / bottom days</span> <span class="kebab">•••</span></h3>
+        <div class="sub" data-i18n="statistics.topBottom.sub">Best day & worst-loss day in the last 30 days.</div>
         <div class="rank">
           <div class="col">
-            <h4 id="top-days-heading">Top 5 days</h4>
+            <h4 id="top-days-heading" data-i18n="statistics.topBottom.topDefault">Top 5 days</h4>
             <div id="top-days-list"></div>
           </div>
           <div class="col">
-            <h4>Bottom 5 loss days</h4>
+            <h4 data-i18n="statistics.topBottom.bottomLossDays">Bottom 5 loss days</h4>
             <div id="bottom-days-list"></div>
           </div>
         </div>
@@ -237,14 +237,14 @@
 
     <!-- Raw data table -->
     <div class="card" style="margin:0 4px 24px">
-      <h3>Raw daily data <span class="kebab">•••</span></h3>
-      <div class="sub">Last 30 days, most recent first.</div>
+      <h3><span data-i18n="statistics.raw.title">Raw daily data</span> <span class="kebab">•••</span></h3>
+      <div class="sub" data-i18n="statistics.raw.sub">Last 30 days, most recent first.</div>
       <table class="data">
         <thead>
-          <tr><th>Date</th><th>Weekday</th><th class="num">Sales</th><th class="num">Revenue</th><th class="num">Purchases</th><th class="num">Losses</th><th class="num">Inventory</th></tr>
+          <tr><th data-i18n="statistics.raw.colDate">Date</th><th data-i18n="statistics.raw.colWeekday">Weekday</th><th class="num" data-i18n="statistics.categories.sales">Sales</th><th class="num" data-i18n="index.legend.revenue">Revenue</th><th class="num" data-i18n="index.legend.purchases">Purchases</th><th class="num" data-i18n="statistics.categories.losses">Losses</th><th class="num" data-i18n="statistics.categories.inventory">Inventory</th></tr>
         </thead>
         <tbody id="raw-tbody">
-          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr>
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px" data-i18n="common.loading">Loading…</td></tr>
         </tbody>
       </table>
     </div>

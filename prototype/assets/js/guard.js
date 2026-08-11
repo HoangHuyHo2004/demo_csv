@@ -4,12 +4,21 @@
 // exists by the time the (async) session check resolves.
 import { requireSession, signOut } from './auth.js';
 import { mountScopeSwitcher } from './scope-ui.js';
+import * as i18n from './i18n.js';
 
 (async function () {
   const result = await requireSession();
   if (!result) return; // requireSession() already started a redirect to login.html
 
   const { session, profile } = result;
+
+  // Applied before anything else touches the DOM: the shell/scope
+  // switcher mount their own markup below, and both include data-i18n
+  // elements that need the right language from their very first paint --
+  // otherwise a user whose saved language is Vietnamese would see one
+  // frame of untranslated (or blank, for shell.js's data-i18n spans)
+  // English first.
+  i18n.init(session.user.id);
 
   if (window.DemoCSVShell) {
     window.DemoCSVShell.setProfile(

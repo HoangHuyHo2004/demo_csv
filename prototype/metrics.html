@@ -20,29 +20,29 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Metrics <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.metrics">Metrics</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search metric name, source column, or category…
+        <span data-i18n="metrics.searchPlaceholder">Search metric name, source column, or category…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
-        <button class="cta">New derived metric <span class="plus">+</span></button>
+        <button class="cta"><span data-i18n="metrics.newDerivedMetric">New derived metric</span> <span class="plus">+</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Metrics</h1>
-        <p>Every tracked metric, with data-health warnings, thresholds, and formatting.</p>
+        <h1 data-i18n="shell.nav.metrics">Metrics</h1>
+        <p data-i18n="metrics.pageDesc">Every tracked metric, with data-health warnings, thresholds, and formatting.</p>
       </div>
     </div>
 
@@ -51,61 +51,61 @@
       <div class="head">
         <div class="badge-h">!</div>
         <div>
-          <h3>Data health · 5 issues need attention</h3>
-          <p>Missing days, gaps, unexpected nulls, or type mismatches across recent uploads.</p>
+          <h3 data-i18n="metrics.health.title">Data health · 5 issues need attention</h3>
+          <p data-i18n="metrics.health.desc">Missing days, gaps, unexpected nulls, or type mismatches across recent uploads.</p>
         </div>
         <div class="count">5</div>
       </div>
       <div class="issues">
         <div class="issue">
           <div class="who">inventory_on_hand</div>
-          <div class="why">3 missing days in July: 07, 14, 21 (weekly gap pattern).</div>
-          <div class="foot"><span class="sev crit">critical</span><button>Fix ▸</button></div>
+          <div class="why" data-i18n="metrics.health.why1">3 missing days in July: 07, 14, 21 (weekly gap pattern).</div>
+          <div class="foot"><span class="sev crit" data-i18n="metrics.sev.critical">critical</span><button data-i18n="metrics.fix">Fix ▸</button></div>
         </div>
         <div class="issue">
           <div class="who">losses</div>
-          <div class="why">7 rows uploaded as text on 2026-07-25 — expected numeric.</div>
-          <div class="foot"><span class="sev warn">warning</span><button>Fix ▸</button></div>
+          <div class="why" data-i18n="metrics.health.why2">7 rows uploaded as text on 2026-07-25 — expected numeric.</div>
+          <div class="foot"><span class="sev warn" data-i18n="metrics.sev.warning">warning</span><button data-i18n="metrics.fix">Fix ▸</button></div>
         </div>
         <div class="issue">
           <div class="who">supplier_returns</div>
-          <div class="why">No upload for 5 consecutive days (last: 2026-07-24).</div>
-          <div class="foot"><span class="sev warn">warning</span><button>Fix ▸</button></div>
+          <div class="why" data-i18n="metrics.health.why3">No upload for 5 consecutive days (last: 2026-07-24).</div>
+          <div class="foot"><span class="sev warn" data-i18n="metrics.sev.warning">warning</span><button data-i18n="metrics.fix">Fix ▸</button></div>
         </div>
         <div class="issue">
           <div class="who">revenue</div>
-          <div class="why">Unit changed mid-month: values shifted 100× on 2026-07-15.</div>
-          <div class="foot"><span class="sev crit">critical</span><button>Fix ▸</button></div>
+          <div class="why" data-i18n="metrics.health.why4">Unit changed mid-month: values shifted 100× on 2026-07-15.</div>
+          <div class="foot"><span class="sev crit" data-i18n="metrics.sev.critical">critical</span><button data-i18n="metrics.fix">Fix ▸</button></div>
         </div>
         <div class="issue">
           <div class="who">cashier_count</div>
-          <div class="why">Column disappeared in last 4 uploads — retire this metric?</div>
-          <div class="foot"><span class="sev info">info</span><button>Retire ▸</button></div>
+          <div class="why" data-i18n="metrics.health.why5">Column disappeared in last 4 uploads — retire this metric?</div>
+          <div class="foot"><span class="sev info" data-i18n="metrics.sev.info">info</span><button data-i18n="metrics.retireIssue">Retire ▸</button></div>
         </div>
       </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="active">All metrics <span style="opacity:.6;margin-left:6px">14</span></button>
-      <button>By category</button>
-      <button>Derived <span style="opacity:.6;margin-left:6px">2</span></button>
-      <button>Retired <span style="opacity:.6;margin-left:6px">3</span></button>
+      <button class="active"><span data-i18n="metrics.tab.all">All metrics</span> <span style="opacity:.6;margin-left:6px">14</span></button>
+      <button data-i18n="metrics.tab.byCategory">By category</button>
+      <button><span data-i18n="metrics.tab.derived">Derived</span> <span style="opacity:.6;margin-left:6px">2</span></button>
+      <button><span data-i18n="metrics.tab.retired">Retired</span> <span style="opacity:.6;margin-left:6px">3</span></button>
     </div>
 
     <!-- Toolbar -->
     <div class="toolbar">
       <div class="search-s">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search metrics…
+        <span data-i18n="metrics.searchMetrics">Search metrics…</span>
       </div>
-      <select><option>All categories</option><option>Sales</option><option>Purchases</option><option>Losses</option><option>Inventory</option></select>
-      <select><option>All statuses</option><option>OK</option><option>Warning</option><option>Critical</option><option>Muted</option></select>
-      <select><option>All health</option><option>Healthy</option><option>Has gaps</option><option>Broken</option></select>
-      <button class="btn ghost">⇅ Sort</button>
-      <button class="btn ghost">Merge…</button>
-      <button class="btn ghost">Bulk mute</button>
-      <button class="btn primary">＋ Add metric</button>
+      <select><option data-i18n="metrics.category.all">All categories</option><option data-i18n="metrics.category.sales">Sales</option><option data-i18n="metrics.category.purchases">Purchases</option><option data-i18n="metrics.category.losses">Losses</option><option data-i18n="metrics.category.inventory">Inventory</option></select>
+      <select><option data-i18n="metrics.status.all">All statuses</option><option data-i18n="metrics.status.ok">OK</option><option data-i18n="metrics.status.warning">Warning</option><option data-i18n="metrics.status.critical">Critical</option><option data-i18n="metrics.status.muted">Muted</option></select>
+      <select><option data-i18n="metrics.healthState.all">All health</option><option data-i18n="metrics.healthState.healthy">Healthy</option><option data-i18n="metrics.healthState.hasGaps">Has gaps</option><option data-i18n="metrics.healthState.broken">Broken</option></select>
+      <button class="btn ghost" data-i18n="metrics.sort">⇅ Sort</button>
+      <button class="btn ghost" data-i18n="metrics.merge">Merge…</button>
+      <button class="btn ghost" data-i18n="metrics.bulkMute">Bulk mute</button>
+      <button class="btn primary" data-i18n="metrics.addMetric">＋ Add metric</button>
     </div>
 
     <!-- Registry + drawer -->
@@ -113,109 +113,109 @@
 
       <!-- Registry table -->
       <div class="card">
-        <div class="card-head"><h3>Metric registry</h3><span class="kebab">•••</span></div>
-        <div class="sub">14 active metrics. Click a row to configure. Drag columns to reorder.</div>
+        <div class="card-head"><h3 data-i18n="metrics.registry.title">Metric registry</h3><span class="kebab">•••</span></div>
+        <div class="sub" data-i18n="metrics.registry.sub">14 active metrics. Click a row to configure. Drag columns to reorder.</div>
         <table class="reg">
           <thead>
             <tr>
               <th style="width:24px"></th>
-              <th>Name <span class="arr">▾</span></th>
-              <th>Category</th>
-              <th>Unit</th>
-              <th class="num">Last</th>
-              <th class="num">Δ %</th>
-              <th>Threshold</th>
-              <th>Health</th>
+              <th><span data-i18n="metrics.th.name">Name</span> <span class="arr">▾</span></th>
+              <th data-i18n="metrics.th.category">Category</th>
+              <th data-i18n="metrics.th.unit">Unit</th>
+              <th class="num" data-i18n="metrics.th.last">Last</th>
+              <th class="num" data-i18n="metrics.th.deltaPercent">Δ %</th>
+              <th data-i18n="metrics.th.threshold">Threshold</th>
+              <th data-i18n="metrics.th.health">Health</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <tr class="sel">
               <td><span class="star on">★</span></td>
-              <td><div class="m-name">sales_volume</div><div class="m-src">src: sales_volume</div></td>
-              <td><span class="pill sales">Sales</span></td>
-              <td>count</td>
+              <td><div class="m-name">sales_volume</div><div class="m-src"><span data-i18n="metrics.src">src:</span> sales_volume</div></td>
+              <td><span class="pill sales" data-i18n="metrics.category.sales">Sales</span></td>
+              <td data-i18n="metrics.unit.count">count</td>
               <td class="num">82</td>
               <td class="num"><span class="delta up">+12%</span></td>
-              <td><span class="status st ok">OK</span></td>
-              <td><span class="health-dot h-ok"><span class="d"></span>Healthy</span></td>
+              <td><span class="status st ok" data-i18n="metrics.status.ok">OK</span></td>
+              <td><span class="health-dot h-ok"><span class="d"></span><span data-i18n="metrics.healthState.healthy">Healthy</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star on">★</span></td>
-              <td><div class="m-name">revenue</div><div class="m-src">src: revenue</div></td>
-              <td><span class="pill sales">Sales</span></td>
-              <td>$ USD</td>
+              <td><div class="m-name">revenue</div><div class="m-src"><span data-i18n="metrics.src">src:</span> revenue</div></td>
+              <td><span class="pill sales" data-i18n="metrics.category.sales">Sales</span></td>
+              <td data-i18n="metrics.unit.usd">$ USD</td>
               <td class="num">$6,880</td>
               <td class="num"><span class="delta up">+12%</span></td>
-              <td><span class="status st warn">Anomaly</span></td>
-              <td><span class="health-dot h-bad"><span class="d"></span>Unit shift</span></td>
+              <td><span class="status st warn" data-i18n="metrics.statusText.anomaly">Anomaly</span></td>
+              <td><span class="health-dot h-bad"><span class="d"></span><span data-i18n="metrics.healthText.unitShift">Unit shift</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star">★</span></td>
-              <td><div class="m-name">purchases</div><div class="m-src">src: purchase_volume</div></td>
-              <td><span class="pill pur">Purchases</span></td>
-              <td>count</td>
+              <td><div class="m-name">purchases</div><div class="m-src"><span data-i18n="metrics.src">src:</span> purchase_volume</div></td>
+              <td><span class="pill pur" data-i18n="metrics.category.purchases">Purchases</span></td>
+              <td data-i18n="metrics.unit.count">count</td>
               <td class="num">38</td>
               <td class="num"><span class="delta down">−3%</span></td>
-              <td><span class="status st ok">OK</span></td>
-              <td><span class="health-dot h-ok"><span class="d"></span>Healthy</span></td>
+              <td><span class="status st ok" data-i18n="metrics.status.ok">OK</span></td>
+              <td><span class="health-dot h-ok"><span class="d"></span><span data-i18n="metrics.healthState.healthy">Healthy</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star on">★</span></td>
-              <td><div class="m-name">losses</div><div class="m-src">src: losses</div></td>
-              <td><span class="pill loss">Losses</span></td>
-              <td>$ USD</td>
+              <td><div class="m-name">losses</div><div class="m-src"><span data-i18n="metrics.src">src:</span> losses</div></td>
+              <td><span class="pill loss" data-i18n="metrics.category.losses">Losses</span></td>
+              <td data-i18n="metrics.unit.usd">$ USD</td>
               <td class="num">$27</td>
               <td class="num"><span class="delta down">−24%</span></td>
-              <td><span class="status st crit">Crit &gt;$500</span></td>
-              <td><span class="health-dot h-gap"><span class="d"></span>Type mix</span></td>
+              <td><span class="status st crit" data-i18n="metrics.statusText.critOver500">Crit &gt;$500</span></td>
+              <td><span class="health-dot h-gap"><span class="d"></span><span data-i18n="metrics.healthText.typeMix">Type mix</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star on">★</span></td>
-              <td><div class="m-name">inventory_on_hand</div><div class="m-src">src: inventory_on_hand</div></td>
-              <td><span class="pill inv">Inventory</span></td>
-              <td>count</td>
+              <td><div class="m-name">inventory_on_hand</div><div class="m-src"><span data-i18n="metrics.src">src:</span> inventory_on_hand</div></td>
+              <td><span class="pill inv" data-i18n="metrics.category.inventory">Inventory</span></td>
+              <td data-i18n="metrics.unit.count">count</td>
               <td class="num">298</td>
               <td class="num"><span class="delta up">+8%</span></td>
-              <td><span class="status st warn">Floor 100</span></td>
-              <td><span class="health-dot h-gap"><span class="d"></span>3 missing days</span></td>
+              <td><span class="status st warn" data-i18n="metrics.statusText.floor100">Floor 100</span></td>
+              <td><span class="health-dot h-gap"><span class="d"></span><span data-i18n="metrics.healthText.missingDays3">3 missing days</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star">★</span></td>
-              <td><div class="m-name">gross_margin</div><div class="m-src">derived</div></td>
-              <td><span class="pill derived">Derived</span></td>
-              <td>%</td>
+              <td><div class="m-name">gross_margin</div><div class="m-src" data-i18n="metrics.derivedTag">derived</div></td>
+              <td><span class="pill derived" data-i18n="metrics.category.derived">Derived</span></td>
+              <td data-i18n="metrics.unit.percent">%</td>
               <td class="num">42.3%</td>
               <td class="num"><span class="delta up">+2%</span></td>
-              <td><span class="status st ok">OK</span></td>
-              <td><span class="health-dot h-ok"><span class="d"></span>Healthy</span></td>
+              <td><span class="status st ok" data-i18n="metrics.status.ok">OK</span></td>
+              <td><span class="health-dot h-ok"><span class="d"></span><span data-i18n="metrics.healthState.healthy">Healthy</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star">★</span></td>
-              <td><div class="m-name">supplier_returns</div><div class="m-src">src: supplier_returns</div></td>
-              <td><span class="pill pur">Purchases</span></td>
-              <td>count</td>
+              <td><div class="m-name">supplier_returns</div><div class="m-src"><span data-i18n="metrics.src">src:</span> supplier_returns</div></td>
+              <td><span class="pill pur" data-i18n="metrics.category.purchases">Purchases</span></td>
+              <td data-i18n="metrics.unit.count">count</td>
               <td class="num">—</td>
               <td class="num">—</td>
-              <td><span class="status st muted">Muted</span></td>
-              <td><span class="health-dot h-gap"><span class="d"></span>5-day gap</span></td>
+              <td><span class="status st muted" data-i18n="metrics.status.muted">Muted</span></td>
+              <td><span class="health-dot h-gap"><span class="d"></span><span data-i18n="metrics.healthText.gap5day">5-day gap</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button>⋮</button></div></td>
             </tr>
             <tr>
               <td><span class="star">★</span></td>
-              <td><div class="m-name">cashier_count</div><div class="m-src">src: cashier_count</div></td>
-              <td><span class="pill sales">Sales</span></td>
-              <td>count</td>
+              <td><div class="m-name">cashier_count</div><div class="m-src"><span data-i18n="metrics.src">src:</span> cashier_count</div></td>
+              <td><span class="pill sales" data-i18n="metrics.category.sales">Sales</span></td>
+              <td data-i18n="metrics.unit.count">count</td>
               <td class="num">4</td>
               <td class="num">—</td>
-              <td><span class="status st muted">Muted</span></td>
-              <td><span class="health-dot h-bad"><span class="d"></span>Column dropped</span></td>
+              <td><span class="status st muted" data-i18n="metrics.status.muted">Muted</span></td>
+              <td><span class="health-dot h-bad"><span class="d"></span><span data-i18n="metrics.healthText.columnDropped">Column dropped</span></span></td>
               <td><div class="actions-cell"><button>✎</button><button class="danger">🗑</button></div></td>
             </tr>
           </tbody>
@@ -225,20 +225,20 @@
       <!-- Drawer / detail -->
       <div class="card drawer">
         <div class="card-head">
-          <h3>Configure metric</h3>
+          <h3 data-i18n="metrics.drawer.title">Configure metric</h3>
           <span class="close">✕</span>
         </div>
 
         <div class="name-row">
           <input type="text" value="sales_volume" />
-          <button class="btn ghost">Merge…</button>
-          <button class="btn ghost">Retire</button>
+          <button class="btn ghost" data-i18n="metrics.merge">Merge…</button>
+          <button class="btn ghost" data-i18n="metrics.retire">Retire</button>
         </div>
         <div class="subline">
-          <span>Source column: <code>sales_volume</code></span>
-          <span>First seen: 2026-03-04</span>
-          <span>128 uploads</span>
-          <span>Category: <span class="pill sales">Sales</span></span>
+          <span><span data-i18n="metrics.sourceColumn">Source column:</span> <code>sales_volume</code></span>
+          <span><span data-i18n="metrics.firstSeen">First seen:</span> 2026-03-04</span>
+          <span>128 <span data-i18n="metrics.uploads">uploads</span></span>
+          <span><span data-i18n="metrics.categoryLabel">Category:</span> <span class="pill sales" data-i18n="metrics.category.sales">Sales</span></span>
         </div>
 
         <div class="chart-strip">
@@ -250,80 +250,80 @@
 
         <div class="kvgrid">
           <div class="kv">
-            <label>Unit</label>
-            <select><option>count</option><option>$ USD</option><option>%</option><option>kg</option><option>L</option></select>
+            <label data-i18n="metrics.kv.unit">Unit</label>
+            <select><option data-i18n="metrics.unit.count">count</option><option data-i18n="metrics.unit.usd">$ USD</option><option data-i18n="metrics.unit.percent">%</option><option data-i18n="metrics.unit.kg">kg</option><option data-i18n="metrics.unit.l">L</option></select>
           </div>
           <div class="kv">
-            <label>Decimals</label>
+            <label data-i18n="metrics.kv.decimals">Decimals</label>
             <select><option>0</option><option>1</option><option>2</option><option>3</option></select>
           </div>
           <div class="kv">
-            <label>Thousand sep</label>
-            <select><option>,</option><option>.</option><option>space</option><option>none</option></select>
+            <label data-i18n="metrics.kv.thousandSep">Thousand sep</label>
+            <select><option>,</option><option>.</option><option data-i18n="metrics.thousandSep.space">space</option><option data-i18n="metrics.thousandSep.none">none</option></select>
           </div>
           <div class="kv">
-            <label>Pin to Overview</label>
-            <select><option>Yes — show KPI card</option><option>No</option></select>
+            <label data-i18n="metrics.kv.pinToOverview">Pin to Overview</label>
+            <select><option data-i18n="metrics.kv.pinYes">Yes — show KPI card</option><option data-i18n="metrics.kv.pinNo">No</option></select>
           </div>
         </div>
 
         <!-- Thresholds -->
         <div class="section">
-          <h4>Alert rules · per station</h4>
+          <h4 data-i18n="metrics.alertRules.title">Alert rules · per station</h4>
           <div style="display:inline-flex;background:#f6f8f4;border-radius:10px;padding:3px;gap:2px;margin-bottom:10px">
             <button style="padding:6px 12px;border-radius:8px;background:#fff;color:var(--ink);font-size:11px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.06);display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#3455b3;display:inline-block"></span>Station A</button>
             <button style="padding:6px 12px;border-radius:8px;color:var(--ink-2);font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#1f6f4a;display:inline-block"></span>Station B</button>
-            <button style="padding:6px 12px;border-radius:8px;color:var(--muted);font-size:11px;font-weight:700">Apply to all</button>
+            <button style="padding:6px 12px;border-radius:8px;color:var(--muted);font-size:11px;font-weight:700" data-i18n="metrics.applyToAll">Apply to all</button>
           </div>
 
           <div class="rule">
             <label class="toggle"><input type="checkbox" checked><span></span></label>
-            <div class="txt">Day-over-day % change<small>Alert when today's value differs from yesterday's by more than…</small></div>
+            <div class="txt"><span data-i18n="metrics.rule.dod.title">Day-over-day % change</span><small data-i18n="metrics.rule.dod.hint">Alert when today's value differs from yesterday's by more than…</small></div>
             <div><input type="number" value="20"> %</div>
-            <div class="sev-select"><button class="info">Info</button><button class="warn active">Warn</button><button class="crit">Crit</button></div>
+            <div class="sev-select"><button class="info" data-i18n="metrics.sevShort.info">Info</button><button class="warn active" data-i18n="metrics.sevShort.warn">Warn</button><button class="crit" data-i18n="metrics.sevShort.crit">Crit</button></div>
           </div>
 
           <div class="rule">
             <label class="toggle"><input type="checkbox"><span></span></label>
-            <div class="txt">Week-over-week % change<small>Compare current 7-day total vs previous 7-day total.</small></div>
+            <div class="txt"><span data-i18n="metrics.rule.wow.title">Week-over-week % change</span><small data-i18n="metrics.rule.wow.hint">Compare current 7-day total vs previous 7-day total.</small></div>
             <div><input type="number" value="15"> %</div>
-            <div class="sev-select"><button class="info active">Info</button><button class="warn">Warn</button><button class="crit">Crit</button></div>
+            <div class="sev-select"><button class="info active" data-i18n="metrics.sevShort.info">Info</button><button class="warn" data-i18n="metrics.sevShort.warn">Warn</button><button class="crit" data-i18n="metrics.sevShort.crit">Crit</button></div>
           </div>
 
           <div class="rule">
             <label class="toggle"><input type="checkbox" checked><span></span></label>
-            <div class="txt">Absolute floor / ceiling<small>Fire when value crosses a fixed threshold.</small></div>
-            <div><select><option>Floor</option><option>Ceiling</option></select> <input type="number" value="30"></div>
-            <div class="sev-select"><button class="info">Info</button><button class="warn">Warn</button><button class="crit active">Crit</button></div>
+            <div class="txt"><span data-i18n="metrics.rule.floor.title">Absolute floor / ceiling</span><small data-i18n="metrics.rule.floor.hint">Fire when value crosses a fixed threshold.</small></div>
+            <div><select><option data-i18n="metrics.floor">Floor</option><option data-i18n="metrics.ceiling">Ceiling</option></select> <input type="number" value="30"></div>
+            <div class="sev-select"><button class="info" data-i18n="metrics.sevShort.info">Info</button><button class="warn" data-i18n="metrics.sevShort.warn">Warn</button><button class="crit active" data-i18n="metrics.sevShort.crit">Crit</button></div>
           </div>
 
           <div class="rule">
             <label class="toggle"><input type="checkbox"><span></span></label>
-            <div class="txt">Rolling stddev anomaly (Z-score)<small>Flag values &gt; N σ from 30-day rolling mean.</small></div>
+            <div class="txt"><span data-i18n="metrics.rule.zscore.title">Rolling stddev anomaly (Z-score)</span><small data-i18n="metrics.rule.zscore.hint">Flag values &gt; N σ from 30-day rolling mean.</small></div>
             <div>σ &gt; <input type="number" value="2.5" step="0.1"></div>
-            <div class="sev-select"><button class="info">Info</button><button class="warn active">Warn</button><button class="crit">Crit</button></div>
+            <div class="sev-select"><button class="info" data-i18n="metrics.sevShort.info">Info</button><button class="warn active" data-i18n="metrics.sevShort.warn">Warn</button><button class="crit" data-i18n="metrics.sevShort.crit">Crit</button></div>
           </div>
 
           <div class="rule" style="border-bottom:0">
             <label class="toggle"><input type="checkbox"><span></span></label>
-            <div class="txt">Mute all alerts<small>Silence this metric everywhere — stays in registry, no notifications.</small></div>
+            <div class="txt"><span data-i18n="metrics.rule.mute.title">Mute all alerts</span><small data-i18n="metrics.rule.mute.hint">Silence this metric everywhere — stays in registry, no notifications.</small></div>
             <div></div>
             <div></div>
           </div>
         </div>
 
         <div class="drawer-actions">
-          <button class="btn ghost">Cancel</button>
-          <button class="btn danger">Retire metric</button>
-          <button class="btn primary">Save changes</button>
+          <button class="btn ghost" data-i18n="common.cancel">Cancel</button>
+          <button class="btn danger" data-i18n="metrics.retireMetric">Retire metric</button>
+          <button class="btn primary" data-i18n="metrics.saveChanges">Save changes</button>
         </div>
       </div>
     </div>
 
     <!-- Derived metric builder -->
     <div class="card derived">
-      <div class="card-head"><h3>Custom / derived metrics</h3><span class="kebab">•••</span></div>
-      <div class="sub">Build metrics as formulas of existing ones. Recomputed on every upload.</div>
+      <div class="card-head"><h3 data-i18n="metrics.derived.title">Custom / derived metrics</h3><span class="kebab">•••</span></div>
+      <div class="sub" data-i18n="metrics.derived.sub">Build metrics as formulas of existing ones. Recomputed on every upload.</div>
 
       <div class="formula">
         <span class="tok">gross_margin</span>
@@ -340,10 +340,10 @@
       </div>
 
       <div class="row">
-        <input type="text" placeholder="Metric name (e.g. inventory_turns)" />
-        <select><option>Unit: %</option><option>Unit: $</option><option>Unit: count</option></select>
-        <select><option>Category: Derived</option><option>Category: Sales</option><option>Category: Custom…</option></select>
-        <button class="btn primary">＋ Add</button>
+        <input type="text" placeholder="Metric name (e.g. inventory_turns)" data-i18n-placeholder="metrics.derived.namePlaceholder" />
+        <select><option data-i18n="metrics.derived.unitPercent">Unit: %</option><option data-i18n="metrics.derived.unitDollar">Unit: $</option><option data-i18n="metrics.derived.unitCount">Unit: count</option></select>
+        <select><option data-i18n="metrics.derived.catDerived">Category: Derived</option><option data-i18n="metrics.derived.catSales">Category: Sales</option><option data-i18n="metrics.derived.catCustom">Category: Custom…</option></select>
+        <button class="btn primary" data-i18n="metrics.add">＋ Add</button>
       </div>
     </div>
 

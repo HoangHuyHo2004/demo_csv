@@ -20,29 +20,29 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Alerts <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.alerts">Alerts</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search alerts by metric, rule, note…
+        <span data-i18n="alerts.searchPlaceholder">Search alerts by metric, rule, note…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
-        <button class="cta">Notification settings <span class="plus">⚙</span></button>
+        <button class="cta"><span data-i18n="alerts.notifSettingsBtn">Notification settings</span> <span class="plus">⚙</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Alerts</h1>
-        <p>Active issues, historical resolutions, delivery, and rule overview — all in one place.</p>
+        <h1 data-i18n="shell.nav.alerts">Alerts</h1>
+        <p data-i18n="alerts.pageDesc">Active issues, historical resolutions, delivery, and rule overview — all in one place.</p>
       </div>
     </div>
 
@@ -50,44 +50,44 @@
     <div class="sev-strip">
       <div class="sev-card crit active">
         <div class="ic">!</div>
-        <div><div class="lbl">Critical</div><div class="val">3</div><div class="foot">2 new in last 24h</div></div>
+        <div><div class="lbl" data-i18n="alerts.sev.critical">Critical</div><div class="val">3</div><div class="foot" data-i18n="alerts.sev.criticalFoot">2 new in last 24h</div></div>
       </div>
       <div class="sev-card warn active">
         <div class="ic">▲</div>
-        <div><div class="lbl">Warning</div><div class="val">7</div><div class="foot">4 new today</div></div>
+        <div><div class="lbl" data-i18n="alerts.sev.warning">Warning</div><div class="val">7</div><div class="foot" data-i18n="alerts.sev.warningFoot">4 new today</div></div>
       </div>
       <div class="sev-card info">
         <div class="ic">i</div>
-        <div><div class="lbl">Info</div><div class="val">3</div><div class="foot">1 new</div></div>
+        <div><div class="lbl" data-i18n="alerts.sev.info">Info</div><div class="val">3</div><div class="foot" data-i18n="alerts.sev.infoFoot">1 new</div></div>
       </div>
       <div class="sev-card muted">
         <div class="ic">–</div>
-        <div><div class="lbl">Muted / Snoozed</div><div class="val">5</div><div class="foot">2 wake tomorrow</div></div>
+        <div><div class="lbl" data-i18n="alerts.sev.muted">Muted / Snoozed</div><div class="val">5</div><div class="foot" data-i18n="alerts.sev.mutedFoot">2 wake tomorrow</div></div>
       </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="active">Active feed <span style="opacity:.6;margin-left:6px">13</span></button>
-      <button>History <span style="opacity:.6;margin-left:6px">142</span></button>
-      <button>Rules <span style="opacity:.6;margin-left:6px">18</span></button>
+      <button class="active"><span data-i18n="alerts.tabs.activeFeed">Active feed</span> <span style="opacity:.6;margin-left:6px">13</span></button>
+      <button><span data-i18n="alerts.tabs.history">History</span> <span style="opacity:.6;margin-left:6px">142</span></button>
+      <button><span data-i18n="alerts.tabs.rules">Rules</span> <span style="opacity:.6;margin-left:6px">18</span></button>
     </div>
 
     <!-- Toolbar -->
     <div class="toolbar">
       <div class="search-s">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search alerts…
+        <span data-i18n="alerts.toolbarSearch">Search alerts…</span>
       </div>
-      <select><option>All stations</option><option>Station A · Quận 1</option><option>Station B · Thủ Đức</option></select>
-      <select><option>All metrics</option><option>sales_volume</option><option>losses</option><option>revenue</option><option>inventory_on_hand</option></select>
-      <select><option>All rules</option><option>Day-over-day %</option><option>Absolute floor/ceiling</option><option>Z-score anomaly</option></select>
-      <select><option>All statuses</option><option>Unacknowledged</option><option>Acknowledged</option><option>Snoozed</option></select>
-      <span class="selcount">2 selected</span>
-      <button class="btn ghost">✓ Ack</button>
-      <button class="btn ghost">💤 Snooze…</button>
-      <button class="btn ghost">✕ Dismiss</button>
-      <button class="btn primary">Assign…</button>
+      <select><option data-i18n="shell.scopeAllStations">All stations</option><option>Station A · Quận 1</option><option>Station B · Thủ Đức</option></select>
+      <select><option data-i18n="alerts.filter.allMetrics">All metrics</option><option>sales_volume</option><option>losses</option><option>revenue</option><option>inventory_on_hand</option></select>
+      <select><option data-i18n="alerts.filter.allRules">All rules</option><option data-i18n="alerts.rule.dayOverDay">Day-over-day %</option><option data-i18n="alerts.rule.absoluteFloorCeiling">Absolute floor/ceiling</option><option data-i18n="alerts.rule.zScoreAnomaly">Z-score anomaly</option></select>
+      <select><option data-i18n="alerts.filter.allStatuses">All statuses</option><option data-i18n="alerts.status.unacknowledged">Unacknowledged</option><option data-i18n="alerts.status.acknowledged">Acknowledged</option><option data-i18n="alerts.status.snoozed">Snoozed</option></select>
+      <span class="selcount">2 <span data-i18n="alerts.selected">selected</span></span>
+      <button class="btn ghost" data-i18n="alerts.toolbar.ack">✓ Ack</button>
+      <button class="btn ghost" data-i18n="alerts.toolbar.snooze">💤 Snooze…</button>
+      <button class="btn ghost" data-i18n="alerts.toolbar.dismiss">✕ Dismiss</button>
+      <button class="btn primary" data-i18n="alerts.toolbar.assign">Assign…</button>
     </div>
 
     <!-- Feed + drawer -->
@@ -95,37 +95,37 @@
 
       <!-- Feed grouped by severity -->
       <div class="card">
-        <div class="card-head"><h3>Active alerts — grouped by severity</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3 data-i18n="alerts.feed.title">Active alerts — grouped by severity</h3><span class="kebab">•••</span></div>
 
         <!-- Critical -->
-        <div class="subhead"><span class="sev-pill crit">Critical · 3</span> <span class="count">Highest priority</span> <button class="bulk">Ack all</button> <button class="bulk">Snooze all</button></div>
+        <div class="subhead"><span class="sev-pill crit"><span data-i18n="alerts.sev.critical">Critical</span> · 3</span> <span class="count" data-i18n="alerts.feed.highestPriority">Highest priority</span> <button class="bulk" data-i18n="alerts.bulk.ackAll">Ack all</button> <button class="bulk" data-i18n="alerts.bulk.snoozeAll">Snooze all</button></div>
 
         <div class="alert crit sel">
           <input type="checkbox" checked>
           <div class="icon">!</div>
           <div>
-            <div class="title">Losses spiked above absolute ceiling <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
-            <div class="rule">Rule: <code>losses &gt; $500</code> (Station A threshold) · fired 08:12</div>
+            <div class="title"><span data-i18n="alerts.card1.title">Losses spiked above absolute ceiling</span> <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>losses &gt; $500</code> (Station A threshold) · <span data-i18n="alerts.firedLabel">fired</span> 08:12</div>
             <div class="body">
-              <span class="vs">Today: <b>$980</b></span>
-              <span class="vs">Ceiling: <b>$500</b></span>
+              <span class="vs"><span data-i18n="alerts.todayLabel">Today:</span> <b>$980</b></span>
+              <span class="vs"><span data-i18n="alerts.ceilingLabel">Ceiling:</span> <b>$500</b></span>
               <span class="delta up">▲ +96%</span>
-              <span class="vs">30-day avg: <b>$450</b></span>
+              <span class="vs"><span data-i18n="alerts.avg30Label">30-day avg:</span> <b>$450</b></span>
             </div>
             <div class="ai">
-              <span class="lbl">AI</span>
-              <div>Losses on Fridays run 2× the weekly mean historically — today's spike is 3σ above even that Friday baseline. Check produce spoilage or the 2026-07-25 supplier shipment.</div>
+              <span class="lbl" data-i18n="alerts.aiLabel">AI</span>
+              <div data-i18n="alerts.card1.ai">Losses on Fridays run 2× the weekly mean historically — today's spike is 3σ above even that Friday baseline. Check produce spoilage or the 2026-07-25 supplier shipment.</div>
             </div>
             <div class="meta">
               <span>2026-07-29 · 08:12</span>
-              <a href="uploads.html">→ upload sales_2026-07-29.csv</a>
-              <span>2 comments</span>
+              <a href="uploads.html">→ <span data-i18n="alerts.uploadLabel">upload</span> sales_2026-07-29.csv</a>
+              <span data-i18n="alerts.card1.comments">2 comments</span>
             </div>
           </div>
           <div class="side">
-            <div class="when">2h ago</div>
+            <div class="when" data-i18n="alerts.card1.when">2h ago</div>
             <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,18 10,16 20,14 30,15 40,10 50,6 60,2"/></svg>
-            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+            <div class="row-actions"><button class="pri" data-i18n="alerts.rowAck">Ack</button><button>💤</button><button>✕</button></div>
           </div>
         </div>
 
@@ -133,20 +133,20 @@
           <input type="checkbox" checked>
           <div class="icon">!</div>
           <div>
-            <div class="title">revenue unit-shift detected <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
-            <div class="rule">Rule: <code>Z-score &gt; 2.5</code> · fired 09:04</div>
+            <div class="title"><span data-i18n="alerts.card2.title">revenue unit-shift detected</span> <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf1ff;color:#3455b3;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#3455b3"></span>Station A</span></div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>Z-score &gt; 2.5</code> · <span data-i18n="alerts.firedLabel">fired</span> 09:04</div>
             <div class="body">
-              <span class="vs">Today: <b>$688,000</b></span>
-              <span class="vs">Expected: <b>~$6,880</b></span>
+              <span class="vs"><span data-i18n="alerts.todayLabel">Today:</span> <b>$688,000</b></span>
+              <span class="vs"><span data-i18n="alerts.expectedLabel">Expected:</span> <b>~$6,880</b></span>
               <span class="delta up">▲ 100×</span>
             </div>
-            <div class="ai"><span class="lbl">AI</span><div>Values are exactly 100× the recent mean — very likely a decimal/currency unit change in the CSV, not a real spike. Re-check the 2026-07-15 upload column format.</div></div>
-            <div class="meta"><span>2026-07-29 · 09:04</span><a href="uploads.html">→ upload revenue_2026-07-29.csv</a></div>
+            <div class="ai"><span class="lbl" data-i18n="alerts.aiLabel">AI</span><div data-i18n="alerts.card2.ai">Values are exactly 100× the recent mean — very likely a decimal/currency unit change in the CSV, not a real spike. Re-check the 2026-07-15 upload column format.</div></div>
+            <div class="meta"><span>2026-07-29 · 09:04</span><a href="uploads.html">→ <span data-i18n="alerts.uploadLabel">upload</span> revenue_2026-07-29.csv</a></div>
           </div>
           <div class="side">
-            <div class="when">1h ago</div>
+            <div class="when" data-i18n="alerts.card2.when">1h ago</div>
             <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,18 10,17 20,18 30,15 40,4 50,3 60,2"/></svg>
-            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+            <div class="row-actions"><button class="pri" data-i18n="alerts.rowAck">Ack</button><button>💤</button><button>✕</button></div>
           </div>
         </div>
 
@@ -154,42 +154,42 @@
           <input type="checkbox">
           <div class="icon">!</div>
           <div>
-            <div class="title">inventory_on_hand missing 3 days <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf7d3;color:#1f6f4a;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#1f6f4a"></span>Station B</span></div>
-            <div class="rule">Rule: <code>data health · missing days</code> · fired 10:00</div>
+            <div class="title"><span data-i18n="alerts.card3.title">inventory_on_hand missing 3 days</span> <span style="display:inline-flex;align-items:center;gap:4px;background:#eaf7d3;color:#1f6f4a;padding:1px 8px;border-radius:999px;font-weight:700;font-size:10px;margin-left:6px;vertical-align:middle"><span style="width:6px;height:6px;border-radius:50%;background:#1f6f4a"></span>Station B</span></div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>data health · missing days</code> · <span data-i18n="alerts.firedLabel">fired</span> 10:00</div>
             <div class="body">
-              <span class="vs">Missing: <b>2026-07-07, 07-14, 07-21</b></span>
-              <span class="vs">Pattern: <b>weekly (Mon)</b></span>
+              <span class="vs"><span data-i18n="alerts.missingLabel">Missing:</span> <b>2026-07-07, 07-14, 07-21</b></span>
+              <span class="vs"><span data-i18n="alerts.patternLabel">Pattern:</span> <b data-i18n="alerts.card3.patternValue">weekly (Mon)</b></span>
             </div>
-            <div class="ai"><span class="lbl">AI</span><div>The gaps land on Mondays — likely the accountant is skipping the weekend inventory count. Consider changing the upload schedule or backfilling from paper logs.</div></div>
+            <div class="ai"><span class="lbl" data-i18n="alerts.aiLabel">AI</span><div data-i18n="alerts.card3.ai">The gaps land on Mondays — likely the accountant is skipping the weekend inventory count. Consider changing the upload schedule or backfilling from paper logs.</div></div>
             <div class="meta"><span>2026-07-29 · 10:00</span></div>
           </div>
           <div class="side">
-            <div class="when">Today</div>
-            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+            <div class="when" data-i18n="alerts.today">Today</div>
+            <div class="row-actions"><button class="pri" data-i18n="alerts.rowAck">Ack</button><button>💤</button><button>✕</button></div>
           </div>
         </div>
 
         <!-- Warning -->
-        <div class="subhead"><span class="sev-pill warn">Warning · 7</span> <span class="count">Watch, no action forced</span> <button class="bulk">Ack all</button></div>
+        <div class="subhead"><span class="sev-pill warn"><span data-i18n="alerts.sev.warning">Warning</span> · 7</span> <span class="count" data-i18n="alerts.feed.watchDesc">Watch, no action forced</span> <button class="bulk" data-i18n="alerts.bulk.ackAll">Ack all</button></div>
 
         <div class="alert warn">
           <input type="checkbox">
           <div class="icon">▲</div>
           <div>
-            <div class="title">purchases day-over-day change exceeded 20%</div>
-            <div class="rule">Rule: <code>DoD % &gt; 20%</code> · fired 07:41</div>
+            <div class="title" data-i18n="alerts.card4.title">purchases day-over-day change exceeded 20%</div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>DoD % &gt; 20%</code> · <span data-i18n="alerts.firedLabel">fired</span> 07:41</div>
             <div class="body">
-              <span class="vs">Today: <b>68</b></span>
-              <span class="vs">Yesterday: <b>38</b></span>
+              <span class="vs"><span data-i18n="alerts.todayLabel">Today:</span> <b>68</b></span>
+              <span class="vs"><span data-i18n="alerts.yesterdayLabel">Yesterday:</span> <b>38</b></span>
               <span class="delta up">▲ +79%</span>
             </div>
-            <div class="ai"><span class="lbl">AI</span><div>Purchases usually spike mid-week ahead of the weekend rush — this is within seasonal norms but larger than the last four Wednesdays.</div></div>
+            <div class="ai"><span class="lbl" data-i18n="alerts.aiLabel">AI</span><div data-i18n="alerts.card4.ai">Purchases usually spike mid-week ahead of the weekend rush — this is within seasonal norms but larger than the last four Wednesdays.</div></div>
             <div class="meta"><span>2026-07-29 · 07:41</span></div>
           </div>
           <div class="side">
-            <div class="when">3h ago</div>
+            <div class="when" data-i18n="alerts.card4.when">3h ago</div>
             <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#f0a545" stroke-width="1.6" points="0,14 10,12 20,15 30,13 40,10 50,8 60,4"/></svg>
-            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+            <div class="row-actions"><button class="pri" data-i18n="alerts.rowAck">Ack</button><button>💤</button><button>✕</button></div>
           </div>
         </div>
 
@@ -197,49 +197,49 @@
           <input type="checkbox">
           <div class="icon">▲</div>
           <div>
-            <div class="title">sales_volume below week-over-week floor</div>
-            <div class="rule">Rule: <code>WoW % &lt; −10%</code> · fired 08:20</div>
+            <div class="title" data-i18n="alerts.card5.title">sales_volume below week-over-week floor</div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>WoW % &lt; −10%</code> · <span data-i18n="alerts.firedLabel">fired</span> 08:20</div>
             <div class="body">
-              <span class="vs">This week: <b>412</b></span>
-              <span class="vs">Last week: <b>478</b></span>
+              <span class="vs"><span data-i18n="alerts.thisWeekLabel">This week:</span> <b>412</b></span>
+              <span class="vs"><span data-i18n="alerts.lastWeekLabel">Last week:</span> <b>478</b></span>
               <span class="delta down">▼ −13.8%</span>
             </div>
-            <div class="meta"><span>2026-07-29 · 08:20</span><span>1 comment</span></div>
+            <div class="meta"><span>2026-07-29 · 08:20</span><span data-i18n="alerts.card5.comment">1 comment</span></div>
           </div>
           <div class="side">
-            <div class="when">2h ago</div>
+            <div class="when" data-i18n="alerts.card1.when">2h ago</div>
             <svg viewBox="0 0 60 22"><polyline fill="none" stroke="#f0a545" stroke-width="1.6" points="0,4 10,6 20,8 30,10 40,13 50,14 60,16"/></svg>
-            <div class="row-actions"><button class="pri">Ack</button><button>💤</button><button>✕</button></div>
+            <div class="row-actions"><button class="pri" data-i18n="alerts.rowAck">Ack</button><button>💤</button><button>✕</button></div>
           </div>
         </div>
 
         <!-- Info -->
-        <div class="subhead"><span class="sev-pill info">Info · 3</span> <span class="count">FYI only</span></div>
+        <div class="subhead"><span class="sev-pill info"><span data-i18n="alerts.sev.info">Info</span> · 3</span> <span class="count" data-i18n="alerts.feed.fyiOnly">FYI only</span></div>
 
         <div class="alert info">
           <input type="checkbox">
           <div class="icon">i</div>
           <div>
-            <div class="title">New metric detected: <code>supplier_returns</code></div>
-            <div class="rule">Rule: <code>registry · new column</code></div>
-            <div class="body"><span class="vs">First seen: <b>2026-07-20</b></span><span class="vs">Uploads: <b>3</b></span></div>
-            <div class="meta"><a href="metrics.html">→ Confirm tracking</a></div>
+            <div class="title"><span data-i18n="alerts.card6.titlePrefix">New metric detected:</span> <code>supplier_returns</code></div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>registry · new column</code></div>
+            <div class="body"><span class="vs"><span data-i18n="alerts.firstSeenLabel">First seen:</span> <b>2026-07-20</b></span><span class="vs"><span data-i18n="alerts.uploadsLabel">Uploads:</span> <b>3</b></span></div>
+            <div class="meta"><a href="metrics.html">→ <span data-i18n="alerts.card6.confirmTracking">Confirm tracking</span></a></div>
           </div>
-          <div class="side"><div class="when">9d ago</div><div class="row-actions"><button class="pri">Confirm</button><button>✕</button></div></div>
+          <div class="side"><div class="when" data-i18n="alerts.card6.when">9d ago</div><div class="row-actions"><button class="pri" data-i18n="alerts.confirm">Confirm</button><button>✕</button></div></div>
         </div>
 
         <!-- Muted / snoozed -->
-        <div class="subhead"><span class="sev-pill muted">Muted / Snoozed · 5</span> <span class="count">Not delivered until wake time</span></div>
+        <div class="subhead"><span class="sev-pill muted"><span data-i18n="alerts.sev.muted">Muted / Snoozed</span> · 5</span> <span class="count" data-i18n="alerts.feed.mutedDesc">Not delivered until wake time</span></div>
 
         <div class="alert muted">
           <input type="checkbox">
           <div class="icon">–</div>
           <div>
-            <div class="title">cashier_count column dropped</div>
-            <div class="rule">Rule: <code>registry · column missing</code> · snoozed until 2026-08-05</div>
-            <div class="meta"><span>Muted by Owner · 4 days ago</span></div>
+            <div class="title" data-i18n="alerts.card7.title">cashier_count column dropped</div>
+            <div class="rule"><span data-i18n="alerts.ruleLabel">Rule:</span> <code>registry · column missing</code> · <span data-i18n="alerts.card7.snoozedUntil">snoozed until 2026-08-05</span></div>
+            <div class="meta"><span data-i18n="alerts.card7.mutedMeta">Muted by Owner · 4 days ago</span></div>
           </div>
-          <div class="side"><div class="when">Snoozed</div><div class="row-actions"><button>Wake</button><button>✕</button></div></div>
+          <div class="side"><div class="when" data-i18n="alerts.snoozed">Snoozed</div><div class="row-actions"><button data-i18n="alerts.wake">Wake</button><button>✕</button></div></div>
         </div>
       </div>
 
@@ -247,12 +247,12 @@
       <div class="card drawer">
         <div class="head-row" style="display:flex;align-items:flex-start;gap:10px">
           <div>
-            <h3>Losses spiked above ceiling</h3>
+            <h3 data-i18n="alerts.drawer.title">Losses spiked above ceiling</h3>
             <div class="subline">
-              <span><span class="sev-pill crit">Critical</span></span>
-              <span>Metric: <b>losses</b></span>
-              <span>Rule: <code>losses &gt; $500</code></span>
-              <span>Fired 2026-07-29 · 08:12</span>
+              <span><span class="sev-pill crit" data-i18n="alerts.sev.critical">Critical</span></span>
+              <span><span data-i18n="alerts.metricLabel">Metric:</span> <b>losses</b></span>
+              <span><span data-i18n="alerts.ruleLabel">Rule:</span> <code>losses &gt; $500</code></span>
+              <span><span data-i18n="alerts.firedLabelCap">Fired</span> 2026-07-29 · 08:12</span>
             </div>
           </div>
           <span class="close">✕</span>
@@ -273,62 +273,62 @@
         </div>
 
         <div class="stat-row">
-          <div class="stat"><label>Today</label><div class="v">$980</div></div>
-          <div class="stat"><label>30-day avg</label><div class="v">$450</div></div>
-          <div class="stat"><label>vs avg</label><div class="v" style="color:var(--red)">+118%</div></div>
+          <div class="stat"><label data-i18n="alerts.today">Today</label><div class="v">$980</div></div>
+          <div class="stat"><label data-i18n="alerts.avg30LabelPlain">30-day avg</label><div class="v">$450</div></div>
+          <div class="stat"><label data-i18n="alerts.vsAvgLabel">vs avg</label><div class="v" style="color:var(--red)">+118%</div></div>
         </div>
 
         <div class="section">
-          <h4>AI explanation</h4>
+          <h4 data-i18n="alerts.drawer.aiExplanation">AI explanation</h4>
           <div class="ai-full">
-            <b>Why this fired.</b> Today's losses ($980) crossed the fixed ceiling of $500 and are 3σ above the 30-day rolling mean.
+            <b data-i18n="alerts.drawer.whyFired">Why this fired.</b> <span data-i18n="alerts.drawer.whyFiredBody">Today's losses ($980) crossed the fixed ceiling of $500 and are 3σ above the 30-day rolling mean.</span>
             <ul>
-              <li>Fridays historically run ~2× the weekly loss average.</li>
-              <li>Today's value is above even that Friday baseline.</li>
-              <li>Likely candidates: produce spoilage, the 07-25 supplier shipment, or a mis-entered receipt.</li>
+              <li data-i18n="alerts.drawer.li1">Fridays historically run ~2× the weekly loss average.</li>
+              <li data-i18n="alerts.drawer.li2">Today's value is above even that Friday baseline.</li>
+              <li data-i18n="alerts.drawer.li3">Likely candidates: produce spoilage, the 07-25 supplier shipment, or a mis-entered receipt.</li>
             </ul>
           </div>
         </div>
 
         <div class="quick-row">
           <div class="kv">
-            <label>Assign to</label>
-            <select><option>Unassigned</option><option>Accountant (Anna)</option><option>Owner (Huy)</option></select>
+            <label data-i18n="alerts.drawer.assignTo">Assign to</label>
+            <select><option data-i18n="alerts.drawer.unassigned">Unassigned</option><option data-i18n="alerts.drawer.accountantAnna">Accountant (Anna)</option><option data-i18n="alerts.drawer.ownerHuy">Owner (Huy)</option></select>
           </div>
           <div class="kv">
-            <label>Snooze</label>
-            <select><option>Don't snooze</option><option>1 hour</option><option>24 hours</option><option>3 days</option><option>1 week</option><option>Until value drops below ceiling</option></select>
+            <label data-i18n="alerts.toolbar.snoozePlain">Snooze</label>
+            <select><option data-i18n="alerts.drawer.dontSnooze">Don't snooze</option><option data-i18n="alerts.drawer.1hour">1 hour</option><option data-i18n="alerts.drawer.24hours">24 hours</option><option data-i18n="alerts.drawer.3days">3 days</option><option data-i18n="alerts.drawer.1week">1 week</option><option data-i18n="alerts.drawer.untilBelowCeiling">Until value drops below ceiling</option></select>
           </div>
         </div>
 
         <div class="section">
-          <h4>Notes thread · 2</h4>
+          <h4><span data-i18n="alerts.drawer.notesThread">Notes thread</span> · 2</h4>
           <div class="thread">
             <div class="comment">
               <div class="av acc"></div>
               <div class="body">
-                <div class="who">Anna (Accountant) <small>2026-07-29 · 09:15</small></div>
-                Checked \\ produce spoilage log — 12 kg mangoes tossed today. That accounts for ~$420 of the spike.
+                <div class="who">Anna (<span data-i18n="common.accountant">Accountant</span>) <small>2026-07-29 · 09:15</small></div>
+                <span data-i18n="alerts.drawer.comment1">Checked \\ produce spoilage log — 12 kg mangoes tossed today. That accounts for ~$420 of the spike.</span>
               </div>
             </div>
             <div class="comment">
               <div class="av own"></div>
               <div class="body">
-                <div class="who">Huy (Owner) <small>2026-07-29 · 10:03</small></div>
-                Okay — let's not snooze, but recheck tomorrow. If it stays over ceiling 2 days in a row, page me.
+                <div class="who">Huy (<span data-i18n="common.owner">Owner</span>) <small>2026-07-29 · 10:03</small></div>
+                <span data-i18n="alerts.drawer.comment2">Okay — let's not snooze, but recheck tomorrow. If it stays over ceiling 2 days in a row, page me.</span>
               </div>
             </div>
           </div>
           <div class="compose">
-            <input type="text" placeholder="Add a note (@mention to assign)…" />
-            <button>Send</button>
+            <input type="text" data-i18n-placeholder="alerts.drawer.notePlaceholder" placeholder="Add a note (@mention to assign)…" />
+            <button data-i18n="alerts.drawer.send">Send</button>
           </div>
         </div>
 
         <div class="drawer-actions">
-          <button class="btn danger">Dismiss</button>
-          <button class="btn ghost">Snooze 24h</button>
-          <button class="btn primary">Acknowledge</button>
+          <button class="btn danger" data-i18n="alerts.toolbar.dismissPlain">Dismiss</button>
+          <button class="btn ghost" data-i18n="alerts.drawer.snooze24h">Snooze 24h</button>
+          <button class="btn primary" data-i18n="alerts.drawer.acknowledge">Acknowledge</button>
         </div>
       </div>
     </div>
@@ -337,79 +337,79 @@
     <div class="brow">
 
       <div class="card">
-        <div class="card-head"><h3>Notification delivery</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3 data-i18n="alerts.channels.title">Notification delivery</h3><span class="kebab">•••</span></div>
         <div class="channels">
           <div class="channel">
             <div class="cic">✉️</div>
             <div>
-              <div class="n">Email to owner</div>
-              <div class="d">hoanghuyho2810@gmail.com · Critical only · digest every 6h</div>
+              <div class="n" data-i18n="alerts.channels.email">Email to owner</div>
+              <div class="d"><span>hoanghuyho2810@gmail.com</span> · <span data-i18n="alerts.status.criticalOnly">Critical only</span> · <span data-i18n="alerts.channels.digestEvery6h">digest every 6h</span></div>
             </div>
-            <span class="st on">On</span>
+            <span class="st on" data-i18n="common.on">On</span>
           </div>
           <div class="channel">
             <div class="cic">💬</div>
             <div>
-              <div class="n">Slack webhook</div>
-              <div class="d">#ops-alerts · Critical + Warning</div>
+              <div class="n" data-i18n="alerts.channels.slack">Slack webhook</div>
+              <div class="d">#ops-alerts · <span data-i18n="alerts.status.criticalWarning">Critical + Warning</span></div>
             </div>
-            <span class="st on">On</span>
+            <span class="st on" data-i18n="common.on">On</span>
           </div>
           <div class="channel">
             <div class="cic">🔗</div>
             <div>
-              <div class="n">Generic webhook</div>
-              <div class="d">https://ops.example.com/hooks/demo_csv · not verified</div>
+              <div class="n" data-i18n="alerts.channels.generic">Generic webhook</div>
+              <div class="d">https://ops.example.com/hooks/demo_csv · <span data-i18n="alerts.channels.notVerified">not verified</span></div>
             </div>
-            <span class="st off">Off</span>
+            <span class="st off" data-i18n="common.off">Off</span>
           </div>
           <div class="channel">
             <div class="cic">📱</div>
             <div>
-              <div class="n">SMS</div>
-              <div class="d">Requires Twilio config</div>
+              <div class="n" data-i18n="alerts.channels.sms">SMS</div>
+              <div class="d" data-i18n="alerts.channels.requiresTwilio">Requires Twilio config</div>
             </div>
-            <span class="st off">Off</span>
+            <span class="st off" data-i18n="common.off">Off</span>
           </div>
         </div>
-        <button class="add-ch">＋ Add delivery channel</button>
+        <button class="add-ch" data-i18n="alerts.channels.addChannel">＋ Add delivery channel</button>
       </div>
 
       <div class="card">
-        <div class="card-head"><h3>Rules overview</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3 data-i18n="alerts.rulesOverview.title">Rules overview</h3><span class="kebab">•••</span></div>
         <table class="rules">
           <thead>
-            <tr><th>Metric</th><th>Rule</th><th>Threshold</th><th>Severity</th><th>Fires (30d)</th><th>Active</th></tr>
+            <tr><th data-i18n="alerts.rulesOverview.metric">Metric</th><th data-i18n="alerts.rulesOverview.rule">Rule</th><th data-i18n="alerts.rulesOverview.threshold">Threshold</th><th data-i18n="alerts.rulesOverview.severity">Severity</th><th data-i18n="alerts.rulesOverview.fires30d">Fires (30d)</th><th data-i18n="alerts.rulesOverview.active">Active</th></tr>
           </thead>
           <tbody>
             <tr>
-              <td><b>losses</b></td><td>Absolute ceiling</td><td>&gt; $500</td>
-              <td><span class="sev-pill crit">Critical</span></td><td>4</td>
+              <td><b>losses</b></td><td data-i18n="alerts.rule.absoluteCeiling">Absolute ceiling</td><td>&gt; $500</td>
+              <td><span class="sev-pill crit" data-i18n="alerts.sev.critical">Critical</span></td><td>4</td>
               <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
             </tr>
             <tr>
-              <td><b>revenue</b></td><td>Z-score anomaly</td><td>σ &gt; 2.5</td>
-              <td><span class="sev-pill crit">Critical</span></td><td>2</td>
+              <td><b>revenue</b></td><td data-i18n="alerts.rule.zScoreAnomaly">Z-score anomaly</td><td>σ &gt; 2.5</td>
+              <td><span class="sev-pill crit" data-i18n="alerts.sev.critical">Critical</span></td><td>2</td>
               <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
             </tr>
             <tr>
-              <td><b>sales_volume</b></td><td>Day-over-day %</td><td>|Δ| &gt; 20%</td>
-              <td><span class="sev-pill warn">Warning</span></td><td>7</td>
+              <td><b>sales_volume</b></td><td data-i18n="alerts.rule.dayOverDay">Day-over-day %</td><td>|Δ| &gt; 20%</td>
+              <td><span class="sev-pill warn" data-i18n="alerts.sev.warning">Warning</span></td><td>7</td>
               <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
             </tr>
             <tr>
-              <td><b>inventory_on_hand</b></td><td>Absolute floor</td><td>&lt; 100</td>
-              <td><span class="sev-pill warn">Warning</span></td><td>1</td>
+              <td><b>inventory_on_hand</b></td><td data-i18n="alerts.rule.absoluteFloor">Absolute floor</td><td>&lt; 100</td>
+              <td><span class="sev-pill warn" data-i18n="alerts.sev.warning">Warning</span></td><td>1</td>
               <td><label class="toggle"><input type="checkbox" checked><span></span></label></td>
             </tr>
             <tr>
-              <td><b>purchases</b></td><td>Week-over-week %</td><td>|Δ| &gt; 15%</td>
-              <td><span class="sev-pill info">Info</span></td><td>3</td>
+              <td><b>purchases</b></td><td data-i18n="alerts.rule.weekOverWeek">Week-over-week %</td><td>|Δ| &gt; 15%</td>
+              <td><span class="sev-pill info" data-i18n="alerts.sev.info">Info</span></td><td>3</td>
               <td><label class="toggle"><input type="checkbox"><span></span></label></td>
             </tr>
             <tr>
-              <td><b>cashier_count</b></td><td>Column dropped</td><td>≥ 3 uploads missing</td>
-              <td><span class="sev-pill muted">Muted</span></td><td>1</td>
+              <td><b>cashier_count</b></td><td data-i18n="alerts.rule.columnDropped">Column dropped</td><td>≥ 3 uploads missing</td>
+              <td><span class="sev-pill muted" data-i18n="alerts.muted">Muted</span></td><td>1</td>
               <td><label class="toggle"><input type="checkbox"><span></span></label></td>
             </tr>
           </tbody>

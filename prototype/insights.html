@@ -20,70 +20,70 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Insights <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.insights">Insights</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Ask anything about your data…
+        <span data-i18n="insights.searchPlaceholder">Ask anything about your data…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
-        <button class="cta">Generate report <span class="plus">✨</span></button>
+        <button class="cta"><span data-i18n="insights.generateReportBtn">Generate report</span> <span class="plus">✨</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Insights</h1>
-        <p>Auto-narratives, ask-a-question chat, recommendations, what-if scenarios, and pattern discovery.</p>
+        <h1 data-i18n="shell.nav.insights">Insights</h1>
+        <p data-i18n="insights.pageDesc">Auto-narratives, ask-a-question chat, recommendations, what-if scenarios, and pattern discovery.</p>
       </div>
     </div>
 
     <!-- Executive brief -->
     <div class="brief">
       <div>
-        <div class="lbl">Executive brief <span class="badge-ai">AI</span> · updated 8 min ago</div>
-        <h2>This week held up well — sales are +12% on Jun, but Friday losses are the story to watch.</h2>
-        <p>Revenue is on pace to close July above last month despite a soft Monday. Losses have trended down overall, but the last two Fridays crossed the $500 ceiling — most of that traces to produce spoilage. Inventory is healthy; supplier_returns has gone silent for 5 days.</p>
+        <div class="lbl"><span data-i18n="insights.brief.label">Executive brief</span> <span class="badge-ai" data-i18n="insights.aiLabel">AI</span> · <span data-i18n="insights.brief.updatedAgo">updated 8 min ago</span></div>
+        <h2 data-i18n="insights.brief.headline">This week held up well — sales are +12% on Jun, but Friday losses are the story to watch.</h2>
+        <p data-i18n="insights.brief.body">Revenue is on pace to close July above last month despite a soft Monday. Losses have trended down overall, but the last two Fridays crossed the $500 ceiling — most of that traces to produce spoilage. Inventory is healthy; supplier_returns has gone silent for 5 days.</p>
         <div class="pills">
-          <span class="pill">Sales <b>+12%</b></span>
-          <span class="pill">Purchases <b>−3%</b></span>
-          <span class="pill">Losses <b>−24%</b></span>
-          <span class="pill">Inventory <b>+8%</b></span>
-          <span class="pill">Confidence <b>0.87</b></span>
+          <span class="pill"><span data-i18n="insights.pill.sales">Sales</span> <b>+12%</b></span>
+          <span class="pill"><span data-i18n="insights.pill.purchases">Purchases</span> <b>−3%</b></span>
+          <span class="pill"><span data-i18n="insights.pill.losses">Losses</span> <b>−24%</b></span>
+          <span class="pill"><span data-i18n="insights.pill.inventory">Inventory</span> <b>+8%</b></span>
+          <span class="pill"><span data-i18n="insights.pill.confidence">Confidence</span> <b>0.87</b></span>
         </div>
         <div class="actions">
-          <button class="btn primary">Read full brief →</button>
-          <button class="btn ghost">↻ Regenerate</button>
-          <button class="btn ghost">⬇ Export PDF</button>
-          <button class="btn ghost">🔗 Share link</button>
+          <button class="btn primary" data-i18n="insights.brief.readFull">Read full brief →</button>
+          <button class="btn ghost" data-i18n="insights.regenerate">↻ Regenerate</button>
+          <button class="btn ghost" data-i18n="insights.exportPdf">⬇ Export PDF</button>
+          <button class="btn ghost" data-i18n="insights.shareLink">🔗 Share link</button>
           <div class="fb">
-            <button title="Helpful">👍</button>
-            <button title="Not helpful">👎</button>
+            <button data-i18n-title="insights.helpful" title="Helpful">👍</button>
+            <button data-i18n-title="insights.notHelpful" title="Not helpful">👎</button>
           </div>
         </div>
       </div>
       <div class="brief-side">
-        <div class="kpi"><div class="l">Revenue MTD</div><div class="v">$193K</div><div class="d">+12% vs Jun</div></div>
-        <div class="kpi"><div class="l">Losses (7d)</div><div class="v">$1,820</div><div class="d" style="color:#ff9e9e">+18% vs prior 7d</div></div>
-        <div class="kpi"><div class="l">Insights generated</div><div class="v">42</div><div class="d">7 pinned by owner</div></div>
+        <div class="kpi"><div class="l" data-i18n="insights.kpi.revenueMtd">Revenue MTD</div><div class="v">$193K</div><div class="d" data-i18n="insights.kpi.revenueDelta">+12% vs Jun</div></div>
+        <div class="kpi"><div class="l" data-i18n="insights.kpi.losses7d">Losses (7d)</div><div class="v">$1,820</div><div class="d" style="color:#ff9e9e" data-i18n="insights.kpi.lossesDelta">+18% vs prior 7d</div></div>
+        <div class="kpi"><div class="l" data-i18n="insights.kpi.insightsGenerated">Insights generated</div><div class="v">42</div><div class="d" data-i18n="insights.kpi.pinnedByOwner">7 pinned by owner</div></div>
       </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="active">Timeline</button>
-      <button>Ask Claude</button>
-      <button>Recommendations <span style="opacity:.6;margin-left:6px">5</span></button>
-      <button>Patterns <span style="opacity:.6;margin-left:6px">8</span></button>
-      <button>Compare / What-if</button>
+      <button class="active" data-i18n="insights.tabs.timeline">Timeline</button>
+      <button data-i18n="insights.tabs.askClaude">Ask Claude</button>
+      <button><span data-i18n="insights.tabs.recommendations">Recommendations</span> <span style="opacity:.6;margin-left:6px">5</span></button>
+      <button><span data-i18n="insights.tabs.patterns">Patterns</span> <span style="opacity:.6;margin-left:6px">8</span></button>
+      <button data-i18n="insights.tabs.compare">Compare / What-if</button>
     </div>
 
     <!-- Timeline feed + Chat -->
@@ -91,25 +91,25 @@
 
       <!-- Timeline -->
       <div class="card">
-        <div class="card-head"><h3>Timeline of insights</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3 data-i18n="insights.timeline.title">Timeline of insights</h3><span class="kebab">•••</span></div>
         <div class="timeline">
 
-          <div class="tl-group-head">Today · 2026-07-29</div>
+          <div class="tl-group-head"><span data-i18n="insights.group.today">Today</span> · 2026-07-29</div>
 
           <div class="insight">
             <div class="top">
               <div class="icon">✦</div>
-              <div class="h">Daily narrative</div>
-              <div class="when">08:00 · auto</div>
+              <div class="h" data-i18n="insights.item.dailyNarrative">Daily narrative</div>
+              <div class="when">08:00 · <span data-i18n="insights.auto">auto</span></div>
             </div>
-            <div class="body">
+            <div class="body" data-i18n-html="insights.item1.body">
               Sales came in at <b>82 units / $6,880</b> — a modest lift over Tuesday's <b>64</b>. The bigger story is <b>losses hitting $980</b> — over the ceiling and above the 30-day mean by 118%. Anna already logged 12kg of mango spoilage; that explains most of it. <a class="cite" href="alerts.html">→ related alert</a>
             </div>
             <div class="pills">
-              <span class="p-num"><b>Sales</b> 82</span>
-              <span class="p-num up"><b>Revenue</b> $6,880</span>
-              <span class="p-num down"><b>Losses</b> $980</span>
-              <span class="p-num"><b>Inventory</b> 298</span>
+              <span class="p-num"><b data-i18n="insights.pill.sales">Sales</b> 82</span>
+              <span class="p-num up"><b data-i18n="insights.pill.revenue">Revenue</b> $6,880</span>
+              <span class="p-num down"><b data-i18n="insights.pill.losses">Losses</b> $980</span>
+              <span class="p-num"><b data-i18n="insights.pill.inventory">Inventory</b> 298</span>
             </div>
             <div class="chart">
               <svg viewBox="0 0 700 90" width="100%" height="90">
@@ -121,20 +121,20 @@
               <button class="fb-btn on-up">👍 12</button>
               <button class="fb-btn">👎</button>
               <div class="spread"></div>
-              <a href="#">📌 Pin</a>
-              <a href="#">🔗 Share</a>
-              <a href="#">⬇ PDF</a>
-              <a href="#">↻ Regenerate</a>
+              <a href="#" data-i18n="insights.pin">📌 Pin</a>
+              <a href="#" data-i18n="insights.share">🔗 Share</a>
+              <a href="#" data-i18n="insights.pdf">⬇ PDF</a>
+              <a href="#" data-i18n="insights.regenerate">↻ Regenerate</a>
             </div>
           </div>
 
           <div class="insight">
             <div class="top">
               <div class="icon">⚡</div>
-              <div class="h">Ask · "Why were losses high last Friday?"</div>
-              <div class="when">10:15 · Owner</div>
+              <div class="h" data-i18n="insights.item2.h">Ask · "Why were losses high last Friday?"</div>
+              <div class="when">10:15 · <span data-i18n="common.owner">Owner</span></div>
             </div>
-            <div class="body">
+            <div class="body" data-i18n-html="insights.item2.body">
               Fridays consistently run <b>2×</b> the weekly average for losses. Last Friday specifically had <b>$920</b> — 3σ above the Friday baseline. Two contributors: (a) the 07-25 supplier shipment had 8% damaged units, and (b) produce spoilage cluster in the afternoon.
               Source: <span class="cite">sales_2026-07-25.csv</span>, <span class="cite">losses_2026-07-25.csv</span>.
             </div>
@@ -142,73 +142,73 @@
               <button class="fb-btn on-up">👍</button>
               <button class="fb-btn">👎</button>
               <div class="spread"></div>
-              <a href="#">📌 Pin</a>
-              <a href="#">🔗 Share</a>
+              <a href="#" data-i18n="insights.pin">📌 Pin</a>
+              <a href="#" data-i18n="insights.share">🔗 Share</a>
             </div>
           </div>
 
-          <div class="tl-group-head">Yesterday · 2026-07-28</div>
+          <div class="tl-group-head"><span data-i18n="insights.group.yesterday">Yesterday</span> · 2026-07-28</div>
 
           <div class="insight">
             <div class="top">
               <div class="icon">✦</div>
-              <div class="h">Daily narrative</div>
-              <div class="when">08:00 · auto</div>
+              <div class="h" data-i18n="insights.item.dailyNarrative">Daily narrative</div>
+              <div class="when">08:00 · <span data-i18n="insights.auto">auto</span></div>
             </div>
-            <div class="body">
+            <div class="body" data-i18n="insights.item3.body">
               A quiet Tuesday: sales flat vs the previous Tuesday, inventory ticked up because of Monday's delivery. No alerts fired.
             </div>
             <div class="pills">
-              <span class="p-num"><b>Sales</b> 64</span>
-              <span class="p-num up"><b>Revenue</b> $5,220</span>
-              <span class="p-num"><b>Losses</b> $50</span>
+              <span class="p-num"><b data-i18n="insights.pill.sales">Sales</b> 64</span>
+              <span class="p-num up"><b data-i18n="insights.pill.revenue">Revenue</b> $5,220</span>
+              <span class="p-num"><b data-i18n="insights.pill.losses">Losses</b> $50</span>
             </div>
             <div class="foot">
               <button class="fb-btn">👍 4</button><button class="fb-btn on-down">👎 1</button>
               <div class="spread"></div>
-              <a href="#">📌 Pin</a><a href="#">🔗 Share</a>
+              <a href="#" data-i18n="insights.pin">📌 Pin</a><a href="#" data-i18n="insights.share">🔗 Share</a>
             </div>
           </div>
 
-          <div class="tl-group-head">This week · Jul 21 – 28</div>
+          <div class="tl-group-head"><span data-i18n="insights.group.thisWeek">This week</span> · Jul 21 – 28</div>
 
           <div class="insight">
             <div class="top">
               <div class="icon" style="background:#7c5cff;color:#fff">Σ</div>
-              <div class="h">Weekly summary</div>
-              <div class="when">Mon 09:00 · auto</div>
+              <div class="h" data-i18n="insights.item.weeklySummary">Weekly summary</div>
+              <div class="when">Mon 09:00 · <span data-i18n="insights.auto">auto</span></div>
             </div>
-            <div class="body">
+            <div class="body" data-i18n-html="insights.item4.body">
               Sales grew <b>+8%</b> WoW driven by strong weekend performance. Losses concentrated on Fridays. Purchases were tuned down slightly — supplier_returns has stopped uploading since Jul 24.
             </div>
             <div class="pills">
-              <span class="p-num up"><b>Sales WoW</b> +8%</span>
-              <span class="p-num down"><b>Losses WoW</b> +14%</span>
-              <span class="p-num"><b>Best day</b> Sat</span>
-              <span class="p-num"><b>Worst day</b> Fri</span>
+              <span class="p-num up"><b data-i18n="insights.pill.salesWow">Sales WoW</b> +8%</span>
+              <span class="p-num down"><b data-i18n="insights.pill.lossesWow">Losses WoW</b> +14%</span>
+              <span class="p-num"><b data-i18n="insights.pill.bestDay">Best day</b> Sat</span>
+              <span class="p-num"><b data-i18n="insights.pill.worstDay">Worst day</b> Fri</span>
             </div>
             <div class="foot">
               <button class="fb-btn on-up">👍 6</button><button class="fb-btn">👎</button>
               <div class="spread"></div>
-              <a href="#">📌 Pinned</a><a href="#">🔗 Share</a><a href="#">⬇ PDF</a>
+              <a href="#" data-i18n="insights.pinned">📌 Pinned</a><a href="#" data-i18n="insights.share">🔗 Share</a><a href="#" data-i18n="insights.pdf">⬇ PDF</a>
             </div>
           </div>
 
-          <div class="tl-group-head">Last month · June 2026</div>
+          <div class="tl-group-head"><span data-i18n="insights.group.lastMonth">Last month</span> · June 2026</div>
 
           <div class="insight">
             <div class="top">
               <div class="icon" style="background:#3455b3;color:#fff">M</div>
-              <div class="h">Monthly wrap</div>
-              <div class="when">Jul 1 · auto</div>
+              <div class="h" data-i18n="insights.item.monthlyWrap">Monthly wrap</div>
+              <div class="when">Jul 1 · <span data-i18n="insights.auto">auto</span></div>
             </div>
-            <div class="body">
+            <div class="body" data-i18n-html="insights.item5.body">
               June closed at <b>$172K revenue</b> — down slightly from May but with lower losses. The month's story was rising purchase costs; margin dropped by <b>1.4pp</b> despite steady volume.
             </div>
             <div class="foot">
               <button class="fb-btn">👍 2</button><button class="fb-btn">👎</button>
               <div class="spread"></div>
-              <a href="#">📌 Pin</a><a href="#">🔗 Share</a>
+              <a href="#" data-i18n="insights.pin">📌 Pin</a><a href="#" data-i18n="insights.share">🔗 Share</a>
             </div>
           </div>
 
@@ -219,45 +219,45 @@
       <div class="card chat">
         <div class="chat-head">
           <div class="icon" style="width:28px;height:28px;border-radius:8px;background:var(--sidebar);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-weight:800">C</div>
-          <h3>Ask Claude</h3>
-          <div class="status"><span class="dot"></span>DB up to date · Jul 29 10:32</div>
+          <h3 data-i18n="insights.chat.title">Ask Claude</h3>
+          <div class="status"><span class="dot"></span><span data-i18n="insights.chat.dbStatus">DB up to date · Jul 29 10:32</span></div>
         </div>
 
         <div class="pinned">
-          <div class="lbl">📌 Pinned prompts</div>
+          <div class="lbl" data-i18n="insights.chat.pinnedPrompts">📌 Pinned prompts</div>
           <div class="pin-list">
-            <span class="pin"><span class="star">★</span>How did we do this week?</span>
-            <span class="pin"><span class="star">★</span>Losses vs plan MTD</span>
-            <span class="pin"><span class="star">★</span>Top 3 things to fix now</span>
-            <span class="pin"><span class="star">★</span>Which day is our best?</span>
-            <span class="pin">＋ Save current</span>
+            <span class="pin"><span class="star">★</span><span data-i18n="insights.chat.prompt1">How did we do this week?</span></span>
+            <span class="pin"><span class="star">★</span><span data-i18n="insights.chat.prompt2">Losses vs plan MTD</span></span>
+            <span class="pin"><span class="star">★</span><span data-i18n="insights.chat.prompt3">Top 3 things to fix now</span></span>
+            <span class="pin"><span class="star">★</span><span data-i18n="insights.chat.prompt4">Which day is our best?</span></span>
+            <span class="pin" data-i18n="insights.chat.saveCurrent">＋ Save current</span>
           </div>
         </div>
 
         <div class="thread">
           <div class="msg user">
             <div class="av">H</div>
-            <div class="bubble">Why were losses high last Friday?</div>
+            <div class="bubble" data-i18n="insights.chat.userQ1">Why were losses high last Friday?</div>
           </div>
 
           <div class="msg ai">
             <div class="av">C</div>
             <div class="bubble">
-              Losses on <b>2026-07-25 (Fri)</b> were <b>$920</b> — the highest single day of the month and 3σ above the Friday baseline.
-              <div class="src">Sources: <code>sales_2026-07-25.csv</code>, <code>losses_2026-07-25.csv</code> · 2 rows checked</div>
-              <div class="fb"><button>👍</button><button>👎</button><button>📌 Save</button></div>
+              <span data-i18n-html="insights.chat.answer1">Losses on <b>2026-07-25 (Fri)</b> were <b>$920</b> — the highest single day of the month and 3σ above the Friday baseline.</span>
+              <div class="src"><span data-i18n="insights.sourcesLabel">Sources:</span> <code>sales_2026-07-25.csv</code>, <code>losses_2026-07-25.csv</code> · <span data-i18n="insights.chat.rowsChecked">2 rows checked</span></div>
+              <div class="fb"><button>👍</button><button>👎</button><button data-i18n="insights.save">📌 Save</button></div>
             </div>
           </div>
 
           <div class="msg user">
             <div class="av">H</div>
-            <div class="bubble">Show that as a chart, last 30 days losses with Fridays highlighted.</div>
+            <div class="bubble" data-i18n="insights.chat.userQ2">Show that as a chart, last 30 days losses with Fridays highlighted.</div>
           </div>
 
           <div class="msg ai">
             <div class="av">C</div>
             <div class="bubble">
-              Here's daily losses for the last 30 days — Fridays outlined in red.
+              <span data-i18n="insights.chat.answer2Intro">Here's daily losses for the last 30 days — Fridays outlined in red.</span>
               <div class="mini-chart">
                 <svg viewBox="0 0 400 80">
                   <g stroke="#eef0ec"><line x1="0" y1="20" x2="400" y2="20"/><line x1="0" y1="50" x2="400" y2="50"/></g>
@@ -282,26 +282,26 @@
                   </g>
                 </svg>
               </div>
-              Every Friday in the last 4 weeks is a local high. Suggests it's structural, not random.
-              <div class="src">Query: <code>SELECT date, value FROM metrics WHERE metric='losses' ORDER BY date DESC LIMIT 30</code></div>
-              <div class="fb"><button>👍</button><button>👎</button><button>📌 Save</button><button>⬇ PNG</button></div>
+              <span data-i18n="insights.chat.answer2Outro">Every Friday in the last 4 weeks is a local high. Suggests it's structural, not random.</span>
+              <div class="src"><span data-i18n="insights.queryLabel">Query:</span> <code>SELECT date, value FROM metrics WHERE metric='losses' ORDER BY date DESC LIMIT 30</code></div>
+              <div class="fb"><button>👍</button><button>👎</button><button data-i18n="insights.save">📌 Save</button><button data-i18n="insights.pngExport">⬇ PNG</button></div>
             </div>
           </div>
         </div>
 
         <div class="suggest">
-          <div class="lbl">Suggested next</div>
+          <div class="lbl" data-i18n="insights.chat.suggestedNext">Suggested next</div>
           <div class="sug-list">
-            <span class="sug">Compare this week vs last week</span>
-            <span class="sug">Is inventory keeping up with sales?</span>
-            <span class="sug">Which day of week has the best margin?</span>
-            <span class="sug">Any metric behaving unusually today?</span>
+            <span class="sug" data-i18n="insights.chat.sug1">Compare this week vs last week</span>
+            <span class="sug" data-i18n="insights.chat.sug2">Is inventory keeping up with sales?</span>
+            <span class="sug" data-i18n="insights.chat.sug3">Which day of week has the best margin?</span>
+            <span class="sug" data-i18n="insights.chat.sug4">Any metric behaving unusually today?</span>
           </div>
         </div>
 
         <div class="composer">
-          <input type="text" placeholder="Ask about any metric, day, or trend…"/>
-          <button class="send">Send ➤</button>
+          <input type="text" data-i18n-placeholder="insights.chat.composerPlaceholder" placeholder="Ask about any metric, day, or trend…"/>
+          <button class="send" data-i18n="insights.chat.sendBtn">Send ➤</button>
         </div>
       </div>
     </div>
@@ -310,57 +310,57 @@
     <div class="row2">
 
       <div class="card">
-        <div class="card-head"><h3>Recommendations · 5</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3><span data-i18n="insights.rec.title">Recommendations</span> · 5</h3><span class="kebab">•••</span></div>
         <div class="rec">
 
           <div class="rec-item">
             <div class="ic buy">🛒</div>
             <div>
-              <div class="t"><span class="tag">Reorder</span> Reorder mango supply from Vendor B</div>
-              <div class="d">Sales of mango-based items grew 22% WoW; current stock covers ~3.5 days. Vendor B's last shipment had 8% damage — recommend switching to Vendor C for this order.</div>
-              <div class="m"><span>Impact: <b style="color:#1f8f4a">+$1,400 est.</b></span><span>Confidence 0.82</span><span>Metrics: sales_volume, inventory_on_hand, losses</span></div>
+              <div class="t"><span class="tag" data-i18n="insights.rec.tag.reorder">Reorder</span> <span data-i18n="insights.rec1.title">Reorder mango supply from Vendor B</span></div>
+              <div class="d" data-i18n="insights.rec1.body">Sales of mango-based items grew 22% WoW; current stock covers ~3.5 days. Vendor B's last shipment had 8% damage — recommend switching to Vendor C for this order.</div>
+              <div class="m"><span><span data-i18n="insights.impactLabel">Impact:</span> <b style="color:#1f8f4a">+$1,400 est.</b></span><span><span data-i18n="insights.confidenceLabel">Confidence</span> 0.82</span><span><span data-i18n="insights.metricsLabel">Metrics:</span> sales_volume, inventory_on_hand, losses</span></div>
             </div>
-            <div class="act"><button class="pri">Act</button><button>Dismiss</button></div>
+            <div class="act"><button class="pri" data-i18n="insights.act">Act</button><button data-i18n="insights.dismiss">Dismiss</button></div>
           </div>
 
           <div class="rec-item">
             <div class="ic investigate">🔍</div>
             <div>
-              <div class="t"><span class="tag">Investigate</span> Friday losses running above ceiling</div>
-              <div class="d">Losses on the last two Fridays crossed $500. Pattern is 4 weeks strong. Check produce-cutting workflow between 14:00–16:00, or reduce Friday morning inventory.</div>
-              <div class="m"><span>Impact: <b style="color:#1f8f4a">−$3,200 / mo</b></span><span>Confidence 0.91</span></div>
+              <div class="t"><span class="tag" data-i18n="insights.rec.tag.investigate">Investigate</span> <span data-i18n="insights.rec2.title">Friday losses running above ceiling</span></div>
+              <div class="d" data-i18n="insights.rec2.body">Losses on the last two Fridays crossed $500. Pattern is 4 weeks strong. Check produce-cutting workflow between 14:00–16:00, or reduce Friday morning inventory.</div>
+              <div class="m"><span><span data-i18n="insights.impactLabel">Impact:</span> <b style="color:#1f8f4a">−$3,200 / mo</b></span><span><span data-i18n="insights.confidenceLabel">Confidence</span> 0.91</span></div>
             </div>
-            <div class="act"><button class="pri">Act</button><button>Snooze</button></div>
+            <div class="act"><button class="pri" data-i18n="insights.act">Act</button><button data-i18n="insights.snooze">Snooze</button></div>
           </div>
 
           <div class="rec-item">
             <div class="ic forecast">📈</div>
             <div>
-              <div class="t"><span class="tag">Forecast</span> July likely to close at $198K–$205K</div>
-              <div class="d">Based on the last 90 days and July's momentum, month-end lands in this band with 80% confidence. Would need +18% remaining days to clear $210K.</div>
-              <div class="m"><span>Confidence 0.80</span><span>Model: rolling avg × seasonality</span></div>
+              <div class="t"><span class="tag" data-i18n="insights.rec.tag.forecast">Forecast</span> <span data-i18n="insights.rec3.title">July likely to close at $198K–$205K</span></div>
+              <div class="d" data-i18n="insights.rec3.body">Based on the last 90 days and July's momentum, month-end lands in this band with 80% confidence. Would need +18% remaining days to clear $210K.</div>
+              <div class="m"><span><span data-i18n="insights.confidenceLabel">Confidence</span> 0.80</span><span><span data-i18n="insights.modelLabel">Model:</span> rolling avg × seasonality</span></div>
             </div>
-            <div class="act"><button>Details</button></div>
+            <div class="act"><button data-i18n="insights.details">Details</button></div>
           </div>
 
           <div class="rec-item">
             <div class="ic schedule">📅</div>
             <div>
-              <div class="t"><span class="tag">Schedule</span> Move inventory count to Sunday</div>
-              <div class="d">Inventory has 3 missing Monday uploads this month. Shifting the count to Sunday would fill the gap without adding effort.</div>
-              <div class="m"><span>Confidence 0.75</span></div>
+              <div class="t"><span class="tag" data-i18n="insights.rec.tag.schedule">Schedule</span> <span data-i18n="insights.rec4.title">Move inventory count to Sunday</span></div>
+              <div class="d" data-i18n="insights.rec4.body">Inventory has 3 missing Monday uploads this month. Shifting the count to Sunday would fill the gap without adding effort.</div>
+              <div class="m"><span><span data-i18n="insights.confidenceLabel">Confidence</span> 0.75</span></div>
             </div>
-            <div class="act"><button class="pri">Act</button><button>Dismiss</button></div>
+            <div class="act"><button class="pri" data-i18n="insights.act">Act</button><button data-i18n="insights.dismiss">Dismiss</button></div>
           </div>
 
           <div class="rec-item">
             <div class="ic ok">✓</div>
             <div>
-              <div class="t"><span class="tag">Retire</span> Retire cashier_count metric</div>
-              <div class="d">The column has been missing from the last 4 uploads. If it's no longer collected, retire the metric to stop noise on Alerts.</div>
-              <div class="m"><span>Low impact</span></div>
+              <div class="t"><span class="tag" data-i18n="insights.rec.tag.retire">Retire</span> <span data-i18n="insights.rec5.title">Retire cashier_count metric</span></div>
+              <div class="d" data-i18n="insights.rec5.body">The column has been missing from the last 4 uploads. If it's no longer collected, retire the metric to stop noise on Alerts.</div>
+              <div class="m"><span data-i18n="insights.lowImpact">Low impact</span></div>
             </div>
-            <div class="act"><button>Retire</button><button>Keep</button></div>
+            <div class="act"><button data-i18n="insights.retire">Retire</button><button data-i18n="insights.keep">Keep</button></div>
           </div>
 
         </div>
@@ -368,33 +368,35 @@
 
       <!-- What-if -->
       <div class="card">
-        <div class="card-head"><h3>What-if scenarios</h3><span class="kebab">•••</span></div>
+        <div class="card-head"><h3 data-i18n="insights.whatif.title">What-if scenarios</h3><span class="kebab">•••</span></div>
         <div class="whatif">
           <div class="row-in">
             <div>
-              <label>Scenario</label>
+              <label data-i18n="insights.whatif.scenario">Scenario</label>
               <select>
-                <option>Losses stay at this rate all month</option>
-                <option>Sales grow 5% next week</option>
-                <option>Inventory shrinks 15%</option>
-                <option>Reorder cadence shifts to weekly</option>
+                <option data-i18n="insights.whatif.scenario1">Losses stay at this rate all month</option>
+                <option data-i18n="insights.whatif.scenario2">Sales grow 5% next week</option>
+                <option data-i18n="insights.whatif.scenario3">Inventory shrinks 15%</option>
+                <option data-i18n="insights.whatif.scenario4">Reorder cadence shifts to weekly</option>
               </select>
             </div>
             <div>
-              <label>Horizon</label>
-              <select><option>End of month</option><option>Next 7 days</option><option>Next 30 days</option><option>End of quarter</option></select>
+              <label data-i18n="insights.whatif.horizon">Horizon</label>
+              <select><option data-i18n="insights.whatif.endOfMonth">End of month</option><option data-i18n="insights.whatif.next7days">Next 7 days</option><option data-i18n="insights.whatif.next30days">Next 30 days</option><option data-i18n="insights.whatif.endOfQuarter">End of quarter</option></select>
             </div>
-            <div style="align-self:end"><button class="btn">Project ✨</button></div>
+            <div style="align-self:end"><button class="btn" data-i18n="insights.whatif.project">Project ✨</button></div>
           </div>
 
           <div class="whatif-result">
-            <b>If losses stay at today's $980/day through Jul 31:</b>
-            You'd lose an additional <b>$1,960</b>, pulling July gross profit down to ~<b>$61.2K</b> (down from the current forecast of $63.1K). Ceiling breaches would fire on Jul 30 and Jul 31 as well.
+            <span data-i18n-html="insights.whatif.result">
+              <b>If losses stay at today's $980/day through Jul 31:</b>
+              You'd lose an additional <b>$1,960</b>, pulling July gross profit down to ~<b>$61.2K</b> (down from the current forecast of $63.1K). Ceiling breaches would fire on Jul 30 and Jul 31 as well.
+            </span>
             <div class="wi-nums">
-              <div class="wi-num"><label>Projected losses</label><b>$4,900</b></div>
-              <div class="wi-num"><label>Δ gross profit</label><b style="color:var(--red)">−$1,960</b></div>
-              <div class="wi-num"><label>New alerts</label><b>+2</b></div>
-              <div class="wi-num"><label>Confidence</label><b>0.78</b></div>
+              <div class="wi-num"><label data-i18n="insights.whatif.projectedLosses">Projected losses</label><b>$4,900</b></div>
+              <div class="wi-num"><label data-i18n="insights.whatif.deltaGrossProfit">Δ gross profit</label><b style="color:var(--red)">−$1,960</b></div>
+              <div class="wi-num"><label data-i18n="insights.whatif.newAlerts">New alerts</label><b>+2</b></div>
+              <div class="wi-num"><label data-i18n="insights.confidenceLabel">Confidence</label><b>0.78</b></div>
             </div>
           </div>
         </div>
@@ -403,19 +405,19 @@
 
     <!-- Cross-station comparison -->
     <div class="card" style="margin:0 4px 16px">
-      <div class="card-head" style="padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)"><h3 style="margin:0;font-size:15px">Cross-station insights · this week</h3><span class="kebab" style="margin-left:auto">•••</span></div>
+      <div class="card-head" style="padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)"><h3 style="margin:0;font-size:15px"><span data-i18n="insights.crossStation.title">Cross-station insights</span> · <span data-i18n="insights.thisWeek">this week</span></h3><span class="kebab" style="margin-left:auto">•••</span></div>
       <div style="padding:16px 18px">
         <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
           <div>
-            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px">AI narrative · confidence 0.84</div>
-            <div style="font-size:14px;line-height:1.6;color:var(--ink)">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px"><span data-i18n="insights.aiNarrativeLabel">AI narrative</span> · <span data-i18n="insights.confidenceLabel">Confidence</span> 0.84</div>
+            <div style="font-size:14px;line-height:1.6;color:var(--ink)" data-i18n-html="insights.crossStation.body">
               <b>Station A outperformed Station B on weekends by 22%</b> in revenue this week. Weekday performance was even, so the gap is entirely weekend-driven — likely tied to A's higher foot traffic in Q1. Losses tell the opposite story: <b>A's losses are running +18%</b> while <b>B has trimmed −12%</b>. Bình's data-quality score is A vs A− for Anna at Station A — three missing inventory days on the Station A side.
             </div>
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)">👍 Helpful</button>
+              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.helpfulBtn">👍 Helpful</button>
               <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)">👎</button>
-              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)">📌 Pin</button>
-              <button style="padding:6px 12px;border-radius:8px;background:var(--sidebar);color:#fff;font-size:11px;font-weight:600">Ask a follow-up</button>
+              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.pin">📌 Pin</button>
+              <button style="padding:6px 12px;border-radius:8px;background:var(--sidebar);color:#fff;font-size:11px;font-weight:600" data-i18n="insights.askFollowUp">Ask a follow-up</button>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px">
@@ -429,7 +431,7 @@
               <div style="flex:1"><div style="font-size:11px;color:var(--muted)">Station B · Thủ Đức</div><div style="font-size:16px;font-weight:700">$75K</div></div>
               <div style="color:#1f8f4a;font-weight:700;font-size:12px">+8%</div>
             </div>
-            <div style="background:linear-gradient(135deg,#eaf7d3,#fff);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink)">
+            <div style="background:linear-gradient(135deg,#eaf7d3,#fff);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink)" data-i18n-html="insights.crossStation.recommendation">
               <b>Recommendation</b>: try Station A's weekend playbook (extended hours + fresh-goods restock) at Station B.
             </div>
           </div>
@@ -439,17 +441,17 @@
 
     <!-- Compare periods narratively -->
     <div class="card compare">
-      <div class="card-head"><h3>Compare periods · narratively</h3><span class="kebab">•••</span></div>
+      <div class="card-head"><h3 data-i18n="insights.comparePeriods.title">Compare periods · narratively</h3><span class="kebab">•••</span></div>
       <div class="row-in">
-        <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Period A</label>
-          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option>This week (Jul 22–28)</option><option>This month</option><option>Custom…</option></select>
+        <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="insights.comparePeriods.periodA">Period A</label>
+          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option data-i18n="insights.comparePeriods.thisWeekRange">This week (Jul 22–28)</option><option data-i18n="insights.comparePeriods.thisMonth">This month</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
         </div>
-        <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Period B</label>
-          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option>Last week (Jul 15–21)</option><option>Same week last year</option><option>Custom…</option></select>
+        <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="insights.comparePeriods.periodB">Period B</label>
+          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option data-i18n="insights.comparePeriods.lastWeekRange">Last week (Jul 15–21)</option><option data-i18n="insights.comparePeriods.sameWeekLastYear">Same week last year</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
         </div>
-        <div style="align-self:end"><button class="btn" style="background:var(--sidebar);color:#fff;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600">Explain difference ✨</button></div>
+        <div style="align-self:end"><button class="btn" style="background:var(--sidebar);color:#fff;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600" data-i18n="insights.comparePeriods.explainDifference">Explain difference ✨</button></div>
       </div>
-      <div class="compare-body">
+      <div class="compare-body" data-i18n-html="insights.comparePeriods.body">
         <b>This week vs last week — summary:</b>
         <ul>
           <li><b>Sales</b> rose <b>+8%</b>, driven mostly by <b>Saturday and Sunday</b> (weekend uplift of ~14%). Weekdays were flat.</li>
@@ -462,55 +464,55 @@
 
     <!-- Patterns -->
     <div class="card patterns">
-      <div class="card-head"><h3>Trend & pattern discovery · 8 found</h3><span class="kebab">•••</span></div>
+      <div class="card-head"><h3><span data-i18n="insights.patterns.title">Trend & pattern discovery</span> · <span data-i18n="insights.patterns.found">8 found</span></h3><span class="kebab">•••</span></div>
       <div class="pat-grid">
 
         <div class="pat">
-          <span class="tag season">Seasonality</span>
-          <div class="t">Sales dip every Monday</div>
-          <div class="d">Sales average −18% on Mondays vs mid-week for the last 12 weeks running.</div>
+          <span class="tag season" data-i18n="insights.tag.seasonality">Seasonality</span>
+          <div class="t" data-i18n="insights.pat1.title">Sales dip every Monday</div>
+          <div class="d" data-i18n="insights.pat1.body">Sales average −18% on Mondays vs mid-week for the last 12 weeks running.</div>
           <svg viewBox="0 0 200 60"><polyline fill="none" stroke="#3455b3" stroke-width="1.8" points="0,10 25,45 50,20 75,15 100,20 125,25 150,10 175,15 200,45"/></svg>
-          <div class="foot"><span class="conf">Conf <b>0.94</b></span><span>Since Apr 22</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.94</b></span><span data-i18n="insights.pat1.since">Since Apr 22</span></div>
         </div>
 
         <div class="pat">
-          <span class="tag corr">Correlation</span>
-          <div class="t">Losses correlate with humidity</div>
-          <div class="d">r = 0.71 between reported humidity and daily losses over 90 days. Consider climate control.</div>
+          <span class="tag corr" data-i18n="insights.tag.correlation">Correlation</span>
+          <div class="t" data-i18n="insights.pat2.title">Losses correlate with humidity</div>
+          <div class="d" data-i18n="insights.pat2.body">r = 0.71 between reported humidity and daily losses over 90 days. Consider climate control.</div>
           <svg viewBox="0 0 200 60"><circle cx="20" cy="45" r="3" fill="#7c5cff"/><circle cx="50" cy="40" r="3" fill="#7c5cff"/><circle cx="70" cy="30" r="3" fill="#7c5cff"/><circle cx="100" cy="25" r="3" fill="#7c5cff"/><circle cx="130" cy="20" r="3" fill="#7c5cff"/><circle cx="160" cy="12" r="3" fill="#7c5cff"/><line x1="10" y1="50" x2="180" y2="8" stroke="#7c5cff" stroke-dasharray="3 3"/></svg>
-          <div class="foot"><span class="conf">Conf <b>0.71</b></span><span>90d window</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.71</b></span><span data-i18n="insights.pat2.window">90d window</span></div>
         </div>
 
         <div class="pat">
-          <span class="tag anom">Anomaly</span>
-          <div class="t">Revenue unit-shift on Jul 15</div>
-          <div class="d">Values 100× larger for one day — almost certainly a CSV format change, not a real spike.</div>
+          <span class="tag anom" data-i18n="insights.tag.anomaly">Anomaly</span>
+          <div class="t" data-i18n="insights.pat3.title">Revenue unit-shift on Jul 15</div>
+          <div class="d" data-i18n="insights.pat3.body">Values 100× larger for one day — almost certainly a CSV format change, not a real spike.</div>
           <svg viewBox="0 0 200 60"><polyline fill="none" stroke="#c94141" stroke-width="1.8" points="0,45 20,42 40,44 60,40 80,38 100,10 120,38 140,40 160,42 180,44 200,40"/></svg>
-          <div class="foot"><span class="conf">Conf <b>0.98</b></span><span>1 day</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.98</b></span><span data-i18n="insights.pat3.window">1 day</span></div>
         </div>
 
         <div class="pat">
-          <span class="tag season">Seasonality</span>
-          <div class="t">Weekend sales +34%</div>
-          <div class="d">Consistent uplift Fri PM → Sun for the last quarter. Staffing may be understated.</div>
+          <span class="tag season" data-i18n="insights.tag.seasonality">Seasonality</span>
+          <div class="t" data-i18n="insights.pat4.title">Weekend sales +34%</div>
+          <div class="d" data-i18n="insights.pat4.body">Consistent uplift Fri PM → Sun for the last quarter. Staffing may be understated.</div>
           <svg viewBox="0 0 200 60"><g fill="#1f6f4a"><rect x="0" y="35" width="20" height="25"/><rect x="25" y="40" width="20" height="20"/><rect x="50" y="42" width="20" height="18"/><rect x="75" y="30" width="20" height="30"/><rect x="100" y="20" width="20" height="40"/><rect x="125" y="10" width="20" height="50"/><rect x="150" y="14" width="20" height="46"/></g></svg>
-          <div class="foot"><span class="conf">Conf <b>0.89</b></span><span>Q2</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.89</b></span><span data-i18n="insights.pat4.window">Q2</span></div>
         </div>
 
         <div class="pat">
-          <span class="tag corr">Correlation</span>
-          <div class="t">Purchases lead sales by 2 days</div>
-          <div class="d">Cross-correlation peaks at lag −2. Useful for demand planning.</div>
+          <span class="tag corr" data-i18n="insights.tag.correlation">Correlation</span>
+          <div class="t" data-i18n="insights.pat5.title">Purchases lead sales by 2 days</div>
+          <div class="d" data-i18n="insights.pat5.body">Cross-correlation peaks at lag −2. Useful for demand planning.</div>
           <svg viewBox="0 0 200 60"><polyline fill="none" stroke="#3455b3" stroke-width="1.6" points="0,20 30,25 60,18 90,26 120,20 150,28 180,22 200,30"/><polyline fill="none" stroke="#1f6f4a" stroke-width="1.6" stroke-dasharray="0" points="0,32 30,38 60,30 90,40 120,32 150,42 180,34 200,44"/></svg>
-          <div class="foot"><span class="conf">Conf <b>0.76</b></span><span>lag −2d</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.76</b></span><span data-i18n="insights.pat5.window">lag −2d</span></div>
         </div>
 
         <div class="pat">
-          <span class="tag anom">Anomaly</span>
-          <div class="t">supplier_returns gone silent</div>
-          <div class="d">No uploads for 5 consecutive days after 6 months of daily reporting.</div>
+          <span class="tag anom" data-i18n="insights.tag.anomaly">Anomaly</span>
+          <div class="t" data-i18n="insights.pat6.title">supplier_returns gone silent</div>
+          <div class="d" data-i18n="insights.pat6.body">No uploads for 5 consecutive days after 6 months of daily reporting.</div>
           <svg viewBox="0 0 200 60"><polyline fill="none" stroke="#c94141" stroke-width="1.6" points="0,40 20,42 40,38 60,45 80,40 100,42 120,50 140,50 160,50 180,50 200,50"/></svg>
-          <div class="foot"><span class="conf">Conf <b>0.83</b></span><span>Since Jul 24</span></div>
+          <div class="foot"><span class="conf"><span data-i18n="insights.confShort">Conf</span> <b>0.83</b></span><span data-i18n="insights.pat6.since">Since Jul 24</span></div>
         </div>
 
       </div>

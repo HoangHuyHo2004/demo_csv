@@ -13,6 +13,7 @@ import {
   parseFile, inferTypes, normalizeNumber, toISODate,
   detectDateFromFilename, detectDateColumnName, looksLikeSnapshot,
 } from './csv.js';
+import { t, applyTranslations, onChange as onLanguageChange } from './i18n.js';
 
 let currentUserId = null;
 let stations = [];
@@ -47,13 +48,23 @@ async function init() {
   wireSaveActions();
   await refreshHistory();
   wireHistoryFilters();
+
+  // Re-render everything rendered from JS (not caught by applyTranslations'
+  // querySelector sweep) whenever the language changes.
+  onLanguageChange(() => {
+    populateHistoryStationFilter();
+    renderFiles();
+    renderHistory();
+  });
 }
 
 function populateHistoryStationFilter() {
   const sel = document.getElementById('hist-station');
   if (!sel) return;
-  sel.innerHTML = '<option value="">All stations</option>' +
+  const prevValue = sel.value;
+  sel.innerHTML = `<option value="">${t('common.allStations')}</option>` +
     stations.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+  sel.value = prevValue;
 }
 
 // ---------------------------------------------------------------------
@@ -86,7 +97,7 @@ function wireDropzone() {
 
 async function handleFiles(fileListArg) {
   for (const file of Array.from(fileListArg)) {
-    if (!/\.csv$/i.test(file.name) && file.type !== 'text/csv') continue;
+    if (!/\.(csv|xlsx|xls)$/i.test(file.name)) continue;
     const state = await buildFileState(file);
     fileStates.push(state);
   }
@@ -114,21 +125,21 @@ async function buildFileState(file) {
 
   if (parsed.headers.length === 0 || parsed.rowCount === 0) {
     state.status = 'error';
-    state.errorMessage = 'Empty file or no columns detected.';
+    state.errorMessage = t('uploads.error.emptyFile');
     return state;
   }
 
   const types = inferTypes(parsed.headers, parsed.rows);
   const dateColName = detectDateColumnName(types);
 
-  state.columns = types.map((t) => {
-    const snapshot = t.type === 'number' && looksLikeSnapshot(t.name);
+  state.columns = types.map((col) => {
+    const snapshot = col.type === 'number' && looksLikeSnapshot(col.name);
     return {
-      sourceName: t.name,
-      mappedName: t.name,
-      type: t.type,
-      isDateCol: t.name === dateColName,
-      include: t.type === 'number' && !snapshot,
+      sourceName: col.name,
+      mappedName: col.name,
+      type: col.type,
+      isDateCol: col.name === dateColName,
+      include: col.type === 'number' && !snapshot,
       isSnapshot: snapshot,
     };
   });
@@ -206,21 +217,34 @@ function renderFiles() {
   updateSaveButton();
 }
 
-const STATUS_LABEL = {
-  draft: 'Parsing…',
-  'needs-station': 'Select a station',
-  'needs-category': 'Enter a category',
-  'needs-date': 'Set the date',
-  duplicate: 'Date exists',
-  ready: 'Ready',
-  saving: 'Saving…',
-  saved: 'Saved',
-  error: 'Error',
+const STATUS_LABEL_KEY = {
+  draft: 'uploads.status.parsing',
+  'needs-station': 'uploads.status.needsStation',
+  'needs-category': 'uploads.status.needsCategory',
+  'needs-date': 'uploads.status.needsDate',
+  duplicate: 'uploads.status.duplicate',
+  ready: 'uploads.status.ready',
+  saving: 'uploads.status.saving',
+  saved: 'uploads.status.saved',
+  error: 'common.error',
 };
 const STATUS_CLASS = {
   draft: 'new', 'needs-station': 'warn', 'needs-category': 'warn', 'needs-date': 'warn',
   duplicate: 'warn', ready: 'ok', saving: 'ok', saved: 'ok', error: 'err',
 };
+function statusLabel(status) {
+  const key = STATUS_LABEL_KEY[status];
+  return key ? t(key) : status;
+}
+const DATE_SOURCE_LABEL_KEY = {
+  column: 'uploads.dateSource.column',
+  filename: 'uploads.dateSource.filename',
+  manual: 'uploads.dateSource.manual',
+};
+function dateSourceLabel(source) {
+  const key = DATE_SOURCE_LABEL_KEY[source];
+  return key ? t(key) : source;
+}
 
 function renderFileRow(state) {
   const node = rowTpl.content.firstElementChild.cloneNode(true);
@@ -229,14 +253,16 @@ function renderFileRow(state) {
   node.querySelector('[data-f="name"]').textContent = state.file.name;
   node.querySelector('[data-f="sub"]').textContent = state.status === 'error'
     ? state.errorMessage
-    : `${sizeKb} KB · ${state.rows.length} rows · date ${state.resolvedDate ? state.resolvedDate + ' (' + state.dateSource + ')' : 'unresolved'}`;
+    : (state.resolvedDate
+        ? t('uploads.fileRow.subResolved', { size: sizeKb, rows: state.rows.length, date: state.resolvedDate, source: dateSourceLabel(state.dateSource) })
+        : t('uploads.fileRow.subUnresolved', { size: sizeKb, rows: state.rows.length }));
 
   const statusEl = node.querySelector('[data-f="status"]');
-  statusEl.textContent = STATUS_LABEL[state.status] || state.status;
+  statusEl.textContent = statusLabel(state.status);
   statusEl.className = 'status ' + (STATUS_CLASS[state.status] || '');
 
   const stationSel = node.querySelector('[data-f="station"]');
-  stationSel.innerHTML = '<option value="">— Select station —</option>' +
+  stationSel.innerHTML = `<option value="">${t('uploads.selectStationOption')}</option>` +
     stations.map((s) => `<option value="${s.id}"${s.id === state.stationId ? ' selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
   stationSel.addEventListener('change', async () => {
     state.stationId = stationSel.value;
@@ -294,6 +320,11 @@ function renderFileRow(state) {
     node.querySelector('[data-f="mapping"]').hidden = true;
   }
 
+  // The row is cloned from <template>, so it was never covered by the
+  // document-wide applyTranslations() sweep -- apply it now to pick up the
+  // category placeholder / date-override title / remove button title.
+  applyTranslations(node);
+
   return node;
 }
 
@@ -305,17 +336,17 @@ function renderDuplicateBanner(state) {
       const newVal = aggregateColumn(state.rows, c.sourceName, 'sum');
       return old
         ? `${escapeHtml(c.mappedName)}: <span class="old">${old.value}</span> → <span class="new">${newVal ?? '—'}</span>`
-        : `${escapeHtml(c.mappedName)}: <span class="new">${newVal ?? '—'}</span> (new)`;
+        : `${escapeHtml(c.mappedName)}: <span class="new">${newVal ?? '—'}</span> ${t('uploads.duplicate.newSuffix')}`;
     })
     .join(' &nbsp;·&nbsp; ');
   const confirmed = state.overwriteConfirmed;
   return `
     <div class="icon">!</div>
     <div>
-      <b>${escapeHtml(state.duplicate.filename)}</b> — a record for <b>${escapeHtml(state.category)}</b> on <b>${state.resolvedDate}</b> already exists.
-      ${confirmed ? 'Overwrite confirmed — the old values will be replaced when you save.' : 'Uploading will overwrite. Preview of change:'}
-      <div class="diff">${diffs || 'No overlapping tracked metrics.'}</div>
-      ${confirmed ? '' : '<button type="button" class="btn ghost" data-f="confirm-overwrite" style="margin-top:8px">Confirm overwrite</button>'}
+      <b>${escapeHtml(state.duplicate.filename)}</b> — ${t('uploads.duplicate.exists', { category: escapeHtml(state.category), date: state.resolvedDate })}
+      ${confirmed ? t('uploads.duplicate.confirmedNote') : t('uploads.duplicate.previewNote')}
+      <div class="diff">${diffs || t('uploads.duplicate.noOverlap')}</div>
+      ${confirmed ? '' : `<button type="button" class="btn ghost" data-f="confirm-overwrite" style="margin-top:8px">${t('uploads.duplicate.confirmButton')}</button>`}
     </div>`;
 }
 
@@ -330,7 +361,7 @@ function renderMapRow(c, fileId) {
       <td style="text-align:center"><input type="radio" name="datecol-${fileId}" data-map="datecol" ${c.isDateCol ? 'checked' : ''} ${c.type === 'date' ? '' : 'disabled'}></td>
       <td style="text-align:center">
         <label class="toggle"><input type="checkbox" data-map="include" ${c.include ? 'checked' : ''} ${c.type !== 'number' ? 'disabled' : ''}><span></span></label>
-        ${c.isSnapshot ? '<div class="map-warning">snapshot metric — summing would be wrong</div>' : ''}
+        ${c.isSnapshot ? `<div class="map-warning">${t('uploads.mapping.snapshotWarning')}</div>` : ''}
       </td>
     </tr>`;
 }
@@ -367,7 +398,10 @@ function wireMapRow(mapBody, state) {
 
 function updateSaveButton() {
   const readyCount = fileStates.filter((s) => s.status === 'ready').length;
-  saveAllBtn.textContent = `Confirm & save ${readyCount || ''} file${readyCount === 1 ? '' : 's'}`.replace('  ', ' ');
+  saveAllBtn.textContent = t('uploads.actions.confirmSaveCount', {
+    n: readyCount || '',
+    s: readyCount === 1 ? '' : 's',
+  }).replace('  ', ' ');
   saveAllBtn.disabled = readyCount === 0;
 }
 
@@ -396,7 +430,8 @@ function wireSaveActions() {
 
 async function saveOne(state) {
   const uploadId = crypto.randomUUID();
-  const storagePath = `${state.stationId}/${state.resolvedDate}/${uploadId}.csv`;
+  const ext = (state.file.name.match(/\.(csv|xlsx|xls)$/i) || ['', 'csv'])[1].toLowerCase();
+  const storagePath = `${state.stationId}/${state.resolvedDate}/${uploadId}.${ext}`;
   const isOverwrite = !!state.duplicate;
 
   state.status = 'saving';
@@ -404,7 +439,7 @@ async function saveOne(state) {
 
   // Step 1: storage upload. Fails -> abort, nothing persisted.
   const { error: storageErr } = await uploadFileToStorage(storagePath, state.file);
-  if (storageErr) return fail(state, 'Could not upload file: ' + storageErr.message);
+  if (storageErr) return fail(state, t('uploads.error.uploadFailed', { message: storageErr.message }));
 
   // Step 1b (overwrite only): mark the old row overwritten first, freeing
   // the partial unique index for the new row.
@@ -412,7 +447,7 @@ async function saveOne(state) {
     const { error: markErr } = await setUploadStatus(state.duplicate.existingUploadId, 'overwritten');
     if (markErr) {
       await removeStorageObject(storagePath);
-      return fail(state, 'Could not prepare overwrite: ' + markErr.message);
+      return fail(state, t('uploads.error.overwritePrep', { message: markErr.message }));
     }
   }
 
@@ -432,7 +467,7 @@ async function saveOne(state) {
     await removeStorageObject(storagePath);
     if (isOverwrite) await setUploadStatus(state.duplicate.existingUploadId, 'processed');
     return fail(state, insErr.code === '23505'
-      ? 'Another upload for this station/date/category was just created — reload and try again.'
+      ? t('uploads.error.duplicateRace')
       : insErr.message);
   }
 
@@ -476,7 +511,7 @@ async function saveOne(state) {
     await deleteMetricValuesForUpload(uploadId);
     await setUploadStatus(uploadId, 'error');
     if (isOverwrite) await setUploadStatus(state.duplicate.existingUploadId, 'processed');
-    return fail(state, 'Could not save values: ' + chunkErr.message);
+    return fail(state, t('uploads.error.saveValuesFailed', { message: chunkErr.message }));
   }
 
   // Step 4 (overwrite only): only now that the new values are safely in,
@@ -545,7 +580,7 @@ function renderHistory() {
   });
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">No uploads yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">${t('uploads.history.empty')}</td></tr>`;
     return;
   }
 
@@ -562,7 +597,7 @@ function renderHistory() {
         <td>${escapeHtml(r.filename)}</td>
         <td>${r.row_count ?? '—'}</td>
         <td>${r.metric_values?.[0]?.count ?? 0}</td>
-        <td><span class="status ${statusClass}">${r.status}</span></td>
+        <td><span class="status ${statusClass}">${historyStatusLabel(r.status)}</span></td>
         <td>${escapeHtml(uploaderName)}</td>
         <td><div class="row-actions"><button type="button" data-action="download">⬇</button></div></td>
       </tr>`;
@@ -578,6 +613,17 @@ function renderHistory() {
       if (url) window.open(url, '_blank');
     });
   });
+}
+
+const HISTORY_STATUS_LABEL_KEY = {
+  processed: 'common.processed',
+  overwritten: 'common.overwritten',
+  pending: 'common.pending',
+  error: 'common.error',
+};
+function historyStatusLabel(status) {
+  const key = HISTORY_STATUS_LABEL_KEY[status];
+  return key ? t(key) : status;
 }
 
 function escapeHtml(str) {

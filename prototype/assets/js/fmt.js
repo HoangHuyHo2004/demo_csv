@@ -1,5 +1,6 @@
 // Number/currency formatting and metric display conventions shared by
 // dashboard.js and statistics.js.
+import { t } from './i18n.js';
 
 // Metric names like `revenue` are conventions this app assumes, not
 // something the schema enforces -- a station whose CSVs use different
@@ -58,6 +59,34 @@ export function formatDelta(pct) {
   if (pct === null || pct === undefined || Number.isNaN(pct)) return '—';
   const sign = pct >= 0 ? '▲ +' : '▼ ';
   return `${sign}${Math.abs(pct).toFixed(0)}%`;
+}
+
+// Every date in the app renders DD/MM/YYYY, per Settings' "date format
+// is fixed for this workspace" -- these are the only date-formatting
+// helpers dashboard.js/statistics.js should use; a bare
+// `new Date(...).toLocaleDateString('en-US', ...)` bakes in an
+// English-only, non-fixed format that contradicts both promises.
+export function formatDateDMY(isoDate) {
+  const [y, m, d] = String(isoDate).split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// Compact "DD/MM" for space-constrained chart annotations, where the
+// year is implied by context and would just add clutter.
+export function formatDateShortDMY(isoDate) {
+  const [, m, d] = String(isoDate).split('-');
+  return `${d}/${m}`;
+}
+
+const WEEKDAY_KEYS = [
+  'statistics.weekday.sun', 'statistics.weekday.mon', 'statistics.weekday.tue',
+  'statistics.weekday.wed', 'statistics.weekday.thu', 'statistics.weekday.fri',
+  'statistics.weekday.sat',
+];
+
+export function weekdayLabel(isoDate) {
+  const dayIndex = new Date(`${isoDate}T00:00:00Z`).getUTCDay();
+  return t(WEEKDAY_KEYS[dayIndex]);
 }
 
 export function isoDateNDaysAgo(n, from = new Date()) {

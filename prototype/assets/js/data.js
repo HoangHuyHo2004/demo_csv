@@ -116,10 +116,18 @@ export async function listUploads({ stationIds, limit = 50 } = {}) {
   return data;
 }
 
+const EXT_CONTENT_TYPE = {
+  csv: 'text/csv',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  xls: 'application/vnd.ms-excel',
+};
+
 export async function uploadFileToStorage(path, file) {
+  const ext = path.split('.').pop().toLowerCase();
+  const contentType = EXT_CONTENT_TYPE[ext] || 'application/octet-stream';
   const { error } = await supabase.storage
     .from('csv-uploads')
-    .upload(path, file, { contentType: 'text/csv', upsert: false });
+    .upload(path, file, { contentType, upsert: false });
   return { error };
 }
 

@@ -21,34 +21,34 @@
   <!-- ============ MAIN ============ -->
   <main>
     <div class="header">
-      <div class="h-title">Owner Dashboard <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="index.header.title">Owner Dashboard</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search anything in Demo_CSV…
+        <span data-i18n="index.header.searchPlaceholder">Search anything in Demo_CSV…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></button>
-        <button class="cta">Upload today's CSV <span class="plus">+</span></button>
+        <button class="cta"><span data-i18n="index.header.uploadCta">Upload today's CSV</span> <span class="plus">+</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Dashboard</h1>
-        <p>An easy way to track your business with care and precision.</p>
+        <h1 data-i18n="index.page.title">Dashboard</h1>
+        <p data-i18n="index.page.desc">An easy way to track your business with care and precision.</p>
       </div>
       <div class="daterange">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        January 2026 – July 2026 ▾
+        <span data-i18n="index.page.dateRange">January 2026 – July 2026 ▾</span>
       </div>
     </div>
 
@@ -56,40 +56,40 @@
     <div class="row top">
       <div class="promo">
         <div class="glow"></div>
-        <div class="tag"><span class="dot"></span>Update</div>
+        <div class="tag"><span class="dot"></span><span data-i18n="index.promo.tag">Update</span></div>
         <div>
-          <div class="date">Jul 28th 2026</div>
-          <div class="headline">Sales revenue increased <b>40% in 1 week</b></div>
+          <div class="date" data-i18n="index.promo.date">Jul 28th 2026</div>
+          <div class="headline" data-i18n-html="index.promo.headline">Sales revenue increased <b>40% in 1 week</b></div>
         </div>
-        <a class="see" href="#">See Statistics ›</a>
+        <a class="see" href="#" data-i18n="index.promo.seeStatistics">See Statistics ›</a>
       </div>
 
       <div class="card kpi">
-        <div class="label">Net Income (revenue) <span class="kebab">•••</span></div>
+        <div class="label"><span data-i18n="index.kpi.netIncome">Net Income (revenue)</span> <span class="kebab">•••</span></div>
         <div class="value"><span class="cur">$</span><span id="kpi-net-income-value">—</span></div>
-        <div class="foot"><span class="delta" id="kpi-net-income-delta">—</span> vs prior 30 days</div>
+        <div class="foot"><span class="delta" id="kpi-net-income-delta">—</span> <span data-i18n="index.kpi.vsPrior30Days">vs prior 30 days</span></div>
       </div>
 
       <div class="card kpi">
-        <div class="label">Total Losses <span class="kebab">•••</span></div>
+        <div class="label"><span data-i18n="index.kpi.totalLosses">Total Losses</span> <span class="kebab">•••</span></div>
         <div class="value"><span class="cur">$</span><span id="kpi-losses-value">—</span></div>
-        <div class="foot"><span class="delta" id="kpi-losses-delta">—</span> vs prior 30 days</div>
+        <div class="foot"><span class="delta" id="kpi-losses-delta">—</span> <span data-i18n="index.kpi.vsPrior30Days">vs prior 30 days</span></div>
       </div>
     </div>
 
     <!-- Mid row -->
     <div class="row mid">
       <div class="card list-card">
-        <h3>Recent Uploads <span class="kebab">•••</span></h3>
+        <h3><span data-i18n="index.recentUploads.title">Recent Uploads</span> <span class="kebab">•••</span></h3>
         <div id="recent-uploads-list"></div>
       </div>
 
       <div class="card rev">
         <div class="top-row">
-          <h3 style="margin:0;font-size:15px;font-weight:600">Revenue</h3>
+          <h3 style="margin:0;font-size:15px;font-weight:600" data-i18n="index.legend.revenue">Revenue</h3>
           <div class="legend">
-            <span><span class="sw" style="background:var(--green-dk)"></span>Revenue</span>
-            <span><span class="sw" style="background:var(--accent)"></span>Purchases</span>
+            <span><span class="sw" style="background:var(--green-dk)"></span><span data-i18n="index.legend.revenue">Revenue</span></span>
+            <span><span class="sw" style="background:var(--accent)"></span><span data-i18n="index.legend.purchases">Purchases</span></span>
           </div>
         </div>
         <div class="big" id="revenue-big">— <small></small></div>
@@ -102,7 +102,7 @@
 
     <!-- Sales report full width under mid -->
     <div class="card report" style="margin-top:16px">
-      <h3>Metric Breakdown <span class="kebab">•••</span></h3>
+      <h3><span data-i18n="index.metricBreakdown.title">Metric Breakdown</span> <span class="kebab">•••</span></h3>
       <div id="metric-breakdown"></div>
     </div>
   </main>
@@ -110,7 +110,7 @@
   <!-- ============ RIGHT COLUMN ============ -->
   <aside class="right-col">
     <div class="card donut-card">
-      <h3>Top Metrics (30 days)</h3>
+      <h3 data-i18n="index.donut.title">Top Metrics (30 days)</h3>
       <div class="donut-wrap">
         <svg id="donut-svg" width="220" height="220" viewBox="0 0 42 42">
           <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#eef0ec" stroke-width="6"/>
@@ -124,19 +124,19 @@
           <text data-donut-text x="34" y="20" text-anchor="middle" font-size="2.6" fill="#0f2a1f" font-weight="700"></text>
           <text data-donut-text x="21" y="36" text-anchor="middle" font-size="2.6" fill="#0f2a1f" font-weight="700"></text>
         </svg>
-        <div class="donut-center">Records (30d)<b id="donut-center-value">—</b></div>
+        <div class="donut-center"><span data-i18n="index.donut.centerLabel">Records (30d)</span><b id="donut-center-value">—</b></div>
       </div>
-      <p class="donut-tips">Share of tracked activity by metric, last 30 days.</p>
-      <a class="btn-outline" href="statistics.html">See full statistics</a>
+      <p class="donut-tips" data-i18n="index.donut.tips">Share of tracked activity by metric, last 30 days.</p>
+      <a class="btn-outline" href="statistics.html" data-i18n="index.donut.seeFullStatistics">See full statistics</a>
       <div class="legend-grid" id="donut-legend"></div>
     </div>
 
     <div class="upsell">
       <svg class="spark" width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19"/></svg>
       <div class="k">D</div>
-      <h4>Level up your business tracking to the next level.</h4>
-      <p>An easy way to manage sales, inventory, and losses with care and precision.</p>
-      <a class="go" href="#">Upgrade to Demo_CSV+</a>
+      <h4 data-i18n="index.upsell.heading">Level up your business tracking to the next level.</h4>
+      <p data-i18n="index.upsell.body">An easy way to manage sales, inventory, and losses with care and precision.</p>
+      <a class="go" href="#" data-i18n="index.upsell.cta">Upgrade to Demo_CSV+</a>
     </div>
   </aside>
 

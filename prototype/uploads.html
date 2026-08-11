@@ -20,36 +20,36 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Uploads <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.uploads">Uploads</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search uploads, categories, filenames…
+        <span data-i18n="uploads.searchPlaceholder">Search uploads, categories, filenames…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
         <button class="icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg></button>
-        <button class="cta">Upload CSV <span class="plus">+</span></button>
+        <button class="cta"><span data-i18n="uploads.uploadFileCta">Upload file</span> <span class="plus">+</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Uploads</h1>
-        <p>Upload daily CSVs, map columns to metrics, and manage data categories.</p>
+        <h1 data-i18n="shell.nav.uploads">Uploads</h1>
+        <p data-i18n="uploads.pageDesc">Upload daily CSV or Excel files, map columns to metrics, and manage data categories.</p>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="active">Upload</button>
-      <button>History</button>
-      <button>Categories</button>
+      <button class="active" data-i18n="uploads.tabs.upload">Upload</button>
+      <button data-i18n="uploads.tabs.history">History</button>
+      <button data-i18n="uploads.tabs.categories">Categories</button>
     </div>
 
     <!-- Upload tab -->
@@ -57,16 +57,16 @@
 
       <!-- LEFT: dropzone + files + mapping -->
       <div class="card">
-        <h3>Upload CSV files <span class="kebab">•••</span></h3>
+        <h3><span data-i18n="uploads.card.title">Upload CSV or Excel files</span> <span class="kebab">•••</span></h3>
 
         <div class="drop" id="dropzone">
           <div class="icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M6 9l6-6 6 6M4 21h16"/></svg>
           </div>
-          <b>Drop CSV files here</b>
-          <small>or click to browse — you can drop several at once (bulk upload supported)</small>
-          <button type="button" class="browse" id="browse-btn">Browse files</button>
-          <input type="file" id="file-input" accept=".csv,text/csv" multiple hidden />
+          <b data-i18n="uploads.dropzone.title">Drop CSV or Excel files here</b>
+          <small data-i18n="uploads.dropzone.hint">.csv, .xlsx, .xls — or click to browse — you can drop several at once (bulk upload supported)</small>
+          <button type="button" class="browse" id="browse-btn" data-i18n="uploads.dropzone.browse">Browse files</button>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" multiple hidden />
         </div>
 
         <!-- Selected files (bulk), rendered from assets/js/upload.js -->
@@ -81,18 +81,18 @@
                 <div class="sub" data-f="sub"></div>
               </div>
               <select data-f="station"></select>
-              <input type="text" data-f="category" placeholder="category" />
-              <input type="date" data-f="date-override" title="Override the detected date" />
+              <input type="text" data-f="category" placeholder="category" data-i18n-placeholder="uploads.fileRow.categoryPlaceholder" />
+              <input type="date" data-f="date-override" title="Override the detected date" data-i18n-title="uploads.fileRow.dateOverrideTitle" />
               <span class="status" data-f="status"></span>
-              <button type="button" class="x" data-f="remove" title="Remove">✕</button>
+              <button type="button" class="x" data-f="remove" title="Remove" data-i18n-title="common.remove">✕</button>
             </div>
             <div class="warn-banner" data-f="warnbanner" hidden></div>
             <div class="mapping" data-f="mapping">
-              <h4>Column mapping</h4>
-              <div class="hint">Rename, exclude, mark the date column. Numeric columns become trackable metrics.</div>
+              <h4 data-i18n="uploads.mapping.title">Column mapping</h4>
+              <div class="hint" data-i18n="uploads.mapping.hint">Rename, exclude, mark the date column. Numeric columns become trackable metrics.</div>
               <table class="map">
                 <thead>
-                  <tr><th>Source column</th><th>Mapped name</th><th>Type</th><th style="text-align:center">Date column</th><th style="text-align:center">Include</th></tr>
+                  <tr><th data-i18n="uploads.mapping.col.source">Source column</th><th data-i18n="uploads.mapping.col.mappedName">Mapped name</th><th data-i18n="uploads.mapping.col.type">Type</th><th style="text-align:center" data-i18n="uploads.mapping.col.dateColumn">Date column</th><th style="text-align:center" data-i18n="uploads.mapping.col.include">Include</th></tr>
                 </thead>
                 <tbody data-f="maprows"></tbody>
               </table>
@@ -101,47 +101,47 @@
         </template>
 
         <div class="actions">
-          <button type="button" class="btn ghost" id="cancel-all-btn">Cancel all</button>
-          <button type="button" class="btn primary" id="save-all-btn" disabled>Confirm & save</button>
+          <button type="button" class="btn ghost" id="cancel-all-btn" data-i18n="common.cancelAll">Cancel all</button>
+          <button type="button" class="btn primary" id="save-all-btn" disabled data-i18n="uploads.actions.confirmSave">Confirm & save</button>
         </div>
       </div>
 
       <!-- RIGHT: categories -->
       <div class="card cats">
-        <h3>Data Categories <span class="kebab">•••</span></h3>
+        <h3><span data-i18n="uploads.categories.title">Data Categories</span> <span class="kebab">•••</span></h3>
 
         <div class="cat">
           <div class="icon" style="background:#eaf7d3;color:#1f6f4a">💰</div>
-          <div><div class="n">Sales</div><div class="d">daily sales volume & revenue</div></div>
-          <div class="count">128 uploads</div>
+          <div><div class="n" data-i18n="uploads.categories.sales.name">Sales</div><div class="d" data-i18n="uploads.categories.sales.desc">daily sales volume & revenue</div></div>
+          <div class="count" data-i18n="uploads.categories.sales.count">128 uploads</div>
           <button class="edit">✎</button>
         </div>
         <div class="cat">
           <div class="icon" style="background:#eaf1ff;color:#3455b3">📦</div>
-          <div><div class="n">Purchases</div><div class="d">supplier orders in</div></div>
-          <div class="count">104 uploads</div>
+          <div><div class="n" data-i18n="uploads.categories.purchases.name">Purchases</div><div class="d" data-i18n="uploads.categories.purchases.desc">supplier orders in</div></div>
+          <div class="count" data-i18n="uploads.categories.purchases.count">104 uploads</div>
           <button class="edit">✎</button>
         </div>
         <div class="cat">
           <div class="icon" style="background:#fdecec;color:#c94141">📉</div>
-          <div><div class="n">Losses</div><div class="d">waste, shrinkage, damage</div></div>
-          <div class="count">96 uploads</div>
+          <div><div class="n" data-i18n="uploads.categories.losses.name">Losses</div><div class="d" data-i18n="uploads.categories.losses.desc">waste, shrinkage, damage</div></div>
+          <div class="count" data-i18n="uploads.categories.losses.count">96 uploads</div>
           <button class="edit">✎</button>
         </div>
         <div class="cat">
           <div class="icon" style="background:#fff0d6;color:#a4680d">🏬</div>
-          <div><div class="n">Inventory</div><div class="d">stock on hand snapshot</div></div>
-          <div class="count">128 uploads</div>
+          <div><div class="n" data-i18n="uploads.categories.inventory.name">Inventory</div><div class="d" data-i18n="uploads.categories.inventory.desc">stock on hand snapshot</div></div>
+          <div class="count" data-i18n="uploads.categories.inventory.count">128 uploads</div>
           <button class="edit">✎</button>
         </div>
         <div class="cat">
           <div class="icon" style="background:#f2f4f0;color:#4a5a51">🧾</div>
-          <div><div class="n">Custom: Supplier Returns</div><div class="d">added by accountant · Jul 20</div></div>
-          <div class="count">3 uploads</div>
+          <div><div class="n" data-i18n="uploads.categories.custom.name">Custom: Supplier Returns</div><div class="d" data-i18n="uploads.categories.custom.desc">added by accountant · Jul 20</div></div>
+          <div class="count" data-i18n="uploads.categories.custom.count">3 uploads</div>
           <button class="edit">✎</button>
         </div>
 
-        <button class="add-cat">＋ Add new category</button>
+        <button class="add-cat" data-i18n="uploads.categories.addNew">＋ Add new category</button>
       </div>
     </div>
 
@@ -149,29 +149,29 @@
     <div class="hist">
       <div class="page-head" style="margin-top:8px">
         <div>
-          <h1 style="font-size:20px">Upload History</h1>
-          <p>Every past upload — click to view, edit, or export.</p>
+          <h1 style="font-size:20px" data-i18n="uploads.history.title">Upload History</h1>
+          <p data-i18n="uploads.history.desc">Every past upload — click to view, edit, or export.</p>
         </div>
       </div>
 
       <div class="toolbar">
         <div class="search-s">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input type="text" id="hist-search" placeholder="Search filename…" style="border:0;background:none;outline:none;font:inherit;width:100%;color:var(--ink)" />
+          <input type="text" id="hist-search" placeholder="Search filename…" data-i18n-placeholder="uploads.history.searchPlaceholder" style="border:0;background:none;outline:none;font:inherit;width:100%;color:var(--ink)" />
         </div>
-        <select id="hist-station"><option value="">All stations</option></select>
-        <select id="hist-category"><option value="">All categories</option><option value="sales">Sales</option><option value="purchases">Purchases</option><option value="losses">Losses</option><option value="inventory">Inventory</option></select>
-        <select id="hist-status"><option value="">All statuses</option><option value="processed">Processed</option><option value="overwritten">Overwritten</option><option value="pending">Pending</option><option value="error">Error</option></select>
+        <select id="hist-station"><option value="" data-i18n="common.allStations">All stations</option></select>
+        <select id="hist-category"><option value="" data-i18n="uploads.history.allCategories">All categories</option><option value="sales" data-i18n="uploads.categories.sales.name">Sales</option><option value="purchases" data-i18n="uploads.categories.purchases.name">Purchases</option><option value="losses" data-i18n="uploads.categories.losses.name">Losses</option><option value="inventory" data-i18n="uploads.categories.inventory.name">Inventory</option></select>
+        <select id="hist-status"><option value="" data-i18n="uploads.history.allStatuses">All statuses</option><option value="processed" data-i18n="common.processed">Processed</option><option value="overwritten" data-i18n="common.overwritten">Overwritten</option><option value="pending" data-i18n="common.pending">Pending</option><option value="error" data-i18n="common.error">Error</option></select>
       </div>
 
       <table class="hist-t">
         <thead>
           <tr>
-            <th>Date</th><th>Station</th><th>Category</th><th>Filename</th><th>Rows</th><th>Metrics</th><th>Status</th><th>Uploaded by</th><th></th>
+            <th data-i18n="uploads.history.col.date">Date</th><th data-i18n="uploads.history.col.station">Station</th><th data-i18n="uploads.history.col.category">Category</th><th data-i18n="uploads.history.col.filename">Filename</th><th data-i18n="uploads.history.col.rows">Rows</th><th data-i18n="uploads.history.col.metrics">Metrics</th><th data-i18n="uploads.history.col.status">Status</th><th data-i18n="uploads.history.col.uploadedBy">Uploaded by</th><th></th>
           </tr>
         </thead>
         <tbody id="hist-tbody">
-          <tr><td colspan="9" class="hist-empty">Loading…</td></tr>
+          <tr><td colspan="9" class="hist-empty" data-i18n="common.loading">Loading…</td></tr>
         </tbody>
       </table>
     </div>

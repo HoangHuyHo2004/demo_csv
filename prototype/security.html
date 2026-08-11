@@ -20,28 +20,28 @@
   <!-- Main -->
   <main>
     <div class="header">
-      <div class="h-title">Security <span class="caret">▾</span></div>
+      <div class="h-title"><span data-i18n="shell.nav.security">Security</span> <span class="caret">▾</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        Search a permission, user, IP, or event…
+        <span data-i18n="security.searchPlaceholder">Search a permission, user, IP, or event…</span>
       </div>
       <div class="h-actions">
         <div class="scope-switcher" id="scope-switcher">
           <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
             <span class="scope-switcher__dot"></span>
-            <span class="scope-switcher__label">All stations</span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
             <span class="scope-switcher__caret">▾</span>
           </button>
           <ul class="scope-switcher__menu" role="listbox" hidden></ul>
         </div>
-        <span class="owner-only">🔒 Owner view</span>
+        <span class="owner-only">🔒 <span data-i18n="shell.ownerView">Owner view</span></span>
       </div>
     </div>
 
     <div class="page-head">
       <div>
-        <h1>Security</h1>
-        <p>Roles, sign-in security, sessions, audit log, and access controls — all in one place.</p>
+        <h1 data-i18n="shell.nav.security">Security</h1>
+        <p data-i18n="security.pageDesc">Roles, sign-in security, sessions, audit log, and access controls — all in one place.</p>
       </div>
     </div>
 
@@ -53,17 +53,17 @@
           <circle cx="85" cy="85" r="72" fill="none" stroke="#b7f04a" stroke-width="14" stroke-linecap="round"
             stroke-dasharray="452" stroke-dashoffset="120"/>
         </svg>
-        <div class="v"><div class="n">73</div><div class="l">Security score</div></div>
+        <div class="v"><div class="n">73</div><div class="l" data-i18n="security.posture.score">Security score</div></div>
       </div>
       <div class="heads">
-        <div class="lbl">Security posture</div>
-        <h2>Good, with one thing to tighten</h2>
-        <p>Owner account is secured with a strong, fixed password policy. IP allowlist is off. Turning it on moves your score to <b>92</b>.</p>
+        <div class="lbl" data-i18n="security.posture.label">Security posture</div>
+        <h2 data-i18n="security.posture.heading">Good, with one thing to tighten</h2>
+        <p data-i18n-html="security.posture.body">Owner account is secured with a strong, fixed password policy. IP allowlist is off. Turning it on moves your score to <b>92</b>.</p>
         <div class="checks" data-owner-only>
-          <div class="chk ok"><span class="st">✓</span>Password policy fixed (12 chars, upper/number/symbol)</div>
-          <div class="chk bad"><span class="st">✕</span>IP allowlist off<span class="fix">→ Configure</span></div>
-          <div class="chk ok"><span class="st">✓</span>Audit log enabled</div>
-          <div class="chk ok"><span class="st">✓</span>Lockout after 5 failed attempts</div>
+          <div class="chk ok"><span class="st">✓</span><span data-i18n="security.posture.checkPasswordPolicy">Password policy fixed (12 chars, upper/number/symbol)</span></div>
+          <div class="chk bad"><span class="st">✕</span><span data-i18n="security.posture.checkIpOff">IP allowlist off</span><span class="fix" data-i18n="security.posture.configure">→ Configure</span></div>
+          <div class="chk ok"><span class="st">✓</span><span data-i18n="security.posture.checkAuditLog">Audit log enabled</span></div>
+          <div class="chk ok"><span class="st">✓</span><span data-i18n="security.posture.checkLockout">Lockout after 5 failed attempts</span></div>
         </div>
       </div>
     </div>
@@ -71,21 +71,21 @@
     <!-- Sub-nav + panel -->
     <div class="settings">
       <aside class="subnav">
-        <a class="active" data-owner-only href="#roles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M17 11a3 3 0 100-6"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6"/></svg>Roles & permissions <span class="owner-tag">Owner</span></a>
-        <a href="#signin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>Sign-in security</a>
-        <a href="#sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>Sessions & devices</a>
-        <a href="#history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Login history</a>
+        <a class="active" data-owner-only href="#roles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M17 11a3 3 0 100-6"/><path d="M2 21c1-4 5-6 7-6s6 2 7 6"/></svg><span data-i18n="security.subnav.roles">Roles & permissions</span> <span class="owner-tag" data-i18n="common.owner">Owner</span></a>
+        <a href="#signin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span data-i18n="security.subnav.signin">Sign-in security</span></a>
+        <a href="#sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-i18n="security.subnav.sessions">Sessions & devices</span></a>
+        <a href="#history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span data-i18n="security.subnav.history">Login history</span></a>
         <div class="sep"></div>
-        <a data-owner-only href="#audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg>Audit log <span class="owner-tag">Owner</span></a>
-        <a data-owner-only href="#access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>IP & geo access <span class="owner-tag">Owner</span></a>
+        <a data-owner-only href="#audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg><span data-i18n="security.subnav.audit">Audit log</span> <span class="owner-tag" data-i18n="common.owner">Owner</span></a>
+        <a data-owner-only href="#access"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg><span data-i18n="security.subnav.access">IP & geo access</span> <span class="owner-tag" data-i18n="common.owner">Owner</span></a>
       </aside>
 
       <div class="panel">
 
         <!-- Roles & permissions -->
         <div class="card" id="roles" data-owner-only>
-          <div class="card-head"><h3>Roles & permissions</h3><span class="owner-only">Owner only</span></div>
-          <div class="sub">Owner controls who has access. Delegate the Accountant role from here.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.roles">Roles & permissions</h3><span class="owner-only" data-i18n="common.ownerOnly">Owner only</span></div>
+          <div class="sub" data-i18n="security.roles.sub">Owner controls who has access. Delegate the Accountant role from here.</div>
           <div class="body">
 
             <!-- Two-role comparison -->
@@ -93,35 +93,35 @@
               <div class="role-card owner">
                 <div class="hd">
                   <div class="ic">👑</div>
-                  <div><h4>Owner</h4><div class="u">1 user</div></div>
+                  <div><h4 data-i18n="common.owner">Owner</h4><div class="u" data-i18n="security.roles.oneUser">1 user</div></div>
                 </div>
                 <ul>
-                  <li><span class="y">✓</span> Upload, edit, delete data</li>
-                  <li><span class="y">✓</span> Configure metrics, thresholds, alerts</li>
-                  <li><span class="y">✓</span> Reveal sensitive fields (with password)</li>
-                  <li><span class="y">✓</span> Manage roles & invite users</li>
-                  <li><span class="y">✓</span> Export data · view audit log</li>
-                  <li><span class="y">✓</span> Manage integrations & API keys</li>
-                  <li><span class="y">✓</span> Wipe database</li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm1">Upload, edit, delete data</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm2">Configure metrics, thresholds, alerts</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm3">Reveal sensitive fields (with password)</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm4">Manage roles & invite users</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm5">Export data · view audit log</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm6">Manage integrations & API keys</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.owner.perm7">Wipe database</span></li>
                 </ul>
                 <div class="members">
-                  <span class="pill"><span class="avatar-sm own"></span>Hoàng Huy Hồ (you)</span>
+                  <span class="pill"><span class="avatar-sm own"></span>Hoàng Huy Hồ <span data-i18n="security.roles.you">(you)</span></span>
                 </div>
               </div>
 
               <div class="role-card acc">
                 <div class="hd">
                   <div class="ic">🧾</div>
-                  <div><h4>Accountant</h4><div class="u">1 user</div></div>
+                  <div><h4 data-i18n="common.accountant">Accountant</h4><div class="u" data-i18n="security.roles.oneUser">1 user</div></div>
                 </div>
                 <ul>
-                  <li><span class="y">✓</span> Upload CSVs</li>
-                  <li><span class="y">✓</span> View metrics, charts, alerts</li>
-                  <li><span class="y">✓</span> Add notes / comments on alerts</li>
-                  <li><span class="n">✗</span> Cannot delete data</li>
-                  <li><span class="n">✗</span> Cannot reveal sensitive fields</li>
-                  <li><span class="n">✗</span> Cannot manage roles or keys</li>
-                  <li><span class="n">✗</span> Cannot wipe database</li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.acc.perm1">Upload CSVs</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.acc.perm2">View metrics, charts, alerts</span></li>
+                  <li><span class="y">✓</span> <span data-i18n="security.roles.acc.perm3">Add notes / comments on alerts</span></li>
+                  <li><span class="n">✗</span> <span data-i18n="security.roles.acc.perm4">Cannot delete data</span></li>
+                  <li><span class="n">✗</span> <span data-i18n="security.roles.acc.perm5">Cannot reveal sensitive fields</span></li>
+                  <li><span class="n">✗</span> <span data-i18n="security.roles.acc.perm6">Cannot manage roles or keys</span></li>
+                  <li><span class="n">✗</span> <span data-i18n="security.roles.acc.perm7">Cannot wipe database</span></li>
                 </ul>
                 <div class="members">
                   <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn</span>
@@ -130,72 +130,72 @@
             </div>
 
             <!-- Team table with delegate -->
-            <h4 style="margin:18px 0 4px;font-size:13px">Team members</h4>
+            <h4 style="margin:18px 0 4px;font-size:13px" data-i18n="settings.subnav.team">Team members</h4>
             <table class="tbl">
-              <thead><tr><th>User</th><th>Role</th><th>Stations</th><th>Last active</th><th>Delegated by</th><th></th></tr></thead>
+              <thead><tr><th data-i18n="settings.team.user">User</th><th data-i18n="settings.team.role">Role</th><th data-i18n="security.roles.stations">Stations</th><th data-i18n="settings.team.lastActive">Last active</th><th data-i18n="security.roles.delegatedBy">Delegated by</th><th></th></tr></thead>
               <tbody>
                 <tr>
-                  <td><span class="avatar-sm own" style="display:inline-block;vertical-align:middle;margin-right:8px"></span>Hoàng Huy Hồ (you)</td>
-                  <td><span class="role-pill owner">Owner</span></td>
-                  <td><span style="font-size:10px;font-weight:700;color:var(--ink-2)">All stations</span></td>
-                  <td>Active now</td>
+                  <td><span class="avatar-sm own" style="display:inline-block;vertical-align:middle;margin-right:8px"></span>Hoàng Huy Hồ <span data-i18n="security.roles.you">(you)</span></td>
+                  <td><span class="role-pill owner" data-i18n="common.owner">Owner</span></td>
+                  <td><span style="font-size:10px;font-weight:700;color:var(--ink-2)" data-i18n="shell.scopeAllStations">All stations</span></td>
+                  <td data-i18n="settings.team.activeNow">Active now</td>
                   <td>—</td>
-                  <td style="text-align:right"><button class="row-btn">Edit</button></td>
+                  <td style="text-align:right"><button class="row-btn" data-i18n="common.edit">Edit</button></td>
                 </tr>
                 <tr>
                   <td><span class="avatar-sm acc" style="display:inline-block;vertical-align:middle;margin-right:8px"></span>Anna Nguyễn</td>
-                  <td><span class="role-pill acc">Accountant</span></td>
+                  <td><span class="role-pill acc" data-i18n="common.accountant">Accountant</span></td>
                   <td><span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#3455b3;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#3455b3"></span>Station A</span></td>
-                  <td>3h ago</td>
-                  <td>You · 2026-03-04</td>
+                  <td data-i18n="settings.team.threeHoursAgo">3h ago</td>
+                  <td data-i18n="security.roles.delegatedByYou1">You · 2026-03-04</td>
                   <td style="text-align:right">
-                    <button class="row-btn">Change role</button>
-                    <button class="row-btn danger">Revoke</button>
+                    <button class="row-btn" data-i18n="security.roles.changeRole">Change role</button>
+                    <button class="row-btn danger" data-i18n="settings.team.revoke">Revoke</button>
                   </td>
                 </tr>
                 <tr>
                   <td><span class="avatar-sm" style="display:inline-block;vertical-align:middle;margin-right:8px;background:linear-gradient(135deg,#f0a545,#e8b980)"></span>Bình Trần</td>
-                  <td><span class="role-pill acc">Accountant</span></td>
+                  <td><span class="role-pill acc" data-i18n="common.accountant">Accountant</span></td>
                   <td><span style="display:inline-flex;align-items:center;gap:4px;font-weight:600;color:#1f6f4a;font-size:11px"><span style="width:7px;height:7px;border-radius:50%;background:#1f6f4a"></span>Station B</span></td>
-                  <td>1h ago</td>
-                  <td>You · 2026-05-12</td>
+                  <td data-i18n="security.roles.oneHourAgo">1h ago</td>
+                  <td data-i18n="security.roles.delegatedByYou2">You · 2026-05-12</td>
                   <td style="text-align:right">
-                    <button class="row-btn">Change role</button>
-                    <button class="row-btn danger">Revoke</button>
+                    <button class="row-btn" data-i18n="security.roles.changeRole">Change role</button>
+                    <button class="row-btn danger" data-i18n="settings.team.revoke">Revoke</button>
                   </td>
                 </tr>
               </tbody>
             </table>
 
             <div style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <input type="email" placeholder="teammate@email.com" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
-              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff"><option>Accountant</option><option>Owner</option></select>
-              <button class="row-btn pri" onclick="document.getElementById('delegate-modal').style.display='flex'">Delegate role</button>
+              <input type="email" data-i18n-placeholder="settings.team.emailPlaceholder" placeholder="teammate@email.com" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff"><option data-i18n="common.accountant">Accountant</option><option data-i18n="common.owner">Owner</option></select>
+              <button class="row-btn pri" data-i18n="security.roles.delegateRole" onclick="document.getElementById('delegate-modal').style.display='flex'">Delegate role</button>
             </div>
 
             <!-- Guardrails -->
-            <h4 style="margin:20px 0 4px;font-size:13px">Guardrails</h4>
+            <h4 style="margin:20px 0 4px;font-size:13px" data-i18n="security.roles.guardrails">Guardrails</h4>
             <div class="field">
-              <div class="lbl">Second-Owner rule<small>Prevents locking yourself out.</small></div>
-              <div class="val" style="font-size:12px;color:var(--ink-2)">Only 1 Owner today. Consider promoting a second person.</div>
-              <div class="action"><button class="row-btn">Add second Owner</button></div>
+              <div class="lbl"><span data-i18n="security.roles.secondOwner.label">Second-Owner rule</span><small data-i18n="security.roles.secondOwner.hint">Prevents locking yourself out.</small></div>
+              <div class="val" style="font-size:12px;color:var(--ink-2)" data-i18n="security.roles.secondOwner.value">Only 1 Owner today. Consider promoting a second person.</div>
+              <div class="action"><button class="row-btn" data-i18n="security.roles.addSecondOwner">Add second Owner</button></div>
             </div>
           </div>
         </div>
 
         <!-- Sign-in security -->
         <div class="card" id="signin">
-          <div class="card-head"><h3>Sign-in security</h3></div>
-          <div class="sub">Fixed protections that apply to every account.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.signin">Sign-in security</h3></div>
+          <div class="sub" data-i18n="security.signin.sub">Fixed protections that apply to every account.</div>
           <div class="body">
             <div class="field" data-owner-only>
-              <div class="lbl">Require MFA for Owner<small>Default and not configurable.</small></div>
-              <div class="val"><span style="font-size:12px;color:var(--ink-2)">Required</span></div>
+              <div class="lbl"><span data-i18n="security.signin.mfa.label">Require MFA for Owner</span><small data-i18n="security.signin.mfa.hint">Default and not configurable.</small></div>
+              <div class="val"><span style="font-size:12px;color:var(--ink-2)" data-i18n="security.signin.required">Required</span></div>
               <div></div>
             </div>
             <div class="field">
-              <div class="lbl">Account lockout<small>Consecutive failed sign-in attempts.</small></div>
-              <div class="val" style="font-size:12px;color:var(--ink-2)">Locked after 5 failed attempts — fixed for every account.</div>
+              <div class="lbl"><span data-i18n="security.signin.lockout.label">Account lockout</span><small data-i18n="security.signin.lockout.hint">Consecutive failed sign-in attempts.</small></div>
+              <div class="val" style="font-size:12px;color:var(--ink-2)" data-i18n="security.posture.checkLockoutFull">Locked after 5 failed attempts — fixed for every account.</div>
               <div></div>
             </div>
           </div>
@@ -203,110 +203,110 @@
 
         <!-- Sessions & devices -->
         <div class="card" id="sessions">
-          <div class="card-head"><h3>Sessions & devices</h3></div>
-          <div class="sub">Every device currently signed in. Sign out any of them.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.sessions">Sessions & devices</h3></div>
+          <div class="sub" data-i18n="security.sessions.sub">Every device currently signed in. Sign out any of them.</div>
           <div class="body">
             <table class="tbl">
-              <thead><tr><th>Device</th><th>User</th><th>IP · Location</th><th>Signed in</th><th>Last active</th><th></th></tr></thead>
+              <thead><tr><th data-i18n="security.sessions.device">Device</th><th data-i18n="settings.team.user">User</th><th data-i18n="security.sessions.ipLocation">IP · Location</th><th data-i18n="security.sessions.signedIn">Signed in</th><th data-i18n="settings.team.lastActive">Last active</th><th></th></tr></thead>
               <tbody>
                 <tr>
-                  <td>💻 Windows · Chrome 129<br/><span style="font-size:10px;color:var(--muted)">This device</span></td>
-                  <td>Hoàng Huy Hồ (Owner)</td>
+                  <td>💻 Windows · Chrome 129<br/><span style="font-size:10px;color:var(--muted)" data-i18n="security.sessions.thisDevice">This device</span></td>
+                  <td>Hoàng Huy Hồ (<span data-i18n="common.owner">Owner</span>)</td>
                   <td><code>171.245.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
                   <td>2026-07-29 07:44</td>
-                  <td><span class="st ok">Now</span></td>
-                  <td style="text-align:right"><button class="row-btn">Current</button></td>
+                  <td><span class="st ok" data-i18n="security.sessions.now">Now</span></td>
+                  <td style="text-align:right"><button class="row-btn" data-i18n="security.sessions.current">Current</button></td>
                 </tr>
                 <tr>
                   <td>📱 iPhone · Safari</td>
-                  <td>Hoàng Huy Hồ (Owner)</td>
+                  <td>Hoàng Huy Hồ (<span data-i18n="common.owner">Owner</span>)</td>
                   <td><code>171.245.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
                   <td>2026-07-27 22:10</td>
-                  <td>2 days ago</td>
-                  <td style="text-align:right"><button class="row-btn danger">Sign out</button></td>
+                  <td data-i18n="security.sessions.twoDaysAgo">2 days ago</td>
+                  <td style="text-align:right"><button class="row-btn danger" data-i18n="security.sessions.signOut">Sign out</button></td>
                 </tr>
                 <tr>
                   <td>💻 macOS · Chrome 129</td>
-                  <td>Anna Nguyễn (Accountant)</td>
+                  <td>Anna Nguyễn (<span data-i18n="common.accountant">Accountant</span>)</td>
                   <td><code>171.244.•.•</code><br/><span style="font-size:10px;color:var(--muted)">HCMC, VN</span></td>
                   <td>2026-07-29 06:20</td>
-                  <td>3h ago</td>
-                  <td style="text-align:right"><button class="row-btn danger">Sign out</button></td>
+                  <td data-i18n="settings.team.threeHoursAgo">3h ago</td>
+                  <td style="text-align:right"><button class="row-btn danger" data-i18n="security.sessions.signOut">Sign out</button></td>
                 </tr>
               </tbody>
             </table>
             <div style="text-align:right;margin-top:10px">
-              <button class="row-btn danger">Sign out every other device</button>
+              <button class="row-btn danger" data-i18n="security.sessions.signOutAllOthers">Sign out every other device</button>
             </div>
           </div>
         </div>
 
         <!-- Login history -->
         <div class="card" id="history">
-          <div class="card-head"><h3>Login history & failed attempts</h3></div>
-          <div class="sub">Successful and failed sign-ins over the last 30 days.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.history">Login history & failed attempts</h3></div>
+          <div class="sub" data-i18n="security.history.sub">Successful and failed sign-ins over the last 30 days.</div>
           <div class="body">
             <table class="tbl">
-              <thead><tr><th>When</th><th>User</th><th>IP · Location</th><th>Device</th><th>Result</th></tr></thead>
+              <thead><tr><th data-i18n="security.history.when">When</th><th data-i18n="settings.team.user">User</th><th data-i18n="security.sessions.ipLocation">IP · Location</th><th data-i18n="security.sessions.device">Device</th><th data-i18n="security.history.result">Result</th></tr></thead>
               <tbody>
-                <tr><td>Jul 29 · 07:44</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st ok">Success</span></td></tr>
-                <tr><td>Jul 29 · 06:20</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok">Success</span></td></tr>
-                <tr><td>Jul 28 · 23:14</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · <b style="color:var(--red)">Warsaw, PL</b></td><td>Linux · curl</td><td><span class="st crit">Failed — bad password</span></td></tr>
-                <tr><td>Jul 28 · 23:13</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · Warsaw, PL</td><td>Linux · curl</td><td><span class="st crit">Failed — bad password</span></td></tr>
-                <tr><td>Jul 28 · 09:03</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok">Success</span></td></tr>
-                <tr><td>Jul 27 · 22:10</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>iPhone · Safari</td><td><span class="st ok">Success</span></td></tr>
-                <tr><td>Jul 26 · 14:33</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st warn">2FA prompted</span></td></tr>
+                <tr><td>Jul 29 · 07:44</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st ok" data-i18n="common.success">Success</span></td></tr>
+                <tr><td>Jul 29 · 06:20</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok" data-i18n="common.success">Success</span></td></tr>
+                <tr><td>Jul 28 · 23:14</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · <b style="color:var(--red)">Warsaw, PL</b></td><td>Linux · curl</td><td><span class="st crit" data-i18n="security.history.failedBadPassword">Failed — bad password</span></td></tr>
+                <tr><td>Jul 28 · 23:13</td><td>hoanghuyho…</td><td><code>203.14.•.•</code> · Warsaw, PL</td><td>Linux · curl</td><td><span class="st crit" data-i18n="security.history.failedBadPassword">Failed — bad password</span></td></tr>
+                <tr><td>Jul 28 · 09:03</td><td>Anna Nguyễn</td><td><code>171.244.•.•</code> · HCMC</td><td>macOS · Chrome</td><td><span class="st ok" data-i18n="common.success">Success</span></td></tr>
+                <tr><td>Jul 27 · 22:10</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>iPhone · Safari</td><td><span class="st ok" data-i18n="common.success">Success</span></td></tr>
+                <tr><td>Jul 26 · 14:33</td><td>Hoàng Huy Hồ</td><td><code>171.245.•.•</code> · HCMC</td><td>Windows · Chrome</td><td><span class="st warn" data-i18n="security.history.mfaPrompted">2FA prompted</span></td></tr>
               </tbody>
             </table>
-            <div style="margin-top:10px;font-size:11px;color:var(--muted)">Suspicious IP <code>203.14.•.•</code> failed 2 times overnight. Consider enabling the IP allowlist below.</div>
+            <div style="margin-top:10px;font-size:11px;color:var(--muted)" data-i18n-html="security.history.suspiciousIp">Suspicious IP <code>203.14.•.•</code> failed 2 times overnight. Consider enabling the IP allowlist below.</div>
           </div>
         </div>
 
         <!-- Audit log -->
         <div class="card" id="audit" data-owner-only>
-          <div class="card-head"><h3>Audit log</h3><span class="owner-only">Owner only</span></div>
-          <div class="sub">Every sensitive action, with who / when / before → after.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.audit">Audit log</h3><span class="owner-only" data-i18n="common.ownerOnly">Owner only</span></div>
+          <div class="sub" data-i18n="security.audit.sub">Every sensitive action, with who / when / before → after.</div>
           <div class="audit">
             <div class="audit-row crit">
               <div class="aic">🗑</div>
               <div>
-                <div class="t">Attempted database wipe · blocked</div>
-                <div class="d"><b>Anna Nguyễn</b> tried <code>DELETE FROM metrics</code> from the Data panel. Blocked by role guardrail.</div>
-                <div class="m"><span>IP 171.244.•.•</span><span>Accountant</span></div>
+                <div class="t" data-i18n="security.audit.row1.title">Attempted database wipe · blocked</div>
+                <div class="d" data-i18n-html="security.audit.row1.desc"><b>Anna Nguyễn</b> tried <code>DELETE FROM metrics</code> from the Data panel. Blocked by role guardrail.</div>
+                <div class="m"><span>IP 171.244.•.•</span><span data-i18n="common.accountant">Accountant</span></div>
               </div>
               <div class="when">2026-07-29 · 08:04</div>
             </div>
             <div class="audit-row warn">
               <div class="aic">🔑</div>
               <div>
-                <div class="t">Revealed sensitive field: <code>Anthropic API key</code></div>
-                <div class="d"><b>Hoàng Huy Hồ</b> revealed the API key for 30 seconds. Verified with password.</div>
-                <div class="m"><span>IP 171.245.•.•</span><span>Owner</span></div>
+                <div class="t" data-i18n-html="security.audit.row2.title">Revealed sensitive field: <code>Anthropic API key</code></div>
+                <div class="d" data-i18n-html="security.audit.row2.desc"><b>Hoàng Huy Hồ</b> revealed the API key for 30 seconds. Verified with password.</div>
+                <div class="m"><span>IP 171.245.•.•</span><span data-i18n="common.owner">Owner</span></div>
               </div>
               <div class="when">2026-07-29 · 07:52</div>
             </div>
             <div class="audit-row info">
               <div class="aic">👥</div>
               <div>
-                <div class="t">Role delegated · Anna → Accountant</div>
-                <div class="d">Invitation sent by <b>Hoàng Huy Hồ</b>. Anna accepted at 09:03.</div>
-                <div class="m"><span>Diff: role → Accountant</span></div>
+                <div class="t" data-i18n="security.audit.row3.title">Role delegated · Anna → Accountant</div>
+                <div class="d" data-i18n-html="security.audit.row3.desc">Invitation sent by <b>Hoàng Huy Hồ</b>. Anna accepted at 09:03.</div>
+                <div class="m"><span data-i18n="security.audit.row3.diff">Diff: role → Accountant</span></div>
               </div>
               <div class="when">2026-03-04 · 08:41</div>
             </div>
             <div class="audit-row info">
               <div class="aic">🧾</div>
               <div>
-                <div class="t">Data exported: metrics_2026-07-29.csv</div>
-                <div class="d"><b>Hoàng Huy Hồ</b> downloaded a full CSV (14 metrics · 148 days).</div>
+                <div class="t" data-i18n="security.audit.row4.title">Data exported: metrics_2026-07-29.csv</div>
+                <div class="d" data-i18n-html="security.audit.row4.desc"><b>Hoàng Huy Hồ</b> downloaded a full CSV (14 metrics · 148 days).</div>
               </div>
               <div class="when">2026-07-28 · 22:11</div>
             </div>
             <div class="audit-row info">
               <div class="aic">📤</div>
               <div>
-                <div class="t">Upload overwritten: inventory_2026-07-27.csv</div>
-                <div class="d"><b>Anna Nguyễn</b> re-uploaded, confirmed overwrite. 3 values changed.</div>
+                <div class="t" data-i18n="security.audit.row5.title">Upload overwritten: inventory_2026-07-27.csv</div>
+                <div class="d" data-i18n-html="security.audit.row5.desc"><b>Anna Nguyễn</b> re-uploaded, confirmed overwrite. 3 values changed.</div>
                 <div class="m"><span>inventory_on_hand: 312 → 298</span></div>
               </div>
               <div class="when">2026-07-28 · 14:20</div>
@@ -314,57 +314,57 @@
             <div class="audit-row info">
               <div class="aic">⚙</div>
               <div>
-                <div class="t">Rule updated: losses ceiling $600 → $500</div>
-                <div class="d"><b>Hoàng Huy Hồ</b> tightened the loss ceiling.</div>
+                <div class="t" data-i18n="security.audit.row6.title">Rule updated: losses ceiling $600 → $500</div>
+                <div class="d" data-i18n-html="security.audit.row6.desc"><b>Hoàng Huy Hồ</b> tightened the loss ceiling.</div>
               </div>
               <div class="when">2026-07-25 · 10:44</div>
             </div>
           </div>
           <div style="padding:12px 20px;background:#fafbf8;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2)">
-            <span>Retention: 365 days · 1,842 events total</span>
-            <span><button class="row-btn">⬇ Export log</button> <button class="row-btn">Filter…</button></span>
+            <span data-i18n="security.audit.retention">Retention: 365 days · 1,842 events total</span>
+            <span><button class="row-btn" data-i18n="security.audit.exportLog">⬇ Export log</button> <button class="row-btn" data-i18n="security.audit.filter">Filter…</button></span>
           </div>
         </div>
 
         <!-- IP allowlist / geo -->
         <div class="card" id="access" data-owner-only>
-          <div class="card-head"><h3>IP allowlist & geo restrictions</h3><span class="owner-only">Owner only</span></div>
-          <div class="sub">Only allow sign-in from listed IPs, or block countries.</div>
+          <div class="card-head"><h3 data-i18n="security.subnav.accessFull">IP allowlist & geo restrictions</h3><span class="owner-only" data-i18n="common.ownerOnly">Owner only</span></div>
+          <div class="sub" data-i18n="security.access.sub">Only allow sign-in from listed IPs, or block countries.</div>
           <div class="body">
             <div class="field">
-              <div class="lbl">Enable IP allowlist<small>Turning on blocks every IP not listed.</small></div>
-              <div class="val"><label class="toggle"><input type="checkbox"><span></span></label> <span style="font-size:12px;color:var(--muted);margin-left:8px">Off</span></div>
+              <div class="lbl"><span data-i18n="security.access.enable.label">Enable IP allowlist</span><small data-i18n="security.access.enable.hint">Turning on blocks every IP not listed.</small></div>
+              <div class="val"><label class="toggle"><input type="checkbox"><span></span></label> <span style="font-size:12px;color:var(--muted);margin-left:8px" data-i18n="common.off">Off</span></div>
               <div></div>
             </div>
 
             <div class="ip-list" style="margin-top:8px">
               <div class="ip">
                 <div class="ic">🏢</div>
-                <div><div class="n">171.245.32.0/24</div><div class="l">Office network · HCMC · added by Owner</div></div>
-                <span class="st ok">Allowed</span>
-                <button class="row-btn danger">Remove</button>
+                <div><div class="n">171.245.32.0/24</div><div class="l" data-i18n="security.access.officeLabel">Office network · HCMC · added by Owner</div></div>
+                <span class="st ok" data-i18n="security.access.allowed">Allowed</span>
+                <button class="row-btn danger" data-i18n="common.remove">Remove</button>
               </div>
               <div class="ip">
                 <div class="ic">🏠</div>
-                <div><div class="n">116.109.•.•</div><div class="l">Home · HCMC · Anna's laptop</div></div>
-                <span class="st ok">Allowed</span>
-                <button class="row-btn danger">Remove</button>
+                <div><div class="n">116.109.•.•</div><div class="l" data-i18n="security.access.homeLabel">Home · HCMC · Anna's laptop</div></div>
+                <span class="st ok" data-i18n="security.access.allowed">Allowed</span>
+                <button class="row-btn danger" data-i18n="common.remove">Remove</button>
               </div>
             </div>
 
             <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-              <input type="text" placeholder="e.g. 203.0.113.0/24 or single IP" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
-              <input type="text" placeholder="Label (Office, Home…)" style="width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
-              <button class="row-btn pri">＋ Add IP</button>
+              <input type="text" data-i18n-placeholder="security.access.ipPlaceholder" placeholder="e.g. 203.0.113.0/24 or single IP" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <input type="text" data-i18n-placeholder="security.access.labelPlaceholder" placeholder="Label (Office, Home…)" style="width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <button class="row-btn pri" data-i18n="security.access.addIp">＋ Add IP</button>
             </div>
 
-            <h4 style="margin:16px 0 6px;font-size:13px">Geo blocks</h4>
+            <h4 style="margin:16px 0 6px;font-size:13px" data-i18n="security.access.geoBlocks">Geo blocks</h4>
             <div class="field">
-              <div class="lbl">Block countries<small>Sign-in refused from these regions.</small></div>
+              <div class="lbl"><span data-i18n="security.access.blockCountries.label">Block countries</span><small data-i18n="security.access.blockCountries.hint">Sign-in refused from these regions.</small></div>
               <div class="val" style="display:flex;flex-wrap:wrap;gap:6px">
-                <span class="pill" style="padding:4px 10px">🇷🇺 Russia ✕</span>
-                <span class="pill" style="padding:4px 10px">🇰🇵 North Korea ✕</span>
-                <span class="pill" style="padding:4px 10px">＋ Add country</span>
+                <span class="pill" style="padding:4px 10px">🇷🇺 <span data-i18n="security.access.russia">Russia</span> ✕</span>
+                <span class="pill" style="padding:4px 10px">🇰🇵 <span data-i18n="security.access.northKorea">North Korea</span> ✕</span>
+                <span class="pill" style="padding:4px 10px" data-i18n="security.access.addCountry">＋ Add country</span>
               </div>
               <div></div>
             </div>
@@ -381,41 +381,35 @@
 <div class="modal-back" id="delegate-modal" style="display:none">
   <div class="modal">
     <div class="ic">👥</div>
-    <h3>Delegate a role</h3>
-    <p>Assign a permission set to another user. You can revoke this at any time.</p>
+    <h3 data-i18n="security.delegateModal.title">Delegate a role</h3>
+    <p data-i18n="security.delegateModal.body">Assign a permission set to another user. You can revoke this at any time.</p>
     <div class="who"><span class="avatar-sm acc"></span><b>Anna Nguyễn</b> · anna@demo-csv.app</div>
-    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em">Role</label>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="settings.team.role">Role</label>
     <select>
-      <option>Accountant — upload, view, comment</option>
-      <option>Owner — full access (adds a co-Owner)</option>
+      <option data-i18n="security.delegateModal.roleAccountant">Accountant — upload, view, comment</option>
+      <option data-i18n="security.delegateModal.roleOwner">Owner — full access (adds a co-Owner)</option>
     </select>
-    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block">Station access</label>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block" data-i18n="security.delegateModal.stationAccess">Station access</label>
     <select>
-      <option>Only Station A · Quận 1</option>
-      <option>Only Station B · Thủ Đức</option>
-      <option>Station A + B (multi-station accountant)</option>
-      <option>All stations (Owner promotion)</option>
+      <option data-i18n="security.delegateModal.onlyStationA">Only Station A · Quận 1</option>
+      <option data-i18n="security.delegateModal.onlyStationB">Only Station B · Thủ Đức</option>
+      <option data-i18n="security.delegateModal.bothStations">Station A + B (multi-station accountant)</option>
+      <option data-i18n="security.delegateModal.allStationsPromotion">All stations (Owner promotion)</option>
     </select>
-    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block">Optional expiry</label>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block" data-i18n="security.delegateModal.optionalExpiry">Optional expiry</label>
     <select>
-      <option>No expiry</option><option>30 days</option><option>90 days</option><option>1 year</option>
+      <option data-i18n="security.delegateModal.noExpiry">No expiry</option><option data-i18n="security.delegateModal.30days">30 days</option><option data-i18n="security.delegateModal.90days">90 days</option><option data-i18n="security.delegateModal.1year">1 year</option>
     </select>
-    <div class="warn" style="margin-top:12px">Promoting to Owner grants ability to manage roles, keys, and wipe data. Requires your password to confirm.</div>
-    <input type="password" placeholder="Enter your password" value="••••••••" />
+    <div class="warn" style="margin-top:12px" data-i18n="security.delegateModal.ownerWarning">Promoting to Owner grants ability to manage roles, keys, and wipe data. Requires your password to confirm.</div>
+    <input type="password" data-i18n-placeholder="settings.revealModal.passwordPlaceholder" placeholder="Enter your password" value="••••••••" />
     <div class="actions">
-      <button class="ghost" onclick="document.getElementById('delegate-modal').style.display='none'">Cancel</button>
-      <button class="pri" onclick="document.getElementById('delegate-modal').style.display='none'">Delegate role</button>
+      <button class="ghost" data-i18n="common.cancel" onclick="document.getElementById('delegate-modal').style.display='none'">Cancel</button>
+      <button class="pri" data-i18n="security.roles.delegateRole" onclick="document.getElementById('delegate-modal').style.display='none'">Delegate role</button>
     </div>
   </div>
 </div>
 
 <script>
-  // Fake QR code
-  const qr = document.getElementById('qr');
-  const pat = [1,1,1,1,1,1,1,1, 1,0,1,0,1,0,0,1, 1,0,1,1,0,1,0,1, 1,0,1,0,1,1,1,1, 1,0,0,1,0,1,0,1, 1,0,1,0,0,0,1,1, 1,1,1,1,1,0,0,1, 0,1,0,1,1,1,1,1];
-  qr.innerHTML = '';
-  pat.forEach(v=>{const d=document.createElement('div');if(!v)d.className='o';qr.appendChild(d);});
-
   // Sub-nav highlight
   document.querySelectorAll('.subnav a').forEach(a=>{
     a.addEventListener('click',()=>{document.querySelectorAll('.subnav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');});

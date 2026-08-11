@@ -1,6 +1,7 @@
 // Wires the header "scope switcher" button into scope.js. No-ops on pages
 // that don't have the #scope-switcher element (currently stations.html).
 import * as scope from './scope.js';
+import { t, onChange as onLanguageChange } from './i18n.js';
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
@@ -36,10 +37,10 @@ export async function mountScopeSwitcher(userId, isOwner) {
     const cur = scope.current();
     let html = '';
     if (isOwner) {
-      html += `<li class="scope-switcher__item${cur.mode === 'all' ? ' active' : ''}" data-value="all"><span class="dot" style="background:#0f2a1f"></span>All stations</li>`;
+      html += `<li class="scope-switcher__item${cur.mode === 'all' ? ' active' : ''}" data-value="all"><span class="dot" style="background:#0f2a1f"></span>${t('shell.scopeAllStations')}</li>`;
     }
     if (list.length === 0) {
-      html += `<li class="scope-switcher__empty">No stations yet</li>`;
+      html += `<li class="scope-switcher__empty">${t('shell.scopeNoStationsYet')}</li>`;
     } else {
       list.forEach((s) => {
         const isActive = cur.mode === 'station' && cur.stationId === s.id;
@@ -58,7 +59,7 @@ export async function mountScopeSwitcher(userId, isOwner) {
   function render() {
     const cur = scope.current();
     if (cur.mode === 'all' && isOwner) {
-      label.textContent = 'All stations';
+      label.textContent = t('shell.scopeAllStations');
       dot.style.background = '#0f2a1f';
     } else if (cur.station) {
       label.textContent = cur.station.name;
@@ -67,7 +68,7 @@ export async function mountScopeSwitcher(userId, isOwner) {
       // mode === 'all' here only happens for a non-Owner with zero
       // accessible stations -- "All stations" would overstate what they
       // can actually see, so say so plainly instead.
-      label.textContent = 'No station access';
+      label.textContent = t('shell.scopeNoStationAccess');
       dot.style.background = '#8a978f';
     }
   }
@@ -80,4 +81,5 @@ export async function mountScopeSwitcher(userId, isOwner) {
   document.addEventListener('click', () => closeMenu());
 
   scope.onChange(render);
+  onLanguageChange(render);
 }
