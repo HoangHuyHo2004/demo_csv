@@ -49,6 +49,10 @@ prototype/
                                   and dict.shell.js for strings shared across pages
 supabase/
   migrations/                  every SQL migration applied to the project, in order
+                                 (any file marked "NOT YET APPLIED" is pending)
+  functions/                   Edge Functions — scheduled report delivery (not deployed)
+tools/
+  convert_journal.py           daily-journal .xlsx -> one flat CSV per day, for upload
 ```
 
 ## Running locally
@@ -142,19 +146,27 @@ records" on those pages for real figures.
 
 ## Known limitations
 
-- **Statistics' range/category/chart-type controls are decorative.** The page is fixed
-  to a rolling last-30-days window; clicking "Daily", "Custom compare", a category chip,
-  or a chart-type button changes its own visual active state but does not yet re-filter
-  the widgets.
+- **Statistics reads one specific metric-name contract.** It renders the daily-journal
+  names produced by `tools/convert_journal.py` (`sl_<fuel>_tru<n>`, `tt_<fuel>_tru<n>`,
+  `sl_<item>`, `tt_<item>`, `ca_<shift>`). Uploads using any other column names — including
+  the earlier `revenue`/`sales_volume` test data — are ignored and the page shows its
+  empty state. Pumps, fuels, items and shifts are discovered from the names present, so
+  nothing is hardcoded, but the prefixes are load-bearing. See
+  `docs/statistics-dashboard-spec.md`.
+- **Shift names display as ASCII slugs** (e.g. `VAAN` for a name spelled with `â`) rather
+  than the original Vietnamese spelling. The converter folds diacritics Telex-style so
+  that two shifts differing only by vowel shape cannot collide into one metric —
+  correct, but ugly. The `metrics.display_name` column exists to carry the real name and
+  nothing populates it yet.
+- **Month-over-month comparison is not implemented.** The month view has no prior-month
+  delta; only the day view compares (against the previous day).
 - **The donut chart's segment labels on Overview are positioned at fixed coordinates**
   inherited from the original mockup's fixed 68/23/9 layout. With real, differently-sized
   segments the percentage labels can land slightly off from their arc — a cosmetic gap,
   not a data error. A proper fix computes each label's position from its segment's actual
   midpoint angle.
-- **The correlation chart on Statistics picks its two metrics heuristically** (prefers
-  `sales_volume` and `purchases` if present, otherwise falls back to whatever's largest).
-  With very few tracked metrics this can pair unrelated ones; the empty state ("not
-  enough overlapping days") covers the case where the chosen pair barely overlaps.
+- **Alerts and Insights still show invented figures in US dollars.** Those two pages are
+  unwired mockups (see above); their demo text was never converted to VND.
 - **CSV number parsing assumes US/UK-style formatting** (comma-thousands, dot-decimal)
   when only one separator is present to disambiguate — confirmed against real uploaded
   data (e.g. `"1,234,567"`). A bare `"1.234"` is read as 1.234, not 1234. Multiple dots

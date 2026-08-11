@@ -30,6 +30,9 @@ export const en = {
   'common.show': 'Show',
   'common.hide': 'Hide',
   'common.export': 'Export',
+  'fmt.billion': 'B',
+  'fmt.million': 'M',
+  'fmt.thousand': 'K',
 };
 
 export const vi = {
@@ -62,4 +65,7 @@ export const vi = {
   'common.show': 'Hiện',
   'common.hide': 'Ẩn',
   'common.export': 'Xuất',
+  'fmt.billion': 'tỷ',
+  'fmt.million': 'tr',
+  'fmt.thousand': 'N',
 };

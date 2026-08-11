@@ -1,574 +1,643 @@
-// Controller for statistics.html. Same one-query-per-page pattern as
-// dashboard.js: a single 60-day metric_daily load (current 30d + prior
-// 30d for deltas), then every widget below derives from that one dataset.
-// The range/chart-type/category-chip controls remain decorative for now
-// (see Phase 5 scope) -- only the widgets get wired to real data.
+// Controller for statistics.html.
+//
+// One query per page: a single metric_daily load covering the selected month
+// plus the day before it (needed for the day-mode comparison at a month
+// boundary). Every widget derives from that one dataset, which is what
+// guarantees the KPIs, charts and table can never disagree with each other.
+//
+// The metric-name contract this page reads (produced by
+// tools/convert_journal.py -- see docs/statistics-dashboard-spec.md):
+//
+//   sl_<fuel>_tru<n>   volume sold on pump n of <fuel>
+//   tt_<fuel>_tru<n>   amount for the same pump
+//   sl_<item>          quantity of a non-pump item (lubricants)
+//   tt_<item>          amount for the same item
+//   ca_<shift>         1 on days that shift worked, else 0
+//   gia_<fuel>         unit price -- RECORDED BUT NOT READ HERE, see below
+//
+// Nothing is hardcoded: pumps, fuels, items and shifts are all discovered
+// from the metric names present, so a station with different pumps still
+// renders, and unrecognised metric names (older test data, junk columns from a
+// bad upload) are ignored rather than breaking the page.
+//
+// WHY gia_* IS IGNORED: metric_daily returns one row per station, so summing
+// across stations would add two stations' prices together and double them. The
+// price shown is always derived as amount / volume, which is correct for one
+// station, correct across many, and additionally gives the volume-weighted
+// blended price on days when the pump price changed mid-day.
 import { requireSession } from './auth.js';
 import * as scope from './scope.js';
-import { loadMetricDaily, listStations, listUploads, getMetricsRegistry } from './data.js';
-import { polylinePoints, areaPath, sparkline, heatCells, pearsonR } from './charts.js';
-import {
-  formatNumber, formatCompact, formatCurrencyCompact, percentDelta, formatDelta,
-  displayMetricName, metricColor, isoDateNDaysAgo, dateRangeDays,
-  formatDateDMY, formatDateShortDMY, weekdayLabel,
-} from './fmt.js';
-import { emptyTableRow, emptyCardHtml } from './empty.js';
+import { loadMetricDaily, latestMetricDate } from './data.js';
+import { formatNumber, formatMoneyCompact, weekdayLabel, formatDateDMY } from './fmt.js';
 import { t, onChange as onLanguageChange } from './i18n.js';
 
-let stations = [];
+const RE_PUMP  = /^(sl|tt)_([a-z0-9]+)_tru(\d+)$/;
+const RE_PRICE = /^gia_([a-z0-9]+)$/;
+const RE_SHIFT = /^ca_([a-z0-9_]+)$/;
+const RE_ITEM  = /^(sl|tt)_([a-z0-9_]+)$/;
+
+// Fixed hue per fuel, so a filter that changes the series count never repaints
+// the survivors. Unknown fuels take the remaining validated slots in name
+// order -- by entity, never by rank.
+const KNOWN_HUE = { a95: '--s1', e5: '--s3', do: '--s2' };
+const SLOTS = ['--s1', '--s2', '--s3', '--s4'];
+
+let MODE = 'month';
+let MONTH = null;          // 'YYYY-MM'
+let SEL = null;            // 'YYYY-MM-DD' (day mode)
+let M = null;              // current model
+let isOwner = false;
+
+const el = (id) => document.getElementById(id);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const nf = (n, d = 0) => formatNumber(n, { decimals: d });
+const iso = (d) => d.toISOString().slice(0, 10);
+const prevISO = (s) => { const d = new Date(s + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - 1); return iso(d); };
+const dowOf = (s) => (new Date(s + 'T00:00:00Z').getUTCDay() + 6) % 7;   // 0 = Monday
 
 init();
 
 async function init() {
   const result = await requireSession();
   if (!result) return;
-  const isOwner = result.profile?.role === 'owner';
-
+  isOwner = result.profile?.role === 'owner';
   await scope.init(result.session.user.id, { isOwner });
-  stations = scope.stations();
 
-  await render();
-  scope.onChange(() => render());
+  const latest = await latestMetricDate({ stationIds: scopeIds() });
+  MONTH = (latest || iso(new Date())).slice(0, 7);
+  el('mpick').value = MONTH;
+
+  wire();
+  await reload();
+
+  // A scope change alters which stations the query may return, so it reloads
+  // rather than just re-rendering.
+  scope.onChange(() => reload());
   onLanguageChange(() => render());
 }
 
-async function render() {
-  const today = isoDateNDaysAgo(0);
-  const windowStart = isoDateNDaysAgo(59);
-  const currentStart = isoDateNDaysAgo(29);
-  const previousEnd = isoDateNDaysAgo(30);
-  const days = dateRangeDays(currentStart, today);
+function scopeIds() {
+  const c = scope.current();
+  return c.mode === 'station' && c.stationId ? [c.stationId] : undefined;
+}
+function monthRange(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const start = new Date(Date.UTC(y, m - 1, 1));
+  const end = new Date(Date.UTC(y, m, 0));
+  const before = new Date(start); before.setUTCDate(0);
+  return { before: iso(before), start: iso(start), end: iso(end) };
+}
 
-  const cur = scope.current();
-  const stationIds = cur.mode === 'station' && cur.stationId ? [cur.stationId] : undefined;
-
-  const rows = await loadMetricDaily({ stationIds, from: windowStart, to: today });
-  const currentRows = rows.filter((r) => r.value_date >= currentStart);
-  const previousRows = rows.filter((r) => r.value_date < currentStart && r.value_date <= previousEnd);
-
-  const metricNames = [...new Set(rows.map((r) => r.metric_name))];
-  const registry = await getMetricsRegistry(metricNames);
-  const uploads = await listUploads({ stationIds, limit: 500 });
-
-  renderKpis(currentRows, previousRows, registry, days);
-  renderLeaderboard(currentRows, previousRows, registry, uploads, days);
-  renderTrendChart(currentRows, registry, days);
-  renderStacked(currentRows, registry, days);
-  renderHeatmap(currentRows, days);
-  renderCorrelation(currentRows, days);
-  renderDeltaTable(currentRows, previousRows, registry, days);
-  renderTopBottomDays(currentRows, days);
-  renderRawTable(currentRows, days);
+async function reload() {
+  const { before, start, end } = monthRange(MONTH);
+  const rows = await loadMetricDaily({ stationIds: scopeIds(), from: before, to: end });
+  M = buildModel(rows, start, end);
+  if (!SEL || !M.byDate[SEL]) SEL = M.days.length ? M.days[M.days.length - 1].date : end;
+  render();
 }
 
 // ---------------------------------------------------------------------
-// Shared aggregation helpers
+// Model
 // ---------------------------------------------------------------------
-
-function seriesByDay(rows, metricName, days) {
+function buildModel(rows, start, end) {
+  const pumps = new Map(), items = new Map(), fuelSet = new Set(), shiftSet = new Set();
   const byDate = {};
+
+  const dayOf = (date) => (byDate[date] ||= {
+    date, dow: dowOf(date), stations: new Set(), shifts: new Set(),
+    pumps: {}, items: {},
+  });
+
   for (const r of rows) {
-    if (r.metric_name !== metricName) continue;
-    byDate[r.value_date] = (byDate[r.value_date] || 0) + Number(r.value);
-  }
-  return days.map((d) => byDate[d] ?? null);
-}
+    const name = r.metric_name;
+    const v = Number(r.value) || 0;
+    let m;
 
-function repValue(rows, metricName, registry) {
-  const matching = rows.filter((r) => r.metric_name === metricName);
-  if (matching.length === 0) return null;
-  const agg = registry[metricName]?.aggregation || 'sum';
-  if (agg === 'last' || agg === 'max') {
-    return [...matching].sort((a, b) => a.value_date.localeCompare(b.value_date)).pop().value;
-  }
-  return matching.reduce((a, r) => a + Number(r.value), 0);
-}
-
-function rankedMetrics(rows, registry, n) {
-  const names = [...new Set(rows.map((r) => r.metric_name))];
-  return names
-    .map((name) => ({ name, value: repValue(rows, name, registry) || 0 }))
-    .filter((m) => m.value > 0)
-    .sort((a, b) => b.value - a.value)
-    .slice(0, n)
-    .map((m) => m.name);
-}
-
-// ---------------------------------------------------------------------
-// KPI tiles
-// ---------------------------------------------------------------------
-
-function renderKpis(currentRows, previousRows, registry, days) {
-  const specs = [
-    { key: 'total-sales', metric: 'sales_volume', currency: false, label: 'Total sales' },
-    { key: 'avg-day', metric: 'sales_volume', currency: false, isAvg: true, label: 'Avg / day' },
-    { key: 'total-purchases', metric: 'purchases', currency: false, label: 'Total purchases' },
-    { key: 'losses', metric: 'losses', currency: true, label: 'Losses' },
-    { key: 'inventory-avg', metric: 'inventory_on_hand', currency: false, isAvg: true, label: 'Inventory (avg)' },
-  ];
-  for (const spec of specs) {
-    const el = document.getElementById(`kpi-${spec.key}`);
-    if (!el) continue;
-    let value = repValue(currentRows, spec.metric, registry);
-    let prevValue = repValue(previousRows, spec.metric, registry);
-    if (spec.isAvg && value !== null) {
-      const present = currentRows.filter((r) => r.metric_name === spec.metric).length;
-      value = present > 0 ? value / present : null;
-      const prevPresent = previousRows.filter((r) => r.metric_name === spec.metric).length;
-      prevValue = prevPresent > 0 && prevValue !== null ? prevValue / prevPresent : null;
+    if ((m = RE_PUMP.exec(name))) {
+      const key = `${m[2]}_${m[3]}`;
+      pumps.set(key, { key, fuel: m[2], pump: Number(m[3]) });
+      fuelSet.add(m[2]);
+      const d = dayOf(r.value_date); d.stations.add(r.station_id);
+      const slot = (d.pumps[key] ||= { vol: 0, amt: 0 });
+      slot[m[1] === 'sl' ? 'vol' : 'amt'] += v;
+      continue;
     }
-    const valEl = el.querySelector('[data-f="val"]');
-    const deltaEl = el.querySelector('[data-f="delta"]');
-    const sparkEl = el.querySelector('[data-f="spark"]');
-    if (valEl) valEl.textContent = value === null ? '—' : (spec.currency ? formatCurrencyCompact(value) : formatCompact(value));
-    const pct = percentDelta(value, prevValue);
-    if (deltaEl) {
-      deltaEl.textContent = pct === null ? '—' : formatDelta(pct);
-      deltaEl.className = 'delta ' + (pct === null ? '' : pct >= 0 ? 'up' : 'down');
+    if ((m = RE_PRICE.exec(name))) { fuelSet.add(m[1]); continue; }   // see header note
+    if ((m = RE_SHIFT.exec(name))) {
+      shiftSet.add(m[1]);
+      if (v >= 1) { const d = dayOf(r.value_date); d.stations.add(r.station_id); d.shifts.add(m[1]); }
+      continue;
     }
-    if (sparkEl) {
-      const series = seriesByDay(currentRows, spec.metric, days);
-      sparkEl.setAttribute('points', sparkline(series, 60, 26));
+    if ((m = RE_ITEM.exec(name))) {
+      items.set(m[2], { key: m[2], name: m[2].replace(/_/g, ' ').toUpperCase() });
+      const d = dayOf(r.value_date); d.stations.add(r.station_id);
+      const slot = (d.items[m[2]] ||= { qty: 0, amt: 0 });
+      slot[m[1] === 'sl' ? 'qty' : 'amt'] += v;
+      continue;
     }
+    // Anything else is not part of this contract and is deliberately ignored.
   }
+
+  const fuels = [...fuelSet].sort().sort((a, b) => (KNOWN_HUE[b] ? 1 : 0) - (KNOWN_HUE[a] ? 1 : 0));
+  const fuelMeta = fuels.map((f, i) => ({
+    key: f, name: f.toUpperCase(),
+    color: `var(${KNOWN_HUE[f] || SLOTS[i % SLOTS.length]})`,
+  }));
+  const pumpList = [...pumps.values()].sort((a, b) => a.fuel < b.fuel ? -1 : a.fuel > b.fuel ? 1 : a.pump - b.pump);
+  const itemList = [...items.values()].sort((a, b) => a.name < b.name ? -1 : 1);
+
+  // Derive per-day aggregates once, so no widget recomputes them differently.
+  for (const d of Object.values(byDate)) {
+    d.fuel = {};
+    for (const f of fuels) {
+      const ps = pumpList.filter((p) => p.fuel === f);
+      d.fuel[f] = {
+        vol: ps.reduce((s, p) => s + (d.pumps[p.key]?.vol || 0), 0),
+        amt: ps.reduce((s, p) => s + (d.pumps[p.key]?.amt || 0), 0),
+      };
+    }
+    d.volume = fuels.reduce((s, f) => s + d.fuel[f].vol, 0);
+    d.itemsAmt = itemList.reduce((s, it) => s + (d.items[it.key]?.amt || 0), 0);
+    d.amount = fuels.reduce((s, f) => s + d.fuel[f].amt, 0) + d.itemsAmt;
+    d.price = Object.fromEntries(fuels.map((f) => [f, d.fuel[f].vol ? d.fuel[f].amt / d.fuel[f].vol : null]));
+    d.stationCount = d.stations.size;
+  }
+
+  const days = Object.values(byDate)
+    .filter((d) => d.date >= start && d.date <= end)
+    .sort((a, b) => a.date < b.date ? -1 : 1);
+
+  return { byDate, days, fuels, fuelMeta, pumpList, itemList, shifts: [...shiftSet].sort(), start, end };
+}
+
+function totalsOf(days) {
+  const fuel = Object.fromEntries(M.fuels.map((f) => [f, {
+    vol: days.reduce((s, d) => s + d.fuel[f].vol, 0),
+    amt: days.reduce((s, d) => s + d.fuel[f].amt, 0),
+  }]));
+  const amount = days.reduce((s, d) => s + d.amount, 0);
+  const volume = days.reduce((s, d) => s + d.volume, 0);
+  return {
+    amount, volume, days: days.length, fuel,
+    itemsAmt: days.reduce((s, d) => s + d.itemsAmt, 0),
+    avgPrice: volume ? M.fuels.reduce((s, f) => s + fuel[f].amt, 0) / volume : null,
+    avgPerDay: days.length ? amount / days.length : 0,
+    pumps: M.pumpList.map((p) => ({ ...p,
+      vol: days.reduce((s, d) => s + (d.pumps[p.key]?.vol || 0), 0),
+      amt: days.reduce((s, d) => s + (d.pumps[p.key]?.amt || 0), 0) })),
+    items: M.itemList.map((it) => ({ ...it,
+      qty: days.reduce((s, d) => s + (d.items[it.key]?.qty || 0), 0),
+      amt: days.reduce((s, d) => s + (d.items[it.key]?.amt || 0), 0) })),
+  };
 }
 
 // ---------------------------------------------------------------------
-// Station leaderboard
+// SVG helpers
 // ---------------------------------------------------------------------
-
-function renderLeaderboard(currentRows, previousRows, registry, uploads, days) {
-  const tbody = document.getElementById('leaderboard-tbody');
-  if (!tbody) return;
-
-  const visibleStations = stations.length ? stations : [];
-  if (visibleStations.length === 0) {
-    tbody.innerHTML = emptyTableRow(8, t('empty.noStationsAccessible'));
-    return;
-  }
-
-  const rowsHtml = [];
-  const totals = { revenue: 0, sales: 0, losses: 0, purchases: 0 };
-  let idx = 0;
-  const ranked = visibleStations
-    .map((s) => {
-      const stRows = currentRows.filter((r) => r.station_id === s.id);
-      const revenue = repValue(stRows, 'revenue', registry) || 0;
-      const prevRevenue = repValue(previousRows.filter((r) => r.station_id === s.id), 'revenue', registry);
-      const salesVol = repValue(stRows, 'sales_volume', registry) || 0;
-      const losses = repValue(stRows, 'losses', registry) || 0;
-      const purchases = repValue(stRows, 'purchases', registry) || 0;
-      const margin = revenue > 0 ? ((revenue - purchases - losses) / revenue) * 100 : null;
-      const uploadDates = new Set(uploads.filter((u) => u.station_id === s.id && u.status !== 'overwritten').map((u) => u.upload_date));
-      const coverage = (days.filter((d) => uploadDates.has(d)).length / days.length) * 100;
-      const trend = seriesByDay(stRows, 'revenue', days);
-      return { station: s, revenue, prevRevenue, salesVol, losses, margin, coverage, trend };
-    })
-    .sort((a, b) => b.revenue - a.revenue);
-
-  ranked.forEach((r) => {
-    idx++;
-    totals.revenue += r.revenue;
-    totals.sales += r.salesVol;
-    totals.losses += r.losses;
-    const pct = percentDelta(r.revenue, r.prevRevenue);
-    const rankClass = idx === 1 ? 'top' : '';
-    rowsHtml.push(`
-      <tr style="cursor:pointer">
-        <td style="padding:10px;border-bottom:1px solid var(--line)"><span class="rank ${rankClass}" style="display:inline-block;width:22px;height:22px;background:${idx === 1 ? 'var(--accent)' : '#f2f4f0'};color:${idx === 1 ? '#0f2a1f' : 'var(--ink-2)'};border-radius:50%;text-align:center;font-weight:800;font-size:11px;line-height:22px">${idx}</span></td>
-        <td style="padding:10px;border-bottom:1px solid var(--line)"><span style="display:inline-flex;align-items:center;gap:6px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:${r.station.color}"></span>${escapeHtml(r.station.name)}</span></td>
-        <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(r.revenue)} ${pct === null ? '' : `<span style="color:${pct >= 0 ? '#1f8f4a' : 'var(--red)'};font-weight:700">${formatDelta(pct)}</span>`}</td>
-        <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">${formatNumber(r.salesVol)}</td>
-        <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(r.losses)}</td>
-        <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums">${r.margin === null ? '—' : r.margin.toFixed(1) + '%'}</td>
-        <td style="padding:10px;border-bottom:1px solid var(--line);text-align:right">${r.coverage.toFixed(0)}%</td>
-        <td style="padding:10px;border-bottom:1px solid var(--line)"><svg width="70" height="20"><polyline fill="none" stroke="${r.station.color}" stroke-width="1.5" points="${polylinePoints(r.trend, { w: 70, h: 20, pad: 2 })}"/></svg></td>
-      </tr>`);
+function mk(tag, attrs = {}, parent) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function clear(svg) { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+function barPath(x, y, w, h, r = 4, dir = 'up') {   // 4px rounded data-end, square baseline
+  r = Math.min(r, w / 2, h);
+  if (h <= 0 || w <= 0) return '';
+  if (dir === 'up') return `M${x},${y + h} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + w - r},${y} Q${x + w},${y} ${x + w},${y + r} L${x + w},${y + h} Z`;
+  return `M${x},${y} L${x + w - r},${y} Q${x + w},${y} ${x + w},${y + r} L${x + w},${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} L${x},${y + h} Z`;
+}
+function hover(node, html) {
+  const tip = el('tip');
+  node.addEventListener('mousemove', (e) => {
+    tip.innerHTML = html; tip.style.opacity = 1;
+    const r = tip.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - r.width - 10) + 'px';
+    tip.style.top = Math.max(e.clientY - r.height - 12, 8) + 'px';
   });
-
-  const combinedMargin = totals.revenue > 0 ? ((totals.revenue - currentRows.filter((r) => r.metric_name === 'purchases').reduce((a, r) => a + Number(r.value), 0) - totals.losses) / totals.revenue) * 100 : null;
-
-  rowsHtml.push(`
-    <tr style="background:#fafbf8;font-weight:700">
-      <td style="padding:10px"></td>
-      <td style="padding:10px">${escapeHtml(t('statistics.leaderboard.combined'))}</td>
-      <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(totals.revenue)}</td>
-      <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatNumber(totals.sales)}</td>
-      <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${formatCurrencyCompact(totals.losses)}</td>
-      <td style="padding:10px;text-align:right;font-variant-numeric:tabular-nums">${combinedMargin === null ? '—' : combinedMargin.toFixed(1) + '%'}</td>
-      <td style="padding:10px;text-align:right">—</td>
-      <td style="padding:10px">—</td>
-    </tr>`);
-
-  tbody.innerHTML = rowsHtml.join('');
-
-  const scopeLabelEl = document.getElementById('leaderboard-scope-label');
-  if (scopeLabelEl) {
-    const cur = scope.current();
-    const scopeName = cur.mode === 'all' ? t('shell.scopeAllStations') : cur.station?.name || '—';
-    scopeLabelEl.textContent = t('statistics.leaderboard.scopeLabel', { scope: scopeName });
+  node.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+}
+function niceMax(v, steps = 4) {
+  if (!(v > 0)) return steps;
+  const raw = v / steps, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  return Math.ceil(raw / mag) * mag * steps;
+}
+function yAxis(svg, x0, x1, yTop, yBot, max, fmt, steps = 4) {
+  for (let i = 0; i <= steps; i++) {
+    const v = (max / steps) * i, y = yBot - (yBot - yTop) * (i / steps);
+    mk('line', { x1: x0, x2: x1, y1: y, y2: y, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    mk('text', { x: x0 - 8, y: y + 3.5, 'text-anchor': 'end', class: 'tick' }, svg).textContent = fmt(v);
   }
 }
+const money = (n) => formatMoneyCompact(n);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const deltaHtml = (cur, prev) => {
+  if (cur == null || prev == null || !prev) return `<span class="delta">${t('stats.noPrevDay')}</span>`;
+  const p = ((cur - prev) / Math.abs(prev)) * 100;
+  return `<span class="delta ${p >= 0 ? 'up' : 'down'}">${p >= 0 ? '▲ +' : '▼ '}${Math.abs(p).toFixed(1)}% ${t('stats.vsPrevDay')}</span>`;
+};
+const scopeName = () => {
+  const c = scope.current();
+  return c.mode === 'station' && c.station ? c.station.name : t('shell.scopeAllStations');
+};
+const nStations = () => scope.current().mode === 'station' ? 1 : Math.max(scope.stations().length, 1);
+const isAll = () => scope.current().mode !== 'station';
 
 // ---------------------------------------------------------------------
-// Trend chart (top metric filled + up to 2 more as lines)
+// Widgets
 // ---------------------------------------------------------------------
-
-function renderTrendChart(currentRows, registry, days) {
-  const svg = document.getElementById('trend-svg');
-  const legendEl = document.getElementById('trend-legend');
-  if (!svg) return;
-
-  const top = rankedMetrics(currentRows, registry, 3);
-  const w = 700, h = 260, pad = { l: 40, r: 10, t: 20, b: 40 };
-  const plotW = w - pad.l - pad.r;
-  const plotH = h - pad.t - pad.b;
-
-  if (top.length === 0) {
-    svg.parentElement.querySelector('.sub').textContent = t('empty.noMetricsTrackedPeriod');
-    svg.innerHTML = '';
-    if (legendEl) legendEl.innerHTML = '';
-    return;
-  }
-
-  const seriesList = top.map((name) => ({ name, color: metricColor(name), values: seriesByDay(currentRows, name, days) }));
-  const allValues = seriesList.flatMap((s) => s.values).filter((v) => v !== null);
-  const maxVal = Math.max(...allValues, 1);
-
-  let svgContent = `
-    <g stroke="#eef0ec" stroke-width="1">
-      <line x1="${pad.l}" y1="${pad.t}" x2="${w - pad.r}" y2="${pad.t}"/>
-      <line x1="${pad.l}" y1="${pad.t + plotH * 0.33}" x2="${w - pad.r}" y2="${pad.t + plotH * 0.33}"/>
-      <line x1="${pad.l}" y1="${pad.t + plotH * 0.66}" x2="${w - pad.r}" y2="${pad.t + plotH * 0.66}"/>
-      <line x1="${pad.l}" y1="${pad.t + plotH}" x2="${w - pad.r}" y2="${pad.t + plotH}"/>
-    </g>
-    <g fill="#8a978f" font-size="10" font-family="Inter">
-      <text x="8" y="${pad.t + 4}">${formatCompact(maxVal)}</text>
-      <text x="8" y="${pad.t + plotH + 4}">0</text>
-    </g>`;
-
-  seriesList.forEach((s, i) => {
-    const pts = plotPoints(s.values, days.length, plotW, plotH, pad, maxVal);
-    if (i === 0) {
-      const base = pad.t + plotH;
-      const line = pts.split(' ').map((p, j) => (j === 0 ? 'M' : 'L') + p).join(' ');
-      const firstX = pts.split(' ')[0].split(',')[0];
-      const lastX = pts.split(' ').slice(-1)[0].split(',')[0];
-      svgContent += `<path d="${line} L${lastX},${base} L${firstX},${base} Z" fill="${s.color}" fill-opacity=".12"/>`;
-      svgContent += `<polyline fill="none" stroke="${s.color}" stroke-width="2.2" points="${pts}"/>`;
-    } else {
-      svgContent += `<polyline fill="none" stroke="${s.color}" stroke-width="2" points="${pts}"/>`;
-    }
-  });
-
-  // Annotate the highest day of the primary metric.
-  const primary = seriesList[0];
-  let peakIdx = -1, peakVal = -Infinity;
-  primary.values.forEach((v, i) => { if (v !== null && v > peakVal) { peakVal = v; peakIdx = i; } });
-  if (peakIdx >= 0) {
-    const x = pad.l + (days.length > 1 ? (plotW / (days.length - 1)) * peakIdx : plotW / 2);
-    const y = pad.t + plotH - (peakVal / maxVal) * plotH;
-    const label = `${formatDateShortDMY(days[peakIdx])} · ${formatCompact(peakVal)}`;
-    svgContent += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${primary.color}"/>`;
-    svgContent += `<rect x="${Math.max(pad.l, x - 55).toFixed(1)}" y="${Math.max(0, y - 32).toFixed(1)}" width="110" height="24" rx="6" fill="#0f2a1f"/>`;
-    svgContent += `<text x="${Math.max(pad.l, x - 55).toFixed(1) - -55}" y="${Math.max(0, y - 32).toFixed(1) - -16}" text-anchor="middle" fill="#b7f04a" font-size="10" font-family="Inter" font-weight="700">${escapeHtml(label)}</text>`;
-  }
-
-  svg.innerHTML = svgContent;
-  svg.parentElement.querySelector('.sub').textContent = t('statistics.trend.sub');
-
-  if (legendEl) {
-    legendEl.innerHTML = seriesList.map((s) => `<span><span class="sw" style="background:${s.color}"></span>${escapeHtml(displayMetricName(s.name))}</span>`).join('');
-  }
+function kpisMonth(T) {
+  el('kpis').innerHTML = [
+    { lbl: t('stats.kpi.revenue'), val: money(T.amount), unit: '₫',
+      sub: `${nf(T.amount)} ₫ · ${t('stats.kpi.inclItems', { n: nf(T.itemsAmt) })}` },
+    { lbl: t('stats.kpi.volume'), val: nf(T.volume), unit: 'L', sub: t('stats.kpi.volumeSub') },
+    { lbl: t('stats.kpi.avgPrice'), val: T.avgPrice ? nf(T.avgPrice) : '—', unit: '₫/L',
+      sub: t('stats.kpi.avgPriceSub') + (isAll() ? ' ' + t('stats.kpi.acrossStations') : '') },
+    { lbl: t('stats.kpi.perDay'), val: money(T.avgPerDay), unit: '₫', sub: t('stats.kpi.daysWithData', { n: T.days }) },
+  ].map((r) => `<div class="kpi"><div class="lbl">${esc(r.lbl)}</div>
+      <div class="val">${esc(r.val)}<span class="unit">${r.unit}</span></div>
+      <div class="sub">${esc(r.sub)}</div></div>`).join('');
+}
+function kpisDay(cur, prev) {
+  const slots = M.pumpList.length;
+  const active = cur ? M.pumpList.filter((p) => (cur.pumps[p.key]?.vol || 0) > 0).length : 0;
+  const avg = cur && cur.volume ? cur.amount / cur.volume : null;
+  const pAvg = prev && prev.volume ? prev.amount / prev.volume : null;
+  const shiftTxt = cur && cur.shifts.size ? [...cur.shifts].map((s) => s.toUpperCase()).join(', ') : '—';
+  el('kpis').innerHTML = (cur ? [
+    { lbl: t('stats.kpi.revenue'), val: money(cur.amount), unit: '₫', d: deltaHtml(cur.amount, prev?.amount), sub: `${nf(cur.amount)} ₫` },
+    { lbl: t('stats.kpi.volume'), val: nf(cur.volume), unit: 'L', d: deltaHtml(cur.volume, prev?.volume),
+      sub: isAll() ? t('stats.kpi.stationsReported', { n: cur.stationCount, total: nStations() }) : t('stats.kpi.shift', { s: shiftTxt }) },
+    { lbl: t('stats.kpi.avgPrice'), val: avg ? nf(avg) : '—', unit: '₫/L', d: deltaHtml(avg, pAvg), sub: t('stats.kpi.avgPriceSub') },
+    { lbl: t('stats.kpi.activePumps'), val: `${active}/${slots}`, unit: '',
+      d: `<span class="delta">${t('stats.kpi.idlePumps', { n: slots - active })}</span>`,
+      sub: isAll() ? t('stats.kpi.pumpSlotsAll') : t('stats.kpi.pumpSlotsOne') },
+  ] : []).map((r) => `<div class="kpi"><div class="lbl">${esc(r.lbl)}</div>
+      <div class="val">${esc(r.val)}<span class="unit">${r.unit}</span></div>
+      ${r.d}<div class="sub">${esc(r.sub)}</div></div>`).join('');
 }
 
-function plotPoints(values, n, plotW, plotH, pad, maxVal) {
-  const stepX = n > 1 ? plotW / (n - 1) : 0;
-  return values.map((v, i) => {
-    const x = pad.l + stepX * i;
-    const y = v === null ? pad.t + plotH : pad.t + plotH - (v / maxVal) * plotH;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
+function chartDailyRevenue(days) {
+  const svg = el('c-daily'); clear(svg);
+  const W = 860, H = 210, pad = { l: 56, r: 14, t: 10, b: 26 };
+  const n = days.length, max = niceMax(Math.max(...days.map((x) => x.amount)));
+  const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b, band = plotW / n, bw = Math.min(24, band - 2);
+  yAxis(svg, pad.l, W - pad.r, pad.t, pad.t + plotH, max, money);
+  const hi = Math.max(...days.map((x) => x.amount)), lo = Math.min(...days.map((x) => x.amount));
+  days.forEach((x, i) => {
+    const h = (x.amount / max) * plotH, xx = pad.l + band * i + (band - bw) / 2, y = pad.t + plotH - h;
+    mk('path', { d: barPath(xx, y, bw, h), fill: 'var(--s1)' }, svg);
+    if (x.amount === hi || x.amount === lo)
+      mk('text', { x: xx + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel' }, svg).textContent = money(x.amount);
+    hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
+      `<b>${formatDateDMY(x.date)}</b> · ${weekdayLabel(x.date)}<br>${t('stats.kpi.revenue')} <b>${nf(x.amount)} ₫</b><br>${t('stats.kpi.volume')} ${nf(x.volume)} L`);
+    if (i % 3 === 0 || i === n - 1)
+      mk('text', { x: pad.l + band * i + band / 2, y: H - 8, 'text-anchor': 'middle', class: 'tick' }, svg).textContent = x.date.slice(-2);
+  });
+  mk('line', { x1: pad.l, x2: W - pad.r, y1: pad.t + plotH, y2: pad.t + plotH, stroke: 'var(--axis)', 'stroke-width': 1 }, svg);
+  el('cap-daily').textContent = t('stats.daily.cap', {
+    scope: scopeName(),
+    hiDate: formatDateDMY(days.find((x) => x.amount === hi).date), hi: nf(hi),
+    loDate: formatDateDMY(days.find((x) => x.amount === lo).date), lo: nf(lo),
+  });
 }
-
-// ---------------------------------------------------------------------
-// Stacked weekly composition
-// ---------------------------------------------------------------------
-
-function renderStacked(currentRows, registry, days) {
-  const svg = document.getElementById('stacked-svg');
-  const legendEl = document.getElementById('stacked-legend');
-  if (!svg) return;
-
-  const top = rankedMetrics(currentRows, registry, 3);
-  if (top.length === 0) {
-    svg.innerHTML = '';
-    if (legendEl) legendEl.innerHTML = '';
-    return;
+function chartDailyVolume(days) {
+  const svg = el('c-vol'); clear(svg);
+  const W = 860, H = 130, pad = { l: 56, r: 14, t: 10, b: 24 };
+  const n = days.length, max = niceMax(Math.max(...days.map((x) => x.volume)));
+  const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b, band = plotW / n;
+  yAxis(svg, pad.l, W - pad.r, pad.t, pad.t + plotH, max, (v) => nf(v), 3);
+  const pts = days.map((x, i) => [pad.l + band * i + band / 2, pad.t + plotH - (x.volume / max) * plotH]);
+  mk('polyline', { points: pts.map((p) => p.join(',')).join(' '), fill: 'none', stroke: 'var(--s1)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  days.forEach((x, i) => {
+    hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
+      `<b>${formatDateDMY(x.date)}</b><br>${t('stats.kpi.volume')} <b>${nf(x.volume)} L</b>`);
+    if (i % 3 === 0 || i === n - 1)
+      mk('text', { x: pad.l + band * i + band / 2, y: H - 6, 'text-anchor': 'middle', class: 'tick' }, svg).textContent = x.date.slice(-2);
+  });
+  const last = pts[pts.length - 1];
+  mk('circle', { cx: last[0], cy: last[1], r: 4.5, fill: 'var(--s1)', stroke: '#fff', 'stroke-width': 2 }, svg);
+  mk('line', { x1: pad.l, x2: W - pad.r, y1: pad.t + plotH, y2: pad.t + plotH, stroke: 'var(--axis)', 'stroke-width': 1 }, svg);
+}
+function chartPrice(days) {
+  const svg = el('c-price'); clear(svg);
+  const W = 520, H = 230, pad = { l: 52, r: 44, t: 12, b: 26 };
+  const n = days.length;
+  const all = days.flatMap((x) => M.fuels.map((k) => x.price[k]).filter((v) => v != null));
+  if (!all.length) { el('cap-price').textContent = t('stats.price.none'); el('lg-price').innerHTML = ''; return; }
+  const lo = Math.floor(Math.min(...all) / 500) * 500 - 500, hi = Math.ceil(Math.max(...all) / 500) * 500;
+  const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b, band = plotW / n;
+  const step = Math.max(500, Math.round((hi - lo) / 4 / 500) * 500);
+  for (let v = lo; v <= hi; v += step) {
+    const y = pad.t + plotH - ((v - lo) / (hi - lo)) * plotH;
+    mk('line', { x1: pad.l, x2: W - pad.r, y1: y, y2: y, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    mk('text', { x: pad.l - 8, y: y + 3.5, 'text-anchor': 'end', class: 'tick' }, svg).textContent = nf(v / 1000, 1) + 'K';
   }
-
-  const weeks = [];
-  for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
-
-  const weekTotals = weeks.map((wdays) => {
-    const byMetric = {};
-    for (const name of top) {
-      byMetric[name] = wdays.reduce((sum, d) => sum + (seriesByDayValue(currentRows, name, d) || 0), 0);
-    }
-    return byMetric;
-  });
-
-  const maxStack = Math.max(...weekTotals.map((wt) => top.reduce((a, name) => a + wt[name], 0)), 1);
-  const chartH = 190, baseY = 210, colW = 40, gap = 10, startX = 20;
-
-  let svgContent = `<g fill="#8a978f" font-size="10" font-family="Inter" text-anchor="middle">`;
-  weeks.forEach((_, i) => {
-    svgContent += `<text x="${startX + i * (colW + gap) + colW / 2}" y="230">W${i + 1}</text>`;
-  });
-  svgContent += `</g>`;
-
-  weekTotals.forEach((wt, i) => {
-    let yCursor = baseY;
-    const x = startX + i * (colW + gap);
-    top.forEach((name) => {
-      const val = wt[name];
-      const segH = (val / maxStack) * chartH;
-      yCursor -= segH;
-      svgContent += `<rect x="${x}" y="${yCursor.toFixed(1)}" width="${colW}" height="${segH.toFixed(1)}" fill="${metricColor(name)}" rx="3"/>`;
+  el('lg-price').innerHTML = M.fuelMeta.map((f) => `<span><i style="background:${f.color}"></i>${esc(f.name)}</span>`).join('');
+  M.fuelMeta.forEach((f) => {
+    const seg = [];
+    days.forEach((x, i) => {
+      if (x.price[f.key] == null) return;
+      const y = pad.t + plotH - ((x.price[f.key] - lo) / (hi - lo)) * plotH;
+      seg.push([pad.l + band * i, y], [pad.l + band * i + band, y]);   // step: hold, then jump
     });
+    if (!seg.length) return;
+    mk('polyline', { points: seg.map((p) => p.join(',')).join(' '), fill: 'none', stroke: f.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    const end = seg[seg.length - 1];
+    mk('circle', { cx: end[0], cy: end[1], r: 4, fill: f.color, stroke: '#fff', 'stroke-width': 2 }, svg);
+    mk('text', { x: end[0] + 8, y: end[1] + 3.5, class: 'dlabel' }, svg).textContent = f.name;
   });
-
-  svg.innerHTML = svgContent;
-  svg.setAttribute('viewBox', `0 0 ${startX * 2 + weeks.length * (colW + gap)} 240`);
-  if (legendEl) {
-    legendEl.innerHTML = top.map((name) => `<span><span class="sw" style="background:${metricColor(name)}"></span>${escapeHtml(displayMetricName(name))}</span>`).join('');
-  }
+  days.forEach((x, i) => {
+    hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
+      `<b>${formatDateDMY(x.date)}</b><br>` + M.fuelMeta.map((f) => `${f.name} <b>${x.price[f.key] == null ? '—' : nf(x.price[f.key]) + ' ₫'}</b>`).join('<br>'));
+    if (i % 5 === 0 || i === n - 1)
+      mk('text', { x: pad.l + band * i + band / 2, y: H - 8, 'text-anchor': 'middle', class: 'tick' }, svg).textContent = x.date.slice(-2);
+  });
+  mk('line', { x1: pad.l, x2: W - pad.r, y1: pad.t + plotH, y2: pad.t + plotH, stroke: 'var(--axis)', 'stroke-width': 1 }, svg);
+  el('cap-price').textContent = t('stats.price.cap') + (isAll() ? ' ' + t('stats.price.capAll') : '');
 }
-
-function seriesByDayValue(rows, metricName, date) {
-  return rows
-    .filter((r) => r.metric_name === metricName && r.value_date === date)
-    .reduce((a, r) => a + Number(r.value), 0) || null;
+function chartDow(days) {
+  const svg = el('c-dow'); clear(svg);
+  const W = 380, H = 230, pad = { l: 50, r: 10, t: 10, b: 28 };
+  const buckets = Array.from({ length: 7 }, () => []);
+  days.forEach((d) => buckets[d.dow].push(d.amount));
+  const v = buckets.map((b) => b.length ? b.reduce((s, x) => s + x, 0) / b.length : 0);
+  const max = niceMax(Math.max(...v));
+  const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b, band = plotW / 7, bw = Math.min(24, band - 8);
+  yAxis(svg, pad.l, W - pad.r, pad.t, pad.t + plotH, max, money);
+  const nz = v.filter((x) => x > 0);
+  const hi = Math.max(...v), lo = nz.length ? Math.min(...nz) : 0;
+  const WD = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  v.forEach((val, i) => {
+    const h = (val / max) * plotH, x = pad.l + band * i + (band - bw) / 2, y = pad.t + plotH - h;
+    mk('path', { d: barPath(x, y, bw, h), fill: 'var(--s1)' }, svg);
+    if (val && (val === hi || val === lo))
+      mk('text', { x: x + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel' }, svg).textContent = money(val);
+    hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
+      `<b>${t('statistics.weekday.' + WD[i])}</b><br>${nf(val)} ₫<br>${t('stats.dow.nDays', { n: buckets[i].length })}`);
+    mk('text', { x: pad.l + band * i + band / 2, y: H - 9, 'text-anchor': 'middle', class: 'tick' }, svg)
+      .textContent = t('statistics.weekday.' + WD[i]);
+  });
+  mk('line', { x1: pad.l, x2: W - pad.r, y1: pad.t + plotH, y2: pad.t + plotH, stroke: 'var(--axis)', 'stroke-width': 1 }, svg);
+  el('cap-dow').textContent = lo
+    ? t('stats.dow.cap', { pct: (((hi - lo) / lo) * 100).toFixed(0) })
+    : t('stats.dow.capThin');
 }
-
-// ---------------------------------------------------------------------
-// Calendar heatmap (primary metric, weeks x weekdays)
-// ---------------------------------------------------------------------
-
-function renderHeatmap(currentRows, days) {
-  const heatEl = document.getElementById('heat');
-  const titleEl = document.getElementById('heat-title');
-  if (!heatEl) return;
-
-  const top = rankedMetrics(currentRows, {}, 1);
-  const metricName = top[0];
-  if (!metricName) {
-    heatEl.innerHTML = '';
-    heatEl.parentElement.querySelector('.sub').textContent = t('empty.noDataYet');
-    return;
-  }
-  if (titleEl) titleEl.textContent = displayMetricName(metricName);
-
-  const byDate = {};
-  for (const r of currentRows) {
-    if (r.metric_name !== metricName) continue;
-    byDate[r.value_date] = (byDate[r.value_date] || 0) + Number(r.value);
-  }
-  const cells = heatCells(byDate, days);
-
-  // Group into weeks starting on the first day of the range.
-  const weeks = [];
-  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
-  const weekCount = weeks.length;
-
-  const shades = ['#eef1ec', '#d0e6b8', '#a9d76d', '#7fbf3e', '#4e8f1f', '#1f6f4a'];
-  const rowLabels = ['', '', '', '', '', '', ''];
-
-  heatEl.style.gridTemplateColumns = `28px repeat(${weekCount}, 1fr)`;
-  heatEl.style.gridTemplateRows = `repeat(7, 1fr)`;
-  heatEl.innerHTML = '';
-
-  const weekdayNames = [
-    t('statistics.weekday.mon'), t('statistics.weekday.tue'), t('statistics.weekday.wed'),
-    t('statistics.weekday.thu'), t('statistics.weekday.fri'), t('statistics.weekday.sat'), t('statistics.weekday.sun'),
-  ];
-  for (let wd = 0; wd < 7; wd++) {
-    const lbl = document.createElement('div');
-    lbl.className = 'rowlbl';
-    lbl.textContent = weekdayNames[wd];
-    heatEl.appendChild(lbl);
-    for (let w = 0; w < weekCount; w++) {
-      const cell = weeks[w][wd];
-      const div = document.createElement('div');
-      div.className = 'cell';
-      div.title = cell ? `${cell.date}: ${formatNumber(cell.value)}` : '';
-      div.style.background = cell ? shades[cell.level] : 'transparent';
-      heatEl.appendChild(div);
+function chartMix(fuel, caption) {
+  const svg = el('c-mix'); clear(svg);
+  const W = 380, gap = 2, y = 14, h = 30;
+  const order = [...M.fuelMeta].sort((a, b) => fuel[b.key].amt - fuel[a.key].amt);
+  const tot = M.fuels.reduce((s, f) => s + fuel[f].amt, 0);
+  el('lg-mix').innerHTML = M.fuelMeta.map((f) => `<span><i style="background:${f.color}"></i>${esc(f.name)}</span>`).join('');
+  el('cap-mix').textContent = caption;
+  if (!tot) { el('t-mix').innerHTML = ''; return; }
+  let x = 0;
+  order.forEach((f, i) => {
+    const w = (fuel[f.key].amt / tot) * W - (i < order.length - 1 ? gap : 0);   // 2px surface gap
+    if (w <= 0) return;
+    hover(mk('path', { d: barPath(x, y, w, h, 4, 'right'), fill: f.color }, svg),
+      `<b>${f.name}</b><br>${nf(fuel[f.key].amt)} ₫<br>${nf(fuel[f.key].vol)} L`);
+    if (w > 46)   // only label inside the mark when it fits
+      mk('text', { x: x + w / 2, y: y + h / 2 + 4, 'text-anchor': 'middle', class: 'dlabel', fill: '#fff' }, svg)
+        .textContent = `${f.name} ${((fuel[f.key].amt / tot) * 100).toFixed(1)}%`;
+    x += w + gap;
+  });
+  el('t-mix').innerHTML = `<thead><tr><th>${t('stats.mix.colType')}</th>`
+    + `<th style="text-align:right">${t('stats.col.litres')}</th>`
+    + `<th style="text-align:right">${t('stats.col.amount')}</th>`
+    + `<th style="text-align:right">₫/L</th></tr></thead><tbody>`
+    + order.map((f) => `<tr><td><span class="swatch" style="background:${f.color}"></span>${esc(f.name)}</td>`
+      + `<td class="n">${nf(fuel[f.key].vol)}</td><td class="n">${nf(fuel[f.key].amt)}</td>`
+      + `<td class="n">${fuel[f.key].vol ? nf(fuel[f.key].amt / fuel[f.key].vol) : '—'}</td></tr>`).join('') + '</tbody>';
+}
+/** One station -> per-pump bars. Many stations -> per-fuel bars: every station
+    has its own "trụ 2", and merging two physically different pumps into one bar
+    would state something untrue. */
+function chartPumps(pumps, fuel, caption) {
+  const svg = el('c-pump'); clear(svg);
+  const W = 520, pad = { l: 96, r: 96, t: 6 }, rowH = 28, bh = 16;
+  const byFuel = isAll();
+  const rows = byFuel
+    ? M.fuelMeta.map((f) => ({ label: f.name, color: f.color, vol: fuel[f.key].vol, amt: fuel[f.key].amt }))
+    : pumps.map((p) => ({
+        label: t('stats.pump.label', { fuel: p.fuel.toUpperCase(), n: p.pump }),
+        color: (M.fuelMeta.find((f) => f.key === p.fuel) || {}).color || 'var(--s1)',
+        vol: p.vol, amt: p.amt }));
+  rows.sort((a, b) => b.vol - a.vol);
+  const max = Math.max(...rows.map((r) => r.vol)) || 1, plotW = W - pad.l - pad.r;
+  svg.setAttribute('viewBox', `0 0 ${W} ${pad.t + rows.length * rowH + 8}`);
+  el('h-pump').textContent = byFuel ? t('stats.pump.titleByFuel') : t('stats.pump.title');
+  el('lg-pump').innerHTML = M.fuelMeta.map((f) => `<span><i style="background:${f.color}"></i>${esc(f.name)}</span>`).join('');
+  rows.forEach((r, i) => {
+    const y = pad.t + i * rowH, w = (r.vol / max) * plotW;
+    mk('text', { x: pad.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end', class: 'dlabel' }, svg).textContent = r.label;
+    mk('line', { x1: pad.l, x2: W - pad.r, y1: y + bh / 2, y2: y + bh / 2, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    if (r.vol > 0) {
+      hover(mk('path', { d: barPath(pad.l, y, w, bh, 4, 'right'), fill: r.color }, svg),
+        `<b>${r.label}</b><br>${nf(r.vol)} L<br>${nf(r.amt)} ₫`);
+      mk('text', { x: pad.l + w + 8, y: y + bh / 2 + 4, class: 'dlabel' }, svg).textContent = nf(r.vol) + ' L';
+    } else {
+      mk('text', { x: pad.l + 4, y: y + bh / 2 + 4, class: 'flag' }, svg).textContent = t('stats.pump.idle');
     }
-  }
+  });
+  el('cap-pump').textContent = caption;
+}
+function chartItems(items, caption) {
+  const card = el('card-oil');
+  if (!items.length) { card.classList.add('hide'); return; }
+  card.classList.remove('hide');
+  const svg = el('c-oil'); clear(svg);
+  const W = 520, pad = { l: 116, r: 92, t: 6 }, rowH = 27, bh = 15;
+  const rows = [...items].sort((a, b) => b.amt - a.amt);
+  const max = Math.max(...rows.map((r) => r.amt)) || 1, plotW = W - pad.l - pad.r;
+  svg.setAttribute('viewBox', `0 0 ${W} ${pad.t + rows.length * rowH + 6}`);
+  rows.forEach((r, i) => {
+    const y = pad.t + i * rowH, w = r.amt ? Math.max((r.amt / max) * plotW, 1) : 0;
+    mk('text', { x: pad.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end', class: 'dlabel' }, svg).textContent = r.name;
+    if (w) {
+      hover(mk('path', { d: barPath(pad.l, y, w, bh, 4, 'right'), fill: 'var(--s1)' }, svg),
+        `<b>${esc(r.name)}</b><br>${nf(r.amt)} ₫<br>${nf(r.qty, 3)}`);
+      mk('text', { x: pad.l + w + 8, y: y + bh / 2 + 4, class: 'dlabel' }, svg).textContent = nf(r.amt) + ' ₫';
+    } else {
+      mk('text', { x: pad.l + 4, y: y + bh / 2 + 4, class: 'tick' }, svg).textContent = t('stats.oil.none');
+    }
+  });
+  el('cap-oil').textContent = caption;
+  el('t-oil').innerHTML = `<thead><tr><th>${t('stats.oil.colItem')}</th>`
+    + `<th style="text-align:right">${t('stats.oil.colQty')}</th>`
+    + `<th style="text-align:right">${t('stats.oil.colUnit')}</th>`
+    + `<th style="text-align:right">${t('stats.col.amount')}</th></tr></thead><tbody>`
+    + rows.map((r) => `<tr><td>${esc(r.name)}</td><td class="n">${r.qty ? nf(r.qty, r.qty % 1 ? 3 : 0) : '—'}</td>`
+      + `<td class="n">${r.qty ? nf(r.amt / r.qty) : '—'}</td><td class="n">${r.amt ? nf(r.amt) : '—'}</td></tr>`).join('') + '</tbody>';
 }
 
 // ---------------------------------------------------------------------
-// Correlation scatter
+// Tables
 // ---------------------------------------------------------------------
+function tableHead() {
+  // In all-stations mode a shift column is meaningless -- each station runs its
+  // own -- so it reports how many stations reported, which also surfaces a
+  // station that has not uploaded.
+  const col2 = isAll() ? t('stats.col.stations') : t('stats.col.shift');
+  return `<thead><tr><th>${t('stats.col.date')}</th><th>${t('statistics.raw.colWeekday')}</th><th>${col2}</th>`
+    + M.fuelMeta.map((f) => `<th style="text-align:right">${esc(f.name)} (L)</th>`).join('')
+    + `<th style="text-align:right">${t('stats.col.totalLitres')}</th>`
+    + `<th style="text-align:right">${t('stats.col.amount')}</th></tr></thead>`;
+}
+function rowHtml(x, cls = '') {
+  const n = nStations();
+  const col2 = isAll()
+    ? `<span${x.stationCount < n ? ' style="color:var(--down);font-weight:700"' : ''}>${x.stationCount}/${n}</span>`
+    : (x.shifts.size ? [...x.shifts].map((s) => s.toUpperCase()).join(', ') : '—');
+  return `<tr class="${cls}"><td>${formatDateDMY(x.date)}</td><td>${weekdayLabel(x.date)}</td><td>${col2}</td>`
+    + M.fuelMeta.map((f) => `<td class="n">${nf(x.fuel[f.key].vol)}</td>`).join('')
+    + `<td class="n">${nf(x.volume)}</td><td class="n">${nf(x.amount)}</td></tr>`;
+}
+const missingRow = (date, cols) =>
+  `<tr class="missing"><td>${formatDateDMY(date)}</td><td colspan="${cols}">${t('stats.table.noDataForDay')}</td></tr>`;
 
-function renderCorrelation(currentRows, days) {
-  const svg = document.getElementById('correlation-svg');
-  const titleEl = document.getElementById('correlation-title');
-  const rEl = document.getElementById('correlation-r');
-  if (!svg) return;
-
-  const present = [...new Set(currentRows.map((r) => r.metric_name))];
-  // yName is chosen first, then xName is picked from what's left so the
-  // two can never collide on the same metric (present[1] could otherwise
-  // coincidentally equal whatever yName preferred).
-  const yName = present.includes('sales_volume') ? 'sales_volume' : present[0];
-  const xCandidates = present.filter((m) => m !== yName);
-  const xName = xCandidates.includes('purchases') ? 'purchases' : xCandidates[0];
-
-  if (!xName || !yName || xName === yName) {
-    svg.innerHTML = '';
-    if (titleEl) titleEl.textContent = t('statistics.correlation.notEnoughMetrics');
-    return;
-  }
-  if (titleEl) titleEl.textContent = t('statistics.correlation.titleFormat', { x: displayMetricName(xName), y: displayMetricName(yName) });
-
-  const xs = seriesByDay(currentRows, xName, days);
-  const ys = seriesByDay(currentRows, yName, days);
-  const pairs = xs.map((x, i) => [x, ys[i]]).filter(([x, y]) => x !== null && y !== null);
-
-  if (pairs.length < 2) {
-    svg.innerHTML = '';
-    if (rEl) rEl.textContent = '';
-    return;
-  }
-
-  const w = 400, h = 240, pad = { l: 40, r: 10, t: 20, b: 40 };
-  const plotW = w - pad.l - pad.r;
-  const plotH = h - pad.t - pad.b;
-  const maxX = Math.max(...pairs.map((p) => p[0]), 1);
-  const maxY = Math.max(...pairs.map((p) => p[1]), 1);
-
-  const toXY = ([x, y]) => [pad.l + (x / maxX) * plotW, pad.t + plotH - (y / maxY) * plotH];
-
-  const r = pearsonR(pairs.map((p) => p[0]), pairs.map((p) => p[1]));
-
-  // Least-squares trendline.
-  const n = pairs.length;
-  const mx = pairs.reduce((a, p) => a + p[0], 0) / n;
-  const my = pairs.reduce((a, p) => a + p[1], 0) / n;
-  let num = 0, den = 0;
-  pairs.forEach(([x, y]) => { num += (x - mx) * (y - my); den += (x - mx) ** 2; });
-  const slope = den === 0 ? 0 : num / den;
-  const intercept = my - slope * mx;
-  const [x1, y1] = toXY([0, Math.max(0, intercept)]);
-  const [x2, y2] = toXY([maxX, intercept + slope * maxX]);
-
-  let svgContent = `
-    <g stroke="#eef0ec"><line x1="${pad.l}" y1="${pad.t}" x2="${w - pad.r}" y2="${pad.t}"/><line x1="${pad.l}" y1="${pad.t + plotH}" x2="${w - pad.r}" y2="${pad.t + plotH}"/></g>
-    <g fill="#8a978f" font-size="10" font-family="Inter">
-      <text x="6" y="${pad.t + 4}">${formatCompact(maxY)}</text>
-      <text x="10" y="${pad.t + plotH + 4}">0</text>
-      <text x="${w / 2}" y="${h - 8}" text-anchor="middle">${escapeHtml(displayMetricName(xName))} →</text>
-    </g>
-    <line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#0f2a1f" stroke-dasharray="4 4" stroke-width="1.5"/>
-    <g fill="#1f6f4a">${pairs.map((p) => { const [x, y] = toXY(p); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`; }).join('')}</g>`;
-
-  svg.innerHTML = svgContent;
-  if (rEl) rEl.textContent = r === null ? '' : `r = ${r.toFixed(2)}`;
+function tableMonth(days) {
+  el('t-daily-h').textContent = t('stats.table.title');
+  el('cap-table').textContent = t('stats.table.cap', { scope: scopeName() });
+  el('t-daily-wrap').classList.add('scroll');
+  el('t-daily').innerHTML = tableHead() + '<tbody>' + days.map((x) => rowHtml(x)).join('') + '</tbody>';
+}
+function tableDay(sel) {
+  const pIso = prevISO(sel), p = M.byDate[pIso], c = M.byDate[sel];
+  el('t-daily-h').textContent = t('stats.table.titleDay');
+  el('cap-table').textContent = t('stats.table.capDay', { scope: scopeName(), prev: formatDateDMY(pIso), sel: formatDateDMY(sel) });
+  el('t-daily-wrap').classList.remove('scroll');
+  const cols = M.fuelMeta.length + 4;
+  el('t-daily').innerHTML = tableHead() + '<tbody>'
+    + (p ? rowHtml(p) : missingRow(pIso, cols)) + (c ? rowHtml(c, 'focus') : missingRow(sel, cols)) + '</tbody>';
+}
+function tablePriceDay(cur, prev) {
+  el('cap-priceday').textContent = t('stats.priceDay.cap') + (isAll() ? ' ' + t('stats.priceDay.capAll') : '');
+  el('t-price-day').innerHTML = `<thead><tr><th>${t('stats.mix.colType')}</th>`
+    + `<th style="text-align:right">${t('stats.priceDay.colPrice')}</th>`
+    + `<th style="text-align:right">${t('stats.priceDay.colPrev')}</th>`
+    + `<th style="text-align:right">${t('stats.priceDay.colChange')}</th></tr></thead><tbody>`
+    + M.fuelMeta.map((f) => {
+      const c = cur?.price[f.key], p = prev?.price[f.key];
+      const chg = (c != null && p) ? ((c - p) / p) * 100 : null;
+      const st = chg == null ? '' : ` style="color:var(${chg >= 0 ? '--up' : '--down'});font-weight:700"`;
+      return `<tr><td><span class="swatch" style="background:${f.color}"></span>${esc(f.name)}</td>`
+        + `<td class="n">${c == null ? '—' : nf(c)}</td><td class="n">${p == null ? '—' : nf(p)}</td>`
+        + `<td class="n"${st}>${chg == null ? '—' : (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%'}</td></tr>`;
+    }).join('') + '</tbody>';
+}
+function tableShift(days) {
+  const agg = new Map();
+  days.forEach((d) => d.shifts.forEach((s) => {
+    const v = agg.get(s) || { days: 0, amount: 0 };
+    v.days++; v.amount += d.amount; agg.set(s, v);
+  }));
+  el('card-shift').classList.toggle('hide', agg.size === 0 || isAll());
+  el('t-shift').innerHTML = `<thead><tr><th>${t('stats.col.shift')}</th>`
+    + `<th style="text-align:right">${t('stats.shift.colDays')}</th>`
+    + `<th style="text-align:right">${t('stats.col.amount')}</th>`
+    + `<th style="text-align:right">${t('stats.shift.colPerDay')}</th></tr></thead><tbody>`
+    + [...agg.entries()].sort((a, b) => b[1].amount - a[1].amount)
+      .map(([name, v]) => `<tr><td>${esc(name.toUpperCase())}</td><td class="n">${v.days}</td>`
+        + `<td class="n">${nf(v.amount)}</td><td class="n">${nf(v.amount / v.days)}</td></tr>`).join('') + '</tbody>';
 }
 
 // ---------------------------------------------------------------------
-// Period-over-period delta table
+// Render
 // ---------------------------------------------------------------------
+function stamp() {
+  const d = new Date(), p = (n) => String(n).padStart(2, '0');
+  return t('stats.exportedAt', { date: `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`, time: `${p(d.getHours())}:${p(d.getMinutes())}` });
+}
+function monthLabel() { const [y, m] = MONTH.split('-'); return `${m}/${y}`; }
 
-function renderDeltaTable(currentRows, previousRows, registry, days) {
-  const tbody = document.getElementById('delta-tbody');
-  if (!tbody) return;
-  const names = [...new Set(currentRows.map((r) => r.metric_name))].slice(0, 6);
-  if (names.length === 0) {
-    tbody.innerHTML = emptyTableRow(7, t('empty.noMetricsTrackedYet'));
+function render() {
+  if (!M) return;
+  const noData = M.days.length === 0 || M.pumpList.length === 0;
+
+  document.querySelectorAll('[data-scope]').forEach((c) => {
+    const okMode = c.dataset.scope === 'both' || c.dataset.scope === MODE;
+    const okSt = !c.dataset.stations
+      || (c.dataset.stations === 'single' && !isAll())
+      || (c.dataset.stations === 'all' && isAll());
+    c.classList.toggle('hide', noData || !(okMode && okSt));
+  });
+  el('kpis').classList.toggle('hide', noData);
+  el('dpick').hidden = MODE !== 'day';
+  el('dpick').min = M.start; el('dpick').max = M.end; el('dpick').value = SEL;
+  el('seg').querySelectorAll('button').forEach((b) => b.classList.toggle('active', b.dataset.mode === MODE));
+
+  if (noData) {
+    el('warn').classList.add('on');
+    el('warn-tx').innerHTML = `<b>${t('stats.empty.title')}</b> `
+      + t('stats.empty.body', { month: monthLabel(), scope: scopeName() });
+    el('page-sub').textContent = '';
+    el('ph-title').textContent = `Demo_CSV — ${t('shell.nav.statistics')} ${monthLabel()}`;
+    el('ph-meta').textContent = `${scopeName()} · ${stamp()} · ${t('stats.empty.title')}`;
     return;
   }
-  tbody.innerHTML = names.map((name) => {
-    const cur = repValue(currentRows, name, registry);
-    const prev = repValue(previousRows, name, registry);
-    const pct = percentDelta(cur, prev);
-    const diff = cur !== null && prev !== null ? cur - prev : null;
-    const series = seriesByDay(currentRows, name, days);
-    const color = metricColor(name);
-    return `
-      <tr>
-        <td>${escapeHtml(name)}</td>
-        <td><span class="pill" style="background:${color}22;color:${color}">${escapeHtml(displayMetricName(name))}</span></td>
-        <td class="num">${formatNumber(cur)}</td>
-        <td class="num">${formatNumber(prev)}</td>
-        <td class="num">${diff === null ? '—' : (diff >= 0 ? '+' : '') + formatNumber(diff)}</td>
-        <td class="num">${pct === null ? '—' : `<span class="delta ${pct >= 0 ? 'up' : 'down'}">${formatDelta(pct)}</span>`}</td>
-        <td><svg width="70" height="20"><polyline fill="none" stroke="${color}" stroke-width="1.5" points="${sparkline(series, 70, 20)}"/></svg></td>
-      </tr>`;
-  }).join('');
-}
 
-// ---------------------------------------------------------------------
-// Top / bottom days
-// ---------------------------------------------------------------------
+  const T = totalsOf(M.days);
 
-function renderTopBottomDays(currentRows, days) {
-  const topEl = document.getElementById('top-days-list');
-  const botEl = document.getElementById('bottom-days-list');
-  if (!topEl || !botEl) return;
-
-  const primary = rankedMetrics(currentRows, {}, 1)[0];
-  if (primary) {
-    const series = days.map((d) => ({ date: d, value: seriesByDayValue(currentRows, primary, d) })).filter((x) => x.value !== null);
-    const top5 = [...series].sort((a, b) => b.value - a.value).slice(0, 5);
-    topEl.innerHTML = top5.length
-      ? top5.map((x, i) => rankItemHtml(i + 1, x.date, x.value, true)).join('')
-      : emptyCardHtml(t('empty.noDataYet'));
-    document.getElementById('top-days-heading').textContent = t('statistics.topBottom.topMetricDays', { metric: displayMetricName(primary) });
+  if (MODE === 'month') {
+    el('warn').classList.remove('on');
+    el('page-sub').textContent = t('stats.sub.month', { scope: scopeName(), month: monthLabel() });
+    kpisMonth(T);
+    chartDailyRevenue(M.days); chartDailyVolume(M.days); chartPrice(M.days); chartDow(M.days);
+    chartMix(T.fuel, t('stats.mix.capMonth', { scope: scopeName(), total: nf(M.fuels.reduce((s, f) => s + T.fuel[f].amt, 0)), items: nf(T.itemsAmt) }));
+    chartPumps(T.pumps, T.fuel, isAll()
+      ? t('stats.pump.capAll', { n: nStations() })
+      : t('stats.pump.capMonth'));
+    chartItems(T.items, t('stats.oil.cap', { scope: scopeName(), total: nf(T.itemsAmt) }));
+    tableShift(M.days); tableMonth(M.days);
+    el('ph-title').textContent = `Demo_CSV — ${t('shell.nav.statistics')} ${monthLabel()} · ${scopeName()}`;
+    el('ph-meta').textContent = `${stamp()} · ${nf(T.amount)} ₫ · ${nf(T.volume)} L`;
   } else {
-    topEl.innerHTML = emptyCardHtml(t('empty.noDataYet'));
+    const cur = M.byDate[SEL], pIso = prevISO(SEL), prev = M.byDate[pIso];
+    // Missing days are warned about, never silently swapped for the nearest day
+    // that happens to have data -- quietly reporting the wrong date is worse
+    // than saying the report is incomplete.
+    const missing = [
+      !prev ? `${formatDateDMY(pIso)} (${t('stats.warn.prevDay')})` : null,
+      !cur ? `${formatDateDMY(SEL)} (${t('stats.warn.reportDay')})` : null,
+    ].filter(Boolean);
+    const partial = isAll() && cur && cur.stationCount < nStations();
+    el('warn').classList.toggle('on', missing.length > 0 || !!partial);
+    if (missing.length || partial)
+      el('warn-tx').innerHTML = (missing.length ? `<b>${t('stats.warn.missing')}</b> ${missing.join(', ')}. ` : '')
+        + (partial ? `<b>${t('stats.warn.partial', { n: cur.stationCount, total: nStations(), date: formatDateDMY(SEL) })}</b> ` : '')
+        + t('stats.warn.tail');
+    el('page-sub').textContent = t('stats.sub.day', { scope: scopeName(), sel: formatDateDMY(SEL), prev: formatDateDMY(pIso) });
+    kpisDay(cur, prev);
+    const zero = Object.fromEntries(M.fuels.map((f) => [f, { vol: 0, amt: 0 }]));
+    chartMix(cur ? cur.fuel : zero, cur
+      ? t('stats.mix.capDay', { scope: scopeName(), date: formatDateDMY(SEL), total: nf(M.fuels.reduce((s, f) => s + cur.fuel[f].amt, 0)) })
+      : t('stats.noDataDay'));
+    chartPumps(M.pumpList.map((p) => ({ ...p, ...(cur?.pumps[p.key] || { vol: 0, amt: 0 }) })), cur ? cur.fuel : zero,
+      isAll() ? t('stats.pump.capAllDay', { n: nStations() }) : t('stats.pump.capDay', { date: formatDateDMY(SEL) }));
+    chartItems(M.itemList.map((it) => ({ ...it, ...(cur?.items[it.key] || { qty: 0, amt: 0 }) })),
+      cur ? t('stats.oil.capDay', { scope: scopeName(), date: formatDateDMY(SEL) }) : t('stats.noDataDay'));
+    tablePriceDay(cur, prev);
+    tableDay(SEL);
+    el('ph-title').textContent = `Demo_CSV — ${t('stats.report.dayTitle', { date: formatDateDMY(SEL) })} · ${scopeName()}`;
+    el('ph-meta').textContent = `${stamp()} · ${t('stats.vsDate', { date: formatDateDMY(pIso) })}`
+      + (cur ? ` · ${nf(cur.amount)} ₫ · ${nf(cur.volume)} L` : '')
+      + (missing.length || partial ? ` · ⚠ ${t('stats.warn.missingShort')}` : '');
   }
-
-  const lossSeries = days.map((d) => ({ date: d, value: seriesByDayValue(currentRows, 'losses', d) })).filter((x) => x.value !== null);
-  const bottom5 = [...lossSeries].sort((a, b) => a.value - b.value).slice(0, 5);
-  botEl.innerHTML = bottom5.length
-    ? bottom5.map((x, i) => rankItemHtml(i + 1, x.date, x.value, false)).join('')
-    : emptyCardHtml(t('empty.noLossesTracked'));
 }
 
-function rankItemHtml(rank, date, value, isTop) {
-  const label = `${formatDateShortDMY(date)} · ${weekdayLabel(date)}`;
-  return `<div class="item ${isTop ? 'top' : 'bot'}"><div class="rk">${rank}</div><div class="who">${escapeHtml(label)}</div><div class="val">${formatCurrencyCompact(value)}</div></div>`;
-}
-
-// ---------------------------------------------------------------------
-// Raw daily data table
-// ---------------------------------------------------------------------
-
-function renderRawTable(currentRows, days) {
-  const tbody = document.getElementById('raw-tbody');
-  if (!tbody) return;
-  const cols = ['sales_volume', 'revenue', 'purchases', 'losses', 'inventory_on_hand'];
-  const reversedDays = [...days].reverse();
-  const hasAny = currentRows.length > 0;
-  if (!hasAny) {
-    tbody.innerHTML = emptyTableRow(7, t('empty.noDataYet'));
-    return;
-  }
-  tbody.innerHTML = reversedDays.map((d) => {
-    const weekday = weekdayLabel(d);
-    const cells = cols.map((c) => {
-      const v = seriesByDayValue(currentRows, c, d);
-      return `<td class="num">${v === null ? '—' : (c === 'revenue' ? formatCurrencyCompact(v) : formatNumber(v))}</td>`;
-    }).join('');
-    return `<tr><td>${formatDateDMY(d)}</td><td>${weekday}</td>${cells}</tr>`;
-  }).join('');
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
+function wire() {
+  el('seg').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-mode]');
+    if (b) { MODE = b.dataset.mode; render(); }
+  });
+  el('mpick').addEventListener('change', () => {
+    if (!el('mpick').value) return;
+    MONTH = el('mpick').value; SEL = null; reload();
+  });
+  el('dpick').addEventListener('change', () => { SEL = el('dpick').value; render(); });
+  // The export carries whatever scope the screen shows, so a reader can never
+  // be handed a PDF covering a period or a station they did not just look at.
+  el('btn-pdf').addEventListener('click', () => window.print());
+  addEventListener('beforeprint', render);   // refresh the timestamp
 }

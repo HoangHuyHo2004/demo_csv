@@ -41,9 +41,26 @@ export function formatCompact(n) {
   return String(Math.round(n));
 }
 
+// The workspace currency is fixed to Vietnamese dong (see Settings), so this
+// renders "2.85 tỷ ₫", not "$2.85B". It previously prefixed a dollar sign,
+// which mislabelled every figure in the app by a factor of ~25,000.
+// ₫ goes after the number, per Vietnamese convention.
 export function formatCurrencyCompact(n) {
-  const formatted = formatCompact(n);
-  return formatted === '—' ? formatted : '$' + formatted;
+  const formatted = formatMoneyCompact(n);
+  return formatted === '—' ? formatted : formatted + ' ₫';
+}
+
+// Compact money for a VND-scale business: daily revenue runs to 10^8 and a
+// month to 10^9, so formatCompact()'s K/M-only ladder produces unreadable
+// values like "2622.7M". The unit words are translated (tỷ / tr in Vietnamese,
+// B / M in English) because they are read as words, not symbols.
+export function formatMoneyCompact(n) {
+  if (n === null || n === undefined || Number.isNaN(n)) return '—';
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return formatNumber(n / 1e9, { decimals: 2 }) + ' ' + t('fmt.billion');
+  if (abs >= 1e6) return formatNumber(n / 1e6, { decimals: 1 }) + ' ' + t('fmt.million');
+  if (abs >= 1e3) return formatNumber(n / 1e3, { decimals: 0 }) + ' ' + t('fmt.thousand');
+  return formatNumber(n);
 }
 
 // Percent change vs a previous-period value. Returns null (not 0 or

@@ -22,3 +22,11 @@ Thumbs.db
 *.sqlite
 *.db
 scratchpad/
+
+# Real business data — NOT for a public repo.
+# The source journals carry the company name, daily revenue, customer names and
+# staff names. Keep them local; the converter (tools/convert_journal.py) rebuilds
+# out/ from them on demand, so nothing is lost by excluding both.
+Book1.xlsx
+*.xlsx
+out/

@@ -24,21 +24,57 @@ export async function listStations() {
 // station is selected; for the "all stations" scope, RLS alone decides
 // what comes back (an Owner sees everything, an Accountant only their
 // assigned stations) rather than the client narrowing it further.
+// PostgREST caps every response at its `db-max-rows` setting (1000 on Supabase)
+// and does so SILENTLY -- a `.limit(20000)` is only ever a ceiling, never a
+// floor, so a large month came back truncated with no error and simply lost its
+// last few days. That is the worst possible failure for this app: plausible
+// numbers that are quietly too small. So page through explicitly and stop only
+// when a short page proves the end was reached.
+//
+// The sort must be a total order or paging can repeat or skip rows between
+// pages; value_date alone is not unique, hence station_id + metric_name too.
+const PAGE_SIZE = 1000;
+
 export async function loadMetricDaily({ stationIds, from, to } = {}) {
+  const out = [];
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    let q = supabase
+      .from('metric_daily')
+      .select('station_id, metric_name, value_date, value')
+      .order('value_date')
+      .order('station_id')
+      .order('metric_name')
+      .range(offset, offset + PAGE_SIZE - 1);
+    if (from) q = q.gte('value_date', from);
+    if (to) q = q.lte('value_date', to);
+    if (stationIds && stationIds.length) q = q.in('station_id', stationIds);
+    const { data, error } = await q;
+    if (error) {
+      console.error('loadMetricDaily failed:', error);
+      return out;   // partial beats nothing, and the caller sees fewer days
+    }
+    out.push(...data);
+    if (data.length < PAGE_SIZE) return out;
+  }
+}
+
+// The most recent date holding any data, so Statistics can open on a month
+// that actually has something in it rather than on today's empty month.
+// Station filtering is left to RLS when no ids are given, same as
+// loadMetricDaily.
+export async function latestMetricDate({ stationIds } = {}) {
   let q = supabase
     .from('metric_daily')
-    .select('station_id, metric_name, value_date, value')
-    .order('value_date')
-    .limit(20000);
-  if (from) q = q.gte('value_date', from);
-  if (to) q = q.lte('value_date', to);
+    .select('value_date')
+    .order('value_date', { ascending: false })
+    .limit(1);
   if (stationIds && stationIds.length) q = q.in('station_id', stationIds);
   const { data, error } = await q;
   if (error) {
-    console.error('loadMetricDaily failed:', error);
-    return [];
+    console.error('latestMetricDate failed:', error);
+    return null;
   }
-  return data;
+  return data?.[0]?.value_date ?? null;
 }
 
 // The active (non-overwritten) upload for a given station+date+category,
