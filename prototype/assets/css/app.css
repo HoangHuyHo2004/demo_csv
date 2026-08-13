@@ -81,9 +81,9 @@ input,select,textarea{color:var(--ink);background-color:var(--panel);font:inheri
   display:grid;
   grid-template-columns: 240px 1fr;
   gap:20px;
-  max-width:1360px;
+  max-width:1760px;
   margin:20px auto;
-  padding:0 20px;
+  padding:0 24px;
   align-items:start;
 }
 body[data-shell-active="overview"] .app{grid-template-columns:240px 1fr 300px}
