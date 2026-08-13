@@ -42,6 +42,22 @@ const RE_ITEM  = /^(sl|tt)_([a-z0-9_]+)$/;
 const KNOWN_HUE = { a95: '--s1', e5: '--s3', do: '--s2' };
 const SLOTS = ['--s1', '--s2', '--s3', '--s4'];
 
+// The validated hues (see .viz block in statistics.html) were picked for
+// distinguishability against each other and against white/dark chrome, not
+// for a fixed white label sitting inside the mark -- s2 (orange) and s3
+// (aqua) are both too light for that, e.g. white-on-s3 is ~2.9:1, well
+// under the 4.5:1 text minimum. Pick per-swatch instead of hardcoding.
+const SLOT_HEX = { '--s1': '#2a78d6', '--s2': '#eb6834', '--s3': '#1baf7a', '--s4': '#eda100' };
+function inMarkTextColor(cssVarColor) {
+  const hex = SLOT_HEX[cssVarColor.replace(/^var\(|\)$/g, '')];
+  if (!hex) return '#fff';
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const lin = [r, g, b].map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const luminance = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  const contrastWithWhite = 1.05 / (luminance + 0.05);
+  return contrastWithWhite >= 4.5 ? '#fff' : '#12160f';
+}
+
 let MODE = 'month';
 let MONTH = null;          // 'YYYY-MM'
 let SEL = null;            // 'YYYY-MM-DD' (day mode)
@@ -288,7 +304,11 @@ function chartDailyRevenue(days) {
     const h = (x.amount / max) * plotH, xx = pad.l + band * i + (band - bw) / 2, y = pad.t + plotH - h;
     mk('path', { d: barPath(xx, y, bw, h), fill: 'var(--s1)' }, svg);
     if (x.amount === hi || x.amount === lo)
-      mk('text', { x: xx + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel' }, svg).textContent = money(x.amount);
+      // Halo behind the label -- it sits right at bar-top height, which for
+      // a short bar is often level with a y-axis gridline running the full
+      // chart width; without this the gridline showed straight through the
+      // text's letter-gaps like a strikethrough.
+      mk('text', { x: xx + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel', stroke: 'var(--panel)', 'stroke-width': 3, 'paint-order': 'stroke' }, svg).textContent = money(x.amount);
     hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
       `<b>${formatDateDMY(x.date)}</b> · ${weekdayLabel(x.date)}<br>${t('stats.kpi.revenue')} <b>${nf(x.amount)} ₫</b><br>${t('stats.kpi.volume')} ${nf(x.volume)} L`);
     if (i % 3 === 0 || i === n - 1)
@@ -372,7 +392,10 @@ function chartDow(days) {
     const h = (val / max) * plotH, x = pad.l + band * i + (band - bw) / 2, y = pad.t + plotH - h;
     mk('path', { d: barPath(x, y, bw, h), fill: 'var(--s1)' }, svg);
     if (val && (val === hi || val === lo))
-      mk('text', { x: x + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel' }, svg).textContent = money(val);
+      // Same halo as chartDailyRevenue's peak/low labels -- this sits at
+      // bar-top height too, which for a short bar often lands on one of
+      // yAxis()'s full-width gridlines.
+      mk('text', { x: x + bw / 2, y: y - 6, 'text-anchor': 'middle', class: 'dlabel', stroke: 'var(--panel)', 'stroke-width': 3, 'paint-order': 'stroke' }, svg).textContent = money(val);
     hover(mk('rect', { x: pad.l + band * i, y: pad.t, width: band, height: plotH, class: 'hit' }, svg),
       `<b>${t('statistics.weekday.' + WD[i])}</b><br>${nf(val)} ₫<br>${t('stats.dow.nDays', { n: buckets[i].length })}`);
     mk('text', { x: pad.l + band * i + band / 2, y: H - 9, 'text-anchor': 'middle', class: 'tick' }, svg)
@@ -398,7 +421,7 @@ function chartMix(fuel, caption) {
     hover(mk('path', { d: barPath(x, y, w, h, 4, 'right'), fill: f.color }, svg),
       `<b>${f.name}</b><br>${nf(fuel[f.key].amt)} ₫<br>${nf(fuel[f.key].vol)} L`);
     if (w > 46)   // only label inside the mark when it fits
-      mk('text', { x: x + w / 2, y: y + h / 2 + 4, 'text-anchor': 'middle', class: 'dlabel', fill: '#fff' }, svg)
+      mk('text', { x: x + w / 2, y: y + h / 2 + 4, 'text-anchor': 'middle', class: 'dlabel', fill: inMarkTextColor(f.color) }, svg)
         .textContent = `${f.name} ${((fuel[f.key].amt / tot) * 100).toFixed(1)}%`;
     x += w + gap;
   });
@@ -431,7 +454,11 @@ function chartPumps(pumps, fuel, caption) {
   rows.forEach((r, i) => {
     const y = pad.t + i * rowH, w = (r.vol / max) * plotW;
     mk('text', { x: pad.l - 10, y: y + bh / 2 + 4, 'text-anchor': 'end', class: 'dlabel' }, svg).textContent = r.label;
-    mk('line', { x1: pad.l, x2: W - pad.r, y1: y + bh / 2, y2: y + bh / 2, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    // Baseline only spans the bar itself, not the full row -- it used to run
+    // the full plot width regardless of bar length, which drew a line right
+    // through the value label sitting just past a short bar (looked like the
+    // number was struck through).
+    mk('line', { x1: pad.l, x2: pad.l + w, y1: y + bh / 2, y2: y + bh / 2, stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
     if (r.vol > 0) {
       hover(mk('path', { d: barPath(pad.l, y, w, bh, 4, 'right'), fill: r.color }, svg),
         `<b>${r.label}</b><br>${nf(r.vol)} L<br>${nf(r.amt)} ₫`);
