@@ -1,6 +1,17 @@
-// Controller for uploads.html: dropzone, per-file parsing/mapping,
-// duplicate-date detection, the save/overwrite transaction, and the
-// upload-history table.
+// Controller for uploads.html: dropzone, per-file parsing, duplicate-date
+// detection, the save/overwrite transaction, and the upload-history table.
+//
+// Column-to-metric mapping is fully automatic and NOT user-reviewable: every
+// column csv.js's inferTypes() calls "number" is tracked as a metric under
+// its own source name, except columns that look like a snapshot value
+// (looksLikeSnapshot() -- names like inventory/stock/balance), which are
+// excluded because summing a snapshot across days is meaningless. There used
+// to be a review table here (rename, include/exclude, pick the date column);
+// it was removed deliberately -- this app's real files always come from the
+// same converter with the same columns, so a per-upload review step was
+// friction with no payoff. The trade-off: if a file ever has a column that
+// really shouldn't be tracked, or the wrong date column gets auto-detected,
+// there is no UI to fix it before saving.
 import { requireSession } from './auth.js';
 import * as scope from './scope.js';
 import {
@@ -8,15 +19,18 @@ import {
   getMetricsRegistry, upsertMetrics, listUploads, getSignedDownloadUrl,
   uploadFileToStorage, removeStorageObject, insertUploadRow,
   setUploadStatus, insertMetricValues, deleteMetricValuesForUpload,
+  listCategories, createCategory, categoryUploadCounts,
 } from './data.js';
 import {
   parseFile, inferTypes, normalizeNumber, toISODate,
   detectDateFromFilename, detectDateColumnName, looksLikeSnapshot,
 } from './csv.js';
+import { formatDateDMY } from './fmt.js';
 import { t, applyTranslations, onChange as onLanguageChange } from './i18n.js';
 
 let currentUserId = null;
 let stations = [];
+let categories = [];   // [{ slug, name, icon, description }], global registry
 const fileStates = [];
 
 const dropzone = document.getElementById('dropzone');
@@ -34,7 +48,9 @@ async function init() {
   if (!result) return;
   currentUserId = result.session.user.id;
   stations = await listStations();
+  categories = await listCategories();
   populateHistoryStationFilter();
+  populateHistoryCategoryFilter();
 
   // guard.js also initializes scope.js (for the header switcher), but its
   // completion isn't guaranteed by the time this module's top-level code
@@ -46,13 +62,17 @@ async function init() {
 
   wireDropzone();
   wireSaveActions();
+  wireCategoryPanel();
+  await refreshCategoryPanel();
   await refreshHistory();
   wireHistoryFilters();
+  document.addEventListener('click', () => { closeAllCalendarPopups(); closeAllCategoryMenus(); });
 
   // Re-render everything rendered from JS (not caught by applyTranslations'
   // querySelector sweep) whenever the language changes.
   onLanguageChange(() => {
     populateHistoryStationFilter();
+    populateHistoryCategoryFilter();
     renderFiles();
     renderHistory();
   });
@@ -65,6 +85,115 @@ function populateHistoryStationFilter() {
   sel.innerHTML = `<option value="">${t('common.allStations')}</option>` +
     stations.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
   sel.value = prevValue;
+}
+
+function populateHistoryCategoryFilter() {
+  const sel = document.getElementById('hist-category');
+  if (!sel) return;
+  const prevValue = sel.value;
+  sel.innerHTML = `<option value="">${t('uploads.history.allCategories')}</option>` +
+    categories.map((c) => `<option value="${c.slug}">${escapeHtml(c.name)}</option>`).join('');
+  sel.value = prevValue;
+}
+
+// ---------------------------------------------------------------------
+// Category panel (right column) -- backed by the real categories table,
+// not the static mockup cards this used to be.
+// ---------------------------------------------------------------------
+
+function categorySlug(name) {
+  return name.trim().toLowerCase();
+}
+
+// Resolves whatever a user typed to a canonical {slug, name}, creating the
+// category if it doesn't exist yet. Shared by the inline per-file category
+// field and the "Add category" modal so both go through one path.
+async function resolveOrCreateCategory(rawName) {
+  const name = rawName.trim();
+  if (!name) return null;
+  const slug = categorySlug(name);
+  const existing = categories.find((c) => c.slug === slug);
+  if (existing) return existing;
+
+  const created = await createCategory({ slug, name });
+  if (!created) return null;
+  categories = [...categories, created].sort((a, b) => a.name.localeCompare(b.name));
+  populateHistoryCategoryFilter();
+  await refreshCategoryPanel();
+  return created;
+}
+
+async function refreshCategoryPanel() {
+  const list = document.getElementById('category-panel-list');
+  if (!list) return;
+  const counts = await categoryUploadCounts();
+  if (categories.length === 0) {
+    list.innerHTML = `<div class="cat-loading">${t('uploads.categories.empty')}</div>`;
+    return;
+  }
+  list.innerHTML = categories.map((c) => `
+    <div class="cat">
+      <div class="icon${c.icon ? '' : ' default'}">${c.icon ? escapeHtml(c.icon) : '🏷️'}</div>
+      <div><div class="n">${escapeHtml(c.name)}</div><div class="d">${escapeHtml(c.description || '')}</div></div>
+      <div class="count">${t('uploads.categories.uploadCount', { n: counts[c.slug] || 0 })}</div>
+    </div>`).join('');
+}
+
+// Shared by two entry points: the right-hand panel's "+ Add new category"
+// button (no callback -- it only needs the panel/menus to refresh, which
+// resolveOrCreateCategory already does) and a per-file category dropdown's
+// own "+ Add new category" row (needs the callback, so the newly created
+// category is selected on that specific row rather than left unset).
+let addCategoryCallback = null;
+
+function openAddCategoryModal(onCreated) {
+  addCategoryCallback = onCreated || null;
+  const modal = document.getElementById('add-cat-modal');
+  const nameInput = document.getElementById('add-cat-name');
+  const errorEl = document.getElementById('add-cat-error');
+  if (!modal) return;
+  nameInput.value = '';
+  errorEl.style.display = 'none';
+  modal.style.display = 'flex';
+  nameInput.focus();
+}
+
+function wireCategoryPanel() {
+  const modal = document.getElementById('add-cat-modal');
+  const nameInput = document.getElementById('add-cat-name');
+  const errorEl = document.getElementById('add-cat-error');
+  const openBtn = document.getElementById('add-cat-btn');
+  if (!modal || !openBtn) return;
+
+  const close = () => { modal.style.display = 'none'; addCategoryCallback = null; };
+
+  openBtn.addEventListener('click', () => openAddCategoryModal(null));
+  document.getElementById('add-cat-cancel').addEventListener('click', close);
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+  document.getElementById('add-cat-submit').addEventListener('click', async () => {
+    const name = nameInput.value.trim();
+    if (!name) {
+      errorEl.textContent = t('uploads.categoryModal.errorEmpty');
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (categories.some((c) => c.slug === categorySlug(name))) {
+      errorEl.textContent = t('uploads.categoryModal.errorExists');
+      errorEl.style.display = 'block';
+      return;
+    }
+    const created = await resolveOrCreateCategory(name);
+    if (!created) {
+      errorEl.textContent = t('uploads.categoryModal.errorFailed');
+      errorEl.style.display = 'block';
+      return;
+    }
+    const cb = addCategoryCallback;
+    modal.style.display = 'none';
+    addCategoryCallback = null;
+    if (cb) cb(created);
+  });
 }
 
 // ---------------------------------------------------------------------
@@ -115,6 +244,7 @@ async function buildFileState(file) {
     columns: [],
     stationId: scope.current().mode === 'station' ? scope.current().stationId : '',
     category: '',
+    categoryName: '',
     resolvedDate: null,
     dateSource: null,
     duplicate: null,
@@ -250,12 +380,17 @@ function renderFileRow(state) {
   const node = rowTpl.content.firstElementChild.cloneNode(true);
   const sizeKb = (state.file.size / 1024).toFixed(1);
 
+  // Column mapping's review table is gone (auto-mapped, no manual step), so
+  // this is the only remaining signal of what's actually being tracked --
+  // worth surfacing the metric count here rather than making it invisible.
+  const metricCount = state.columns.filter((c) => c.include && c.type === 'number').length;
+
   node.querySelector('[data-f="name"]').textContent = state.file.name;
   node.querySelector('[data-f="sub"]').textContent = state.status === 'error'
     ? state.errorMessage
     : (state.resolvedDate
-        ? t('uploads.fileRow.subResolved', { size: sizeKb, rows: state.rows.length, date: state.resolvedDate, source: dateSourceLabel(state.dateSource) })
-        : t('uploads.fileRow.subUnresolved', { size: sizeKb, rows: state.rows.length }));
+        ? t('uploads.fileRow.subResolved', { size: sizeKb, rows: state.rows.length, metrics: metricCount, date: state.resolvedDate, source: dateSourceLabel(state.dateSource) })
+        : t('uploads.fileRow.subUnresolved', { size: sizeKb, rows: state.rows.length, metrics: metricCount }));
 
   const statusEl = node.querySelector('[data-f="status"]');
   statusEl.textContent = statusLabel(state.status);
@@ -271,24 +406,8 @@ function renderFileRow(state) {
     renderFiles();
   });
 
-  const catInput = node.querySelector('[data-f="category"]');
-  catInput.value = state.category;
-  catInput.addEventListener('change', async () => {
-    state.category = catInput.value.trim().toLowerCase();
-    await checkDuplicate(state);
-    computeStatus(state);
-    renderFiles();
-  });
-
-  const dateInput = node.querySelector('[data-f="date-override"]');
-  dateInput.value = state.resolvedDate || '';
-  dateInput.addEventListener('change', async () => {
-    state.resolvedDate = dateInput.value || null;
-    state.dateSource = 'manual';
-    await checkDuplicate(state);
-    computeStatus(state);
-    renderFiles();
-  });
+  wireCategoryPicker(node, state);
+  wireDateField(node, state);
 
   node.querySelector('[data-f="remove"]').addEventListener('click', () => {
     const idx = fileStates.findIndex((s) => s.id === state.id);
@@ -312,20 +431,204 @@ function renderFileRow(state) {
     warnBanner.hidden = true;
   }
 
-  const mapBody = node.querySelector('[data-f="maprows"]');
-  if (state.status !== 'error') {
-    mapBody.innerHTML = state.columns.map((c) => renderMapRow(c, state.id)).join('');
-    wireMapRow(mapBody, state);
-  } else {
-    node.querySelector('[data-f="mapping"]').hidden = true;
-  }
-
   // The row is cloned from <template>, so it was never covered by the
   // document-wide applyTranslations() sweep -- apply it now to pick up the
-  // category placeholder / date-override title / remove button title.
+  // date-override title / remove button title. NOT the category label: that
+  // element's text is entirely owned by wireCategoryPicker()'s syncLabel(),
+  // which already calls t() itself for both the placeholder and the
+  // selected-category cases -- leaving a static data-i18n on it here would
+  // make applyTranslations() stomp the selected category name back to the
+  // placeholder on every re-render (this happened once already).
   applyTranslations(node);
 
   return node;
+}
+
+// ---------------------------------------------------------------------
+// Date field: a text input the app masks and parses itself, plus a small
+// hand-built calendar popup -- not a native <input type="date">, whose
+// segment-typing behaviour (which digit group gets focus, how many digits
+// before auto-advancing) is entirely browser/OS-controlled and was the
+// actual cause of "typing 2024 only shows 24 or 2". Parsing goes through
+// toISODate() from csv.js, the same day-first parser the CSV pipeline
+// already uses -- one date-parsing rule for the whole app, never
+// `new Date(string)`.
+// ---------------------------------------------------------------------
+
+function maskDateInput(raw) {
+  const digits = raw.replace(/\D/g, '').slice(0, 8);
+  return [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4, 8)].filter(Boolean).join('/');
+}
+
+function closeAllCalendarPopups() {
+  document.querySelectorAll('.cal-popup:not([hidden])').forEach((p) => { p.hidden = true; });
+}
+
+const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+function buildCalendarHtml(viewMonth, selectedISO) {
+  const y = viewMonth.getFullYear();
+  const m = viewMonth.getMonth();
+  const first = new Date(y, m, 1);
+  const startDow = (first.getDay() + 6) % 7; // Monday = 0, matching dd/mm/yyyy's own convention
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const todayISO = new Date().toISOString().slice(0, 10);
+
+  let cells = WEEKDAY_KEYS.map((k) => `<div class="cal-cell wd">${t('statistics.weekday.' + k)}</div>`).join('');
+  for (let i = 0; i < startDow; i++) cells += '<div class="cal-cell"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const cls = ['cal-cell', 'day', iso === selectedISO ? 'sel' : '', iso === todayISO ? 'today' : '']
+      .filter(Boolean).join(' ');
+    cells += `<div class="${cls}" data-iso="${iso}">${d}</div>`;
+  }
+
+  return `
+    <div class="cal-head">
+      <button type="button" class="cal-nav" data-nav="-1">‹</button>
+      <span class="cal-label">${String(m + 1).padStart(2, '0')}/${y}</span>
+      <button type="button" class="cal-nav" data-nav="1">›</button>
+    </div>
+    <div class="cal-grid">${cells}</div>`;
+}
+
+function wireDateField(node, state) {
+  const input = node.querySelector('[data-f="date-override"]');
+  const btn = node.querySelector('[data-f="cal-btn"]');
+  const popup = node.querySelector('[data-f="cal-popup"]');
+  let viewMonth = state.resolvedDate ? new Date(state.resolvedDate + 'T00:00:00') : new Date();
+
+  input.value = state.resolvedDate ? formatDateDMY(state.resolvedDate) : '';
+
+  input.addEventListener('input', () => {
+    const pos = input.selectionStart;
+    const before = input.value;
+    input.value = maskDateInput(input.value);
+    // Slashes get inserted as the user types past a segment boundary; keep
+    // the cursor roughly where it was rather than always snapping to the end.
+    input.setSelectionRange(pos + (input.value.length - before.length), pos + (input.value.length - before.length));
+  });
+
+  async function applyDate(iso) {
+    state.resolvedDate = iso;
+    state.dateSource = 'manual';
+    input.classList.remove('invalid');
+    await checkDuplicate(state);
+    computeStatus(state);
+    renderFiles();
+  }
+
+  input.addEventListener('change', async () => {
+    const raw = input.value.trim();
+    if (!raw) { await applyDate(null); return; }
+    const iso = toISODate(raw);
+    if (!iso) { input.classList.add('invalid'); return; }   // leave resolvedDate as-is; let them fix it
+    await applyDate(iso);
+  });
+
+  function renderPopup() {
+    popup.innerHTML = buildCalendarHtml(viewMonth, state.resolvedDate);
+    popup.querySelectorAll('.cal-nav').forEach((navBtn) => {
+      navBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + Number(navBtn.dataset.nav), 1);
+        renderPopup();
+      });
+    });
+    popup.querySelectorAll('.cal-cell.day').forEach((cell) => {
+      cell.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popup.hidden = true;
+        applyDate(cell.dataset.iso);
+      });
+    });
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = popup.hidden;
+    closeAllCalendarPopups();
+    closeAllCategoryMenus();
+    if (willOpen) {
+      viewMonth = state.resolvedDate ? new Date(state.resolvedDate + 'T00:00:00') : new Date();
+      renderPopup();
+      popup.hidden = false;
+    }
+  });
+  popup.addEventListener('click', (e) => e.stopPropagation());
+}
+
+// ---------------------------------------------------------------------
+// Category picker: click-open list (same interaction as the header's
+// station scope switcher), not a text field -- selecting an existing
+// category is a single click, and "+ Add new category" opens the same
+// modal the right-hand panel uses, auto-selecting the result on this row.
+// ---------------------------------------------------------------------
+
+function closeAllCategoryMenus() {
+  document.querySelectorAll('.cat-picker__menu:not([hidden])').forEach((m) => { m.hidden = true; });
+}
+
+function wireCategoryPicker(node, state) {
+  const btn = node.querySelector('[data-f="cat-picker-btn"]');
+  const label = node.querySelector('[data-f="cat-picker-label"]');
+  const menu = node.querySelector('[data-f="cat-picker-menu"]');
+
+  function syncLabel() {
+    if (state.category) {
+      label.textContent = state.categoryName || state.category;
+      btn.classList.remove('placeholder');
+    } else {
+      label.textContent = t('uploads.fileRow.categoryPlaceholder');
+      btn.classList.add('placeholder');
+    }
+  }
+  syncLabel();
+
+  async function selectCategory(cat) {
+    state.category = cat.slug;
+    state.categoryName = cat.name;
+    syncLabel();
+    menu.hidden = true;
+    await checkDuplicate(state);
+    computeStatus(state);
+    renderFiles();
+  }
+
+  function renderMenu() {
+    const items = categories.map((c) => `
+      <li class="cat-picker__item${c.slug === state.category ? ' active' : ''}" data-slug="${escapeAttr(c.slug)}">
+        <span class="ic">${c.icon ? escapeHtml(c.icon) : '🏷️'}</span>${escapeHtml(c.name)}
+      </li>`).join('');
+    menu.innerHTML =
+      (items || `<li class="cat-picker__empty">${t('uploads.categories.empty')}</li>`) +
+      `<li class="cat-picker__item add-new" data-action="add-new"><span class="ic">＋</span>${t('uploads.categories.addNew')}</li>`;
+
+    menu.querySelectorAll('[data-slug]').forEach((li) => {
+      li.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const cat = categories.find((c) => c.slug === li.dataset.slug);
+        if (cat) selectCategory(cat);
+      });
+    });
+    menu.querySelector('[data-action="add-new"]').addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.hidden = true;
+      openAddCategoryModal((created) => selectCategory(created));
+    });
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = menu.hidden;
+    closeAllCategoryMenus();
+    closeAllCalendarPopups();
+    if (willOpen) {
+      renderMenu();
+      menu.hidden = false;
+    }
+  });
+  menu.addEventListener('click', (e) => e.stopPropagation());
 }
 
 function renderDuplicateBanner(state) {
@@ -350,51 +653,6 @@ function renderDuplicateBanner(state) {
     </div>`;
 }
 
-function renderMapRow(c, fileId) {
-  const typeClass = c.type === 'date' ? 'date' : c.type === 'number' ? 'num' : 'txt';
-  const dateDisabled = c.type !== 'date' && c.type !== 'text' ? '' : (c.type === 'text' ? 'disabled' : '');
-  return `
-    <tr data-col="${escapeAttr(c.sourceName)}">
-      <td><code>${escapeHtml(c.sourceName)}</code></td>
-      <td><input type="text" value="${escapeAttr(c.mappedName)}" data-map="name"></td>
-      <td><span class="pill ${typeClass}">${c.type}</span></td>
-      <td style="text-align:center"><input type="radio" name="datecol-${fileId}" data-map="datecol" ${c.isDateCol ? 'checked' : ''} ${c.type === 'date' ? '' : 'disabled'}></td>
-      <td style="text-align:center">
-        <label class="toggle"><input type="checkbox" data-map="include" ${c.include ? 'checked' : ''} ${c.type !== 'number' ? 'disabled' : ''}><span></span></label>
-        ${c.isSnapshot ? `<div class="map-warning">${t('uploads.mapping.snapshotWarning')}</div>` : ''}
-      </td>
-    </tr>`;
-}
-
-function wireMapRow(mapBody, state) {
-  mapBody.querySelectorAll('tr').forEach((tr) => {
-    const sourceName = tr.dataset.col;
-    const col = state.columns.find((c) => c.sourceName === sourceName);
-
-    tr.querySelector('[data-map="name"]').addEventListener('change', (e) => {
-      col.mappedName = e.target.value.trim() || col.sourceName;
-    });
-
-    const dateRadio = tr.querySelector('[data-map="datecol"]');
-    if (dateRadio) {
-      dateRadio.addEventListener('change', async () => {
-        state.columns.forEach((c) => { c.isDateCol = false; });
-        col.isDateCol = true;
-        resolveDate(state);
-        await checkDuplicate(state);
-        computeStatus(state);
-        renderFiles();
-      });
-    }
-
-    const includeBox = tr.querySelector('[data-map="include"]');
-    if (includeBox) {
-      includeBox.addEventListener('change', (e) => {
-        col.include = e.target.checked;
-      });
-    }
-  });
-}
 
 function updateSaveButton() {
   const readyCount = fileStates.filter((s) => s.status === 'ready').length;

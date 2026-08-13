@@ -42,7 +42,7 @@
     <div class="page-head">
       <div>
         <h1 data-i18n="shell.nav.uploads">Uploads</h1>
-        <p data-i18n="uploads.pageDesc">Upload daily CSV or Excel files, map columns to metrics, and manage data categories.</p>
+        <p data-i18n="uploads.pageDesc">Upload daily CSV or Excel files and manage data categories — columns are mapped to metrics automatically.</p>
       </div>
     </div>
 
@@ -55,7 +55,7 @@
     <!-- Upload tab -->
     <div class="row">
 
-      <!-- LEFT: dropzone + files + mapping -->
+      <!-- LEFT: dropzone + files -->
       <div class="card">
         <h3><span data-i18n="uploads.card.title">Upload CSV or Excel files</span> <span class="kebab">•••</span></h3>
 
@@ -81,22 +81,22 @@
                 <div class="sub" data-f="sub"></div>
               </div>
               <select data-f="station"></select>
-              <input type="text" data-f="category" placeholder="category" data-i18n-placeholder="uploads.fileRow.categoryPlaceholder" />
-              <input type="date" data-f="date-override" title="Override the detected date" data-i18n-title="uploads.fileRow.dateOverrideTitle" />
+              <div class="cat-picker" data-f="cat-picker">
+                <button type="button" class="cat-picker__btn" data-f="cat-picker-btn">
+                  <span class="cat-picker__label" data-f="cat-picker-label">category</span>
+                  <span class="cat-picker__caret">▾</span>
+                </button>
+                <ul class="cat-picker__menu" data-f="cat-picker-menu" hidden></ul>
+              </div>
+              <div class="datefield" data-f="datefield">
+                <input type="text" data-f="date-override" inputmode="numeric" maxlength="10" placeholder="dd/mm/yyyy" data-i18n-placeholder="uploads.fileRow.datePlaceholder" title="Override the detected date" data-i18n-title="uploads.fileRow.dateOverrideTitle" autocomplete="off" />
+                <button type="button" class="cal-btn" data-f="cal-btn" data-i18n-aria-label="uploads.fileRow.openCalendar" aria-label="Open calendar">📅</button>
+                <div class="cal-popup" data-f="cal-popup" hidden></div>
+              </div>
               <span class="status" data-f="status"></span>
               <button type="button" class="x" data-f="remove" title="Remove" data-i18n-title="common.remove">✕</button>
             </div>
             <div class="warn-banner" data-f="warnbanner" hidden></div>
-            <div class="mapping" data-f="mapping">
-              <h4 data-i18n="uploads.mapping.title">Column mapping</h4>
-              <div class="hint" data-i18n="uploads.mapping.hint">Rename, exclude, mark the date column. Numeric columns become trackable metrics.</div>
-              <table class="map">
-                <thead>
-                  <tr><th data-i18n="uploads.mapping.col.source">Source column</th><th data-i18n="uploads.mapping.col.mappedName">Mapped name</th><th data-i18n="uploads.mapping.col.type">Type</th><th style="text-align:center" data-i18n="uploads.mapping.col.dateColumn">Date column</th><th style="text-align:center" data-i18n="uploads.mapping.col.include">Include</th></tr>
-                </thead>
-                <tbody data-f="maprows"></tbody>
-              </table>
-            </div>
           </div>
         </template>
 
@@ -110,38 +110,9 @@
       <div class="card cats">
         <h3><span data-i18n="uploads.categories.title">Data Categories</span> <span class="kebab">•••</span></h3>
 
-        <div class="cat">
-          <div class="icon" style="background:#eaf7d3;color:#1f6f4a">💰</div>
-          <div><div class="n" data-i18n="uploads.categories.sales.name">Sales</div><div class="d" data-i18n="uploads.categories.sales.desc">daily sales volume & revenue</div></div>
-          <div class="count" data-i18n="uploads.categories.sales.count">128 uploads</div>
-          <button class="edit">✎</button>
-        </div>
-        <div class="cat">
-          <div class="icon" style="background:#eaf1ff;color:#3455b3">📦</div>
-          <div><div class="n" data-i18n="uploads.categories.purchases.name">Purchases</div><div class="d" data-i18n="uploads.categories.purchases.desc">supplier orders in</div></div>
-          <div class="count" data-i18n="uploads.categories.purchases.count">104 uploads</div>
-          <button class="edit">✎</button>
-        </div>
-        <div class="cat">
-          <div class="icon" style="background:#fdecec;color:#c94141">📉</div>
-          <div><div class="n" data-i18n="uploads.categories.losses.name">Losses</div><div class="d" data-i18n="uploads.categories.losses.desc">waste, shrinkage, damage</div></div>
-          <div class="count" data-i18n="uploads.categories.losses.count">96 uploads</div>
-          <button class="edit">✎</button>
-        </div>
-        <div class="cat">
-          <div class="icon" style="background:#fff0d6;color:#a4680d">🏬</div>
-          <div><div class="n" data-i18n="uploads.categories.inventory.name">Inventory</div><div class="d" data-i18n="uploads.categories.inventory.desc">stock on hand snapshot</div></div>
-          <div class="count" data-i18n="uploads.categories.inventory.count">128 uploads</div>
-          <button class="edit">✎</button>
-        </div>
-        <div class="cat">
-          <div class="icon" style="background:#f2f4f0;color:#4a5a51">🧾</div>
-          <div><div class="n" data-i18n="uploads.categories.custom.name">Custom: Supplier Returns</div><div class="d" data-i18n="uploads.categories.custom.desc">added by accountant · Jul 20</div></div>
-          <div class="count" data-i18n="uploads.categories.custom.count">3 uploads</div>
-          <button class="edit">✎</button>
-        </div>
+        <div id="category-panel-list"><div class="cat-loading" data-i18n="common.loading">Loading…</div></div>
 
-        <button class="add-cat" data-i18n="uploads.categories.addNew">＋ Add new category</button>
+        <button class="add-cat" id="add-cat-btn" data-i18n="uploads.categories.addNew">＋ Add new category</button>
       </div>
     </div>
 
@@ -160,7 +131,7 @@
           <input type="text" id="hist-search" placeholder="Search filename…" data-i18n-placeholder="uploads.history.searchPlaceholder" style="border:0;background:none;outline:none;font:inherit;width:100%;color:var(--ink)" />
         </div>
         <select id="hist-station"><option value="" data-i18n="common.allStations">All stations</option></select>
-        <select id="hist-category"><option value="" data-i18n="uploads.history.allCategories">All categories</option><option value="sales" data-i18n="uploads.categories.sales.name">Sales</option><option value="purchases" data-i18n="uploads.categories.purchases.name">Purchases</option><option value="losses" data-i18n="uploads.categories.losses.name">Losses</option><option value="inventory" data-i18n="uploads.categories.inventory.name">Inventory</option></select>
+        <select id="hist-category"><option value="" data-i18n="uploads.history.allCategories">All categories</option></select>
         <select id="hist-status"><option value="" data-i18n="uploads.history.allStatuses">All statuses</option><option value="processed" data-i18n="common.processed">Processed</option><option value="overwritten" data-i18n="common.overwritten">Overwritten</option><option value="pending" data-i18n="common.pending">Pending</option><option value="error" data-i18n="common.error">Error</option></select>
       </div>
 
@@ -177,6 +148,22 @@
     </div>
 
   </main>
+</div>
+
+<!-- Add-category modal -->
+<div class="modal-back" id="add-cat-modal" style="display:none">
+  <div class="modal">
+    <div class="ic">🏷️</div>
+    <h3 data-i18n="uploads.categoryModal.title">Add category</h3>
+    <p data-i18n="uploads.categoryModal.body">Categories are shared across every station — creating one here makes it available to everyone.</p>
+    <label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="uploads.categoryModal.nameLabel">Name</label>
+    <input type="text" id="add-cat-name" data-i18n-placeholder="uploads.categoryModal.namePlaceholder" placeholder="e.g. Rent, Utilities" autocomplete="off" />
+    <div class="note" id="add-cat-error" style="display:none;color:var(--red)"></div>
+    <div class="actions">
+      <button class="ghost" id="add-cat-cancel" data-i18n="common.cancel">Cancel</button>
+      <button class="pri" id="add-cat-submit" data-i18n="uploads.categoryModal.create">Create</button>
+    </div>
+  </div>
 </div>
 
 <script>

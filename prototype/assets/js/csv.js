@@ -126,15 +126,21 @@ export function toISODate(raw) {
   if (m) return buildISODate(m[1], m[2], m[3]);
 
   // DD/MM/YYYY or DD-MM-YYYY (day-first, matching VN/EU convention, which
-  // this app's default locale assumes). If the first segment can't be a
-  // day (>12) but the second can, recover as if it were MM/DD/YYYY.
+  // this app's default locale assumes). Only fall back to MM/DD/YYYY when
+  // day-first is impossible outright -- the second segment can't be a
+  // month (>12) -- and the fallback itself works (first segment <=12, so
+  // it can serve as a month). A day of 13-31 in the first segment is a
+  // perfectly ordinary day, NOT a reason to swap -- an earlier version of
+  // this check used ">12" to mean "can't be a day", which is wrong (days
+  // go up to 31) and silently rejected every date past the 12th of the
+  // month whose day happened to exceed the month, e.g. "21/10/2024".
   m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
   if (m) {
-    const a = Number(m[1]);
-    const b = Number(m[2]);
-    return (a > 12 && b <= 12)
-      ? buildISODate(m[3], m[1], m[2])
-      : buildISODate(m[3], m[2], m[1]);
+    const first = Number(m[1]);
+    const second = Number(m[2]);
+    return (second > 12 && first <= 12)
+      ? buildISODate(m[3], first, second)   // recovered as MM/DD/YYYY
+      : buildISODate(m[3], second, first);  // DD/MM/YYYY (default)
   }
 
   return null;

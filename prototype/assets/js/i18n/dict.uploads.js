@@ -1,10 +1,10 @@
 // Uploads page (uploads.html) and its controller (upload.js): dropzone,
-// bulk file intake, per-file column mapping, duplicate-date overwrite
-// banner, save button, data-categories mockup card, and upload history.
+// bulk file intake, category picker, duplicate-date overwrite banner,
+// save button, data-categories panel, and upload history.
 export const en = {
   'uploads.searchPlaceholder': 'Search uploads, categories, filenames…',
   'uploads.uploadFileCta': 'Upload file',
-  'uploads.pageDesc': 'Upload daily CSV or Excel files, map columns to metrics, and manage data categories.',
+  'uploads.pageDesc': 'Upload daily CSV or Excel files and manage data categories — columns are mapped to metrics automatically.',
 
   'uploads.tabs.upload': 'Upload',
   'uploads.tabs.history': 'History',
@@ -16,9 +16,14 @@ export const en = {
   'uploads.dropzone.browse': 'Browse files',
 
   'uploads.fileRow.categoryPlaceholder': 'category',
+  'uploads.fileRow.datePlaceholder': 'dd/mm/yyyy',
   'uploads.fileRow.dateOverrideTitle': 'Override the detected date',
-  'uploads.fileRow.subResolved': '{{size}} KB · {{rows}} rows · date {{date}} ({{source}})',
-  'uploads.fileRow.subUnresolved': '{{size}} KB · {{rows}} rows · date unresolved',
+  'uploads.fileRow.openCalendar': 'Open calendar',
+  // "{{metrics}} tracked" rather than "{{metrics}} metrics" -- sidesteps the
+  // English plural agreement ("1 metrics" reads as a bug), same fix as
+  // stats.kpi.idlePumps.
+  'uploads.fileRow.subResolved': '{{size}} KB · {{rows}} rows · {{metrics}} tracked · date {{date}} ({{source}})',
+  'uploads.fileRow.subUnresolved': '{{size}} KB · {{rows}} rows · {{metrics}} tracked · date unresolved',
 
   'uploads.dateSource.column': 'column',
   'uploads.dateSource.filename': 'filename',
@@ -34,15 +39,6 @@ export const en = {
   'uploads.status.ready': 'Ready',
   'uploads.status.saving': 'Saving…',
   'uploads.status.saved': 'Saved',
-
-  'uploads.mapping.title': 'Column mapping',
-  'uploads.mapping.hint': 'Rename, exclude, mark the date column. Numeric columns become trackable metrics.',
-  'uploads.mapping.col.source': 'Source column',
-  'uploads.mapping.col.mappedName': 'Mapped name',
-  'uploads.mapping.col.type': 'Type',
-  'uploads.mapping.col.dateColumn': 'Date column',
-  'uploads.mapping.col.include': 'Include',
-  'uploads.mapping.snapshotWarning': 'snapshot metric — summing would be wrong',
 
   'uploads.duplicate.exists': 'a record for <b>{{category}}</b> on <b>{{date}}</b> already exists.',
   'uploads.duplicate.confirmedNote': 'Overwrite confirmed — the old values will be replaced when you save.',
@@ -62,21 +58,19 @@ export const en = {
 
   'uploads.categories.title': 'Data Categories',
   'uploads.categories.addNew': '＋ Add new category',
-  'uploads.categories.sales.name': 'Sales',
-  'uploads.categories.sales.desc': 'daily sales volume & revenue',
-  'uploads.categories.sales.count': '128 uploads',
-  'uploads.categories.purchases.name': 'Purchases',
-  'uploads.categories.purchases.desc': 'supplier orders in',
-  'uploads.categories.purchases.count': '104 uploads',
-  'uploads.categories.losses.name': 'Losses',
-  'uploads.categories.losses.desc': 'waste, shrinkage, damage',
-  'uploads.categories.losses.count': '96 uploads',
-  'uploads.categories.inventory.name': 'Inventory',
-  'uploads.categories.inventory.desc': 'stock on hand snapshot',
-  'uploads.categories.inventory.count': '128 uploads',
-  'uploads.categories.custom.name': 'Custom: Supplier Returns',
-  'uploads.categories.custom.desc': 'added by accountant · Jul 20',
-  'uploads.categories.custom.count': '3 uploads',
+  'uploads.categories.empty': 'No categories yet — add one, or one will be created the first time you type a new name in the upload row.',
+  // Phrased to avoid an English plural agreement ("1 uploads" reads as a bug) --
+  // same fix as stats.kpi.idlePumps.
+  'uploads.categories.uploadCount': 'Uploads: {{n}}',
+
+  'uploads.categoryModal.title': 'Add category',
+  'uploads.categoryModal.body': 'Categories are shared across every station — creating one here makes it available to everyone.',
+  'uploads.categoryModal.nameLabel': 'Name',
+  'uploads.categoryModal.namePlaceholder': 'e.g. Rent, Utilities',
+  'uploads.categoryModal.create': 'Create',
+  'uploads.categoryModal.errorEmpty': 'Enter a name.',
+  'uploads.categoryModal.errorExists': 'That category already exists.',
+  'uploads.categoryModal.errorFailed': 'Could not create the category — try again.',
 
   'uploads.history.title': 'Upload History',
   'uploads.history.desc': 'Every past upload — click to view, edit, or export.',
@@ -97,7 +91,7 @@ export const en = {
 export const vi = {
   'uploads.searchPlaceholder': 'Tìm bản tải lên, danh mục, tên tệp…',
   'uploads.uploadFileCta': 'Tải lên tệp',
-  'uploads.pageDesc': 'Tải lên tệp CSV hoặc Excel hằng ngày, ánh xạ cột thành chỉ số, và quản lý danh mục dữ liệu.',
+  'uploads.pageDesc': 'Tải lên tệp CSV hoặc Excel hằng ngày và quản lý danh mục dữ liệu — cột được ánh xạ thành chỉ số tự động.',
 
   'uploads.tabs.upload': 'Tải lên',
   'uploads.tabs.history': 'Lịch sử',
@@ -109,9 +103,11 @@ export const vi = {
   'uploads.dropzone.browse': 'Chọn tệp',
 
   'uploads.fileRow.categoryPlaceholder': 'danh mục',
+  'uploads.fileRow.datePlaceholder': 'dd/mm/yyyy',
   'uploads.fileRow.dateOverrideTitle': 'Ghi đè ngày đã phát hiện',
-  'uploads.fileRow.subResolved': '{{size}} KB · {{rows}} dòng · ngày {{date}} ({{source}})',
-  'uploads.fileRow.subUnresolved': '{{size}} KB · {{rows}} dòng · ngày chưa xác định',
+  'uploads.fileRow.openCalendar': 'Mở lịch',
+  'uploads.fileRow.subResolved': '{{size}} KB · {{rows}} dòng · {{metrics}} chỉ số · ngày {{date}} ({{source}})',
+  'uploads.fileRow.subUnresolved': '{{size}} KB · {{rows}} dòng · {{metrics}} chỉ số · ngày chưa xác định',
 
   'uploads.dateSource.column': 'cột',
   'uploads.dateSource.filename': 'tên tệp',
@@ -127,15 +123,6 @@ export const vi = {
   'uploads.status.ready': 'Sẵn sàng',
   'uploads.status.saving': 'Đang lưu…',
   'uploads.status.saved': 'Đã lưu',
-
-  'uploads.mapping.title': 'Ánh xạ cột',
-  'uploads.mapping.hint': 'Đổi tên, loại trừ, đánh dấu cột ngày. Các cột số sẽ trở thành chỉ số được theo dõi.',
-  'uploads.mapping.col.source': 'Cột nguồn',
-  'uploads.mapping.col.mappedName': 'Tên ánh xạ',
-  'uploads.mapping.col.type': 'Loại',
-  'uploads.mapping.col.dateColumn': 'Cột ngày',
-  'uploads.mapping.col.include': 'Bao gồm',
-  'uploads.mapping.snapshotWarning': 'chỉ số dạng ảnh chụp — cộng dồn sẽ không chính xác',
 
   'uploads.duplicate.exists': 'đã tồn tại một bản ghi cho <b>{{category}}</b> vào ngày <b>{{date}}</b>.',
   'uploads.duplicate.confirmedNote': 'Đã xác nhận ghi đè — các giá trị cũ sẽ được thay thế khi bạn lưu.',
@@ -155,21 +142,17 @@ export const vi = {
 
   'uploads.categories.title': 'Danh mục dữ liệu',
   'uploads.categories.addNew': '＋ Thêm danh mục mới',
-  'uploads.categories.sales.name': 'Doanh số',
-  'uploads.categories.sales.desc': 'sản lượng bán hàng & doanh thu hằng ngày',
-  'uploads.categories.sales.count': '128 lượt tải lên',
-  'uploads.categories.purchases.name': 'Nhập hàng',
-  'uploads.categories.purchases.desc': 'đơn hàng nhập từ nhà cung cấp',
-  'uploads.categories.purchases.count': '104 lượt tải lên',
-  'uploads.categories.losses.name': 'Hao hụt',
-  'uploads.categories.losses.desc': 'hao hụt, thất thoát, hư hỏng',
-  'uploads.categories.losses.count': '96 lượt tải lên',
-  'uploads.categories.inventory.name': 'Tồn kho',
-  'uploads.categories.inventory.desc': 'ảnh chụp tồn kho hiện có',
-  'uploads.categories.inventory.count': '128 lượt tải lên',
-  'uploads.categories.custom.name': 'Tùy chỉnh: Hàng trả lại nhà cung cấp',
-  'uploads.categories.custom.desc': 'do kế toán thêm · 20 Th7',
-  'uploads.categories.custom.count': '3 lượt tải lên',
+  'uploads.categories.empty': 'Chưa có danh mục nào — hãy thêm một danh mục, hoặc danh mục sẽ được tạo tự động khi bạn nhập tên mới ở dòng tải lên.',
+  'uploads.categories.uploadCount': 'Lượt tải lên: {{n}}',
+
+  'uploads.categoryModal.title': 'Thêm danh mục',
+  'uploads.categoryModal.body': 'Danh mục được dùng chung cho mọi trạm — tạo tại đây sẽ áp dụng cho tất cả.',
+  'uploads.categoryModal.nameLabel': 'Tên',
+  'uploads.categoryModal.namePlaceholder': 'vd: Tiền thuê, Điện nước',
+  'uploads.categoryModal.create': 'Tạo',
+  'uploads.categoryModal.errorEmpty': 'Nhập tên danh mục.',
+  'uploads.categoryModal.errorExists': 'Danh mục này đã tồn tại.',
+  'uploads.categoryModal.errorFailed': 'Không thể tạo danh mục — hãy thử lại.',
 
   'uploads.history.title': 'Lịch sử tải lên',
   'uploads.history.desc': 'Mọi bản tải lên trước đây — nhấn để xem, chỉnh sửa hoặc xuất dữ liệu.',

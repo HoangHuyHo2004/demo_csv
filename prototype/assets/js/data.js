@@ -18,6 +18,51 @@ export async function listStations() {
   return data;
 }
 
+// Global category registry, same shape as the metrics registry below: any
+// signed-in user can read and create one, so an accountant can name a new
+// category on the spot without waiting on the Owner.
+export async function listCategories() {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('slug, name, icon, description')
+    .order('name');
+  if (error) {
+    console.error('listCategories failed:', error);
+    return [];
+  }
+  return data;
+}
+
+// Creates a category if its slug doesn't exist yet; ignoreDuplicates so two
+// people typing the same new category name at the same moment don't race
+// each other into a conflict, same pattern as upsertMetrics.
+export async function createCategory({ slug, name }) {
+  const { error } = await supabase
+    .from('categories')
+    .upsert({ slug, name }, { onConflict: 'slug', ignoreDuplicates: true });
+  if (error) {
+    console.error('createCategory failed:', error);
+    return null;
+  }
+  return { slug, name };
+}
+
+// One upload count per category, scoped by the same RLS that already limits
+// listUploads() to accessible stations. Reduced client-side rather than N
+// separate count queries -- upload volume here is hundreds of rows, not
+// millions, so one query either way, but this is one round trip instead of
+// one per category.
+export async function categoryUploadCounts() {
+  const { data, error } = await supabase.from('uploads').select('category');
+  if (error) {
+    console.error('categoryUploadCounts failed:', error);
+    return {};
+  }
+  const counts = {};
+  for (const row of data) counts[row.category] = (counts[row.category] || 0) + 1;
+  return counts;
+}
+
 // One query for an entire dashboard page -- every widget derives from
 // this same in-memory dataset, which is what guarantees every tile agrees
 // with every other. Station filtering only happens when a specific
