@@ -851,7 +851,7 @@ function renderHistory() {
       <tr data-upload-id="${r.id}" data-storage-path="${escapeAttr(r.storage_path || '')}" data-filename="${escapeAttr(r.filename)}">
         <td>${r.upload_date}</td>
         <td><span style="display:inline-flex;align-items:center;gap:5px;font-weight:600;color:${stationColor}"><span style="width:8px;height:8px;border-radius:50%;background:${stationColor}"></span>${escapeHtml(stationName)}</span></td>
-        <td><span class="pill" style="background:#f2f4f0;color:var(--ink-2)">${escapeHtml(r.category)}</span></td>
+        <td><span class="pill" style="background:var(--chip);color:var(--ink-2)">${escapeHtml(r.category)}</span></td>
         <td>${escapeHtml(r.filename)}</td>
         <td>${r.row_count ?? '—'}</td>
         <td>${r.metric_values?.[0]?.count ?? 0}</td>

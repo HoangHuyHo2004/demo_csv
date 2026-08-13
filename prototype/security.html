@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="assets/js/theme-init.js"></script>
 <meta name="viewport" content="width=1280" />
 <title>Demo_CSV — Security</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -168,8 +169,8 @@
             </table>
 
             <div style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <input type="email" data-i18n-placeholder="settings.team.emailPlaceholder" placeholder="teammate@email.com" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
-              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fff"><option data-i18n="common.accountant">Accountant</option><option data-i18n="common.owner">Owner</option></select>
+              <input type="email" data-i18n-placeholder="settings.team.emailPlaceholder" placeholder="teammate@email.com" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--surface-soft-2)"/>
+              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--panel)"><option data-i18n="common.accountant">Accountant</option><option data-i18n="common.owner">Owner</option></select>
               <button class="row-btn pri" data-i18n="security.roles.delegateRole" onclick="document.getElementById('delegate-modal').style.display='flex'">Delegate role</button>
             </div>
 
@@ -320,7 +321,7 @@
               <div class="when">2026-07-25 · 10:44</div>
             </div>
           </div>
-          <div style="padding:12px 20px;background:#fafbf8;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2)">
+          <div style="padding:12px 20px;background:var(--surface-soft-2);border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2)">
             <span data-i18n="security.audit.retention">Retention: 365 days · 1,842 events total</span>
             <span><button class="row-btn" data-i18n="security.audit.exportLog">⬇ Export log</button> <button class="row-btn" data-i18n="security.audit.filter">Filter…</button></span>
           </div>
@@ -353,8 +354,8 @@
             </div>
 
             <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
-              <input type="text" data-i18n-placeholder="security.access.ipPlaceholder" placeholder="e.g. 203.0.113.0/24 or single IP" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
-              <input type="text" data-i18n-placeholder="security.access.labelPlaceholder" placeholder="Label (Office, Home…)" style="width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:#fafbf8"/>
+              <input type="text" data-i18n-placeholder="security.access.ipPlaceholder" placeholder="e.g. 203.0.113.0/24 or single IP" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--surface-soft-2)"/>
+              <input type="text" data-i18n-placeholder="security.access.labelPlaceholder" placeholder="Label (Office, Home…)" style="width:180px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--surface-soft-2)"/>
               <button class="row-btn pri" data-i18n="security.access.addIp">＋ Add IP</button>
             </div>
 

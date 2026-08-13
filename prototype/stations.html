@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="assets/js/theme-init.js"></script>
 <meta name="viewport" content="width=1280" />
 <title>Demo_CSV — Stations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,163 +23,58 @@
       <div class="h-title"><span data-i18n="shell.nav.stations">Stations</span> <span class="caret">▾</span></div>
       <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="stations.searchPlaceholder">Search stations…</span></div>
       <div class="h-actions">
-        <button class="scope"><span class="dot"></span><b data-i18n="shell.scopeAllStations">All stations</b><span class="caret">▾</span></button>
-        <button class="cta" onclick="document.getElementById('new-stn').style.display='flex'"><span data-i18n="stations.newStation">＋ New station</span> <span class="plus">＋</span></button>
+        <div class="scope-switcher" id="scope-switcher">
+          <button type="button" class="scope-switcher__btn" aria-haspopup="listbox" aria-expanded="false">
+            <span class="scope-switcher__dot"></span>
+            <span class="scope-switcher__label" data-i18n="shell.scopeAllStations">All stations</span>
+            <span class="scope-switcher__caret">▾</span>
+          </button>
+          <ul class="scope-switcher__menu" role="listbox" hidden></ul>
+        </div>
+        <button type="button" class="cta" id="new-stn-btn"><span data-i18n="stations.newStation">＋ New station</span> <span class="plus">＋</span></button>
       </div>
     </div>
 
     <div class="page-head">
       <div>
         <h1 data-i18n="shell.nav.stations">Stations</h1>
-        <p data-i18n="stations.pageDesc">Your business locations. Data, uploads, alerts, and accountants are scoped per station.</p>
+        <p data-i18n="stations.pageDesc">Your business locations. Data and uploads are scoped per station.</p>
       </div>
     </div>
 
     <div class="kpis">
-      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.activeStations">Active stations</div><div class="val">2</div><div class="foot" data-i18n="stations.kpi.archived1">1 archived</div></div>
-      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.combinedRevenue">Combined revenue (MTD)</div><div class="val">$193K</div><div class="foot">+12% <span data-i18n="stations.kpi.vsJun">vs Jun</span></div></div>
-      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.uploadsToday">Uploads today</div><div class="val">3</div><div class="foot">2 <span data-i18n="stations.kpi.processedPending">processed · 1 pending</span></div></div>
-      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.activeAlerts">Active alerts across stations</div><div class="val">13</div><div class="foot" data-i18n="stations.kpi.critical3">3 critical</div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.activeStations">Active stations</div><div class="val" data-f="kpi-active">—</div><div class="foot" data-f="kpi-archived-foot"></div></div>
+      <div class="kpi"><div class="lbl" data-i18n="stations.kpi.totalUploads">Uploads (all-time)</div><div class="val" data-f="kpi-uploads">—</div></div>
     </div>
 
     <!-- Station cards -->
-    <div class="grid">
-
-      <div class="stn a">
-        <div class="stripe"></div>
-        <div class="hd">
-          <div class="ic">⛽</div>
-          <div>
-            <h3>Station A · Quận 1 <span class="badge-st" data-i18n="stations.status.active">Active</span></h3>
-            <div class="subd">142 Nguyễn Huệ, Q1, HCMC · UTC+7 · ₫ VND</div>
-          </div>
-          <div class="actions"><button data-i18n="stations.edit">Edit</button><button data-i18n="stations.transfer">Transfer</button><button class="danger" data-i18n="stations.archive">Archive</button></div>
-        </div>
-        <div class="body">
-          <div class="row">
-            <div class="stat"><div class="l" data-i18n="stations.stat.revenueMtd">Revenue MTD</div><div class="v">$118K</div><div class="d" style="color:#1f8f4a">+14%</div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.uploads30d">Uploads (30d)</div><div class="v">28/30</div><div class="d">93% <span data-i18n="stations.onTime">on-time</span></div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.activeAlerts">Active alerts</div><div class="v">7</div><div class="d" style="color:var(--red)">2 <span data-i18n="stations.crit">crit</span></div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.dataQuality">Data quality</div><div class="v">A−</div><div class="d">3 <span data-i18n="stations.gaps">gaps</span></div></div>
-          </div>
-          <div class="members">
-            <span class="pill"><span class="avatar-sm own"></span><span data-i18n="common.owner">Owner</span>: <span data-i18n="stations.you">You</span></span>
-            <span class="pill"><span class="avatar-sm acc"></span>Anna Nguyễn — <span data-i18n="common.accountant">Accountant</span></span>
-          </div>
-          <div class="spark">
-            <svg viewBox="0 0 600 60" preserveAspectRatio="none">
-              <polyline fill="none" stroke="#3455b3" stroke-width="2" points="0,45 60,42 120,38 180,32 240,36 300,28 360,24 420,26 480,18 540,20 600,12"/>
-            </svg>
-          </div>
-        </div>
-        <div class="foot">
-          <span><span data-i18n="stations.created">Created</span> Mar 4, 2026 · 128 <span data-i18n="stations.uploadDaysSuffix">upload days</span></span>
-          <a href="index.html" data-i18n="stations.openDashboard">Open dashboard →</a>
-        </div>
-      </div>
-
-      <div class="stn b">
-        <div class="stripe"></div>
-        <div class="hd">
-          <div class="ic">⛽</div>
-          <div>
-            <h3>Station B · Thủ Đức <span class="badge-st" data-i18n="stations.status.active">Active</span></h3>
-            <div class="subd">88 Võ Văn Ngân, Thủ Đức · UTC+7 · ₫ VND</div>
-          </div>
-          <div class="actions"><button data-i18n="stations.edit">Edit</button><button data-i18n="stations.transfer">Transfer</button><button class="danger" data-i18n="stations.archive">Archive</button></div>
-        </div>
-        <div class="body">
-          <div class="row">
-            <div class="stat"><div class="l" data-i18n="stations.stat.revenueMtd">Revenue MTD</div><div class="v">$75K</div><div class="d" style="color:#1f8f4a">+8%</div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.uploads30d">Uploads (30d)</div><div class="v">30/30</div><div class="d">100% <span data-i18n="stations.onTime">on-time</span></div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.activeAlerts">Active alerts</div><div class="v">6</div><div class="d" style="color:var(--amber)">1 <span data-i18n="stations.crit">crit</span></div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.dataQuality">Data quality</div><div class="v">A</div><div class="d" data-i18n="stations.healthy">Healthy</div></div>
-          </div>
-          <div class="members">
-            <span class="pill"><span class="avatar-sm own"></span><span data-i18n="common.owner">Owner</span>: <span data-i18n="stations.you">You</span></span>
-            <span class="pill"><span class="avatar-sm b"></span>Bình Trần — <span data-i18n="common.accountant">Accountant</span></span>
-          </div>
-          <div class="spark">
-            <svg viewBox="0 0 600 60" preserveAspectRatio="none">
-              <polyline fill="none" stroke="#1f6f4a" stroke-width="2" points="0,40 60,38 120,42 180,36 240,30 300,32 360,26 420,28 480,22 540,18 600,20"/>
-            </svg>
-          </div>
-        </div>
-        <div class="foot">
-          <span><span data-i18n="stations.created">Created</span> May 12, 2026 · 78 <span data-i18n="stations.uploadDaysSuffix">upload days</span></span>
-          <a href="index.html" data-i18n="stations.openDashboard">Open dashboard →</a>
-        </div>
-      </div>
-
-      <div class="stn arch">
-        <div class="stripe"></div>
-        <div class="hd">
-          <div class="ic">⛽</div>
-          <div>
-            <h3>Station C · Bình Thạnh <span class="badge-st" data-i18n="stations.status.archived">Archived</span></h3>
-            <div class="subd">Sold Feb 2026 · <span data-i18n="stations.readOnly">read-only</span> history</div>
-          </div>
-          <div class="actions"><button data-i18n="stations.unarchive">Unarchive</button><button data-i18n="common.export">Export</button></div>
-        </div>
-        <div class="body">
-          <div class="row">
-            <div class="stat"><div class="l" data-i18n="stations.stat.revenueLifetime">Revenue lifetime</div><div class="v">$412K</div><div class="d">Sep 2023 – Feb 2026</div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.uploadDays">Upload days</div><div class="v">867</div><div class="d" data-i18n="stations.readOnly">read-only</div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.alerts">Alerts</div><div class="v">—</div><div class="d" data-i18n="stations.muted">Muted</div></div>
-            <div class="stat"><div class="l" data-i18n="stations.stat.members">Members</div><div class="v">0</div><div class="d" data-i18n="stations.cleared">Cleared</div></div>
-          </div>
-        </div>
-        <div class="foot"><span><span data-i18n="stations.archivedLabel">Archived</span> Feb 21, 2026 · 148d <span data-i18n="stations.coolOffEnded">cool-off period ended</span></span><a href="index.html" data-i18n="stations.viewHistory">View history →</a></div>
-      </div>
-
-      <div class="add-card" onclick="document.getElementById('new-stn').style.display='flex'">
-        <div class="plus">＋</div>
-        <h4 data-i18n="stations.addCard.title">Add a new station</h4>
-        <p data-i18n="stations.addCard.desc">Create a location, choose a color, then invite its accountant.</p>
-      </div>
-
+    <div class="grid" id="station-list">
+      <div class="cat-loading" data-i18n="common.loading">Loading…</div>
     </div>
 
-    <!-- Comparison -->
-    <div class="card">
-      <div class="card-head"><h3 data-i18n="stations.compare.title">Compare stations · July 2026</h3><span class="kebab">•••</span></div>
-      <table class="tbl">
-        <thead>
-          <tr><th data-i18n="stations.th.rank">Rank</th><th data-i18n="stations.th.station">Station</th><th class="num" data-i18n="stations.th.revenue">Revenue</th><th class="num" data-i18n="stations.th.salesVol">Sales vol.</th><th class="num" data-i18n="stations.th.losses">Losses</th><th class="num" data-i18n="stations.th.margin">Margin</th><th class="num" data-i18n="stations.th.onTimeUploads">On-time uploads</th><th data-i18n="stations.th.dataHealth">Data health</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="rank top">1</span></td>
-            <td><span class="stn-chip"><span class="d" style="background:#3455b3"></span>Station A</span></td>
-            <td class="num">$118K <span class="delta up">+14%</span></td>
-            <td class="num">2,410</td>
-            <td class="num">$1,140 <span class="delta down">+18%</span></td>
-            <td class="num">43.1%</td>
-            <td class="num">93%</td>
-            <td>A−</td>
-          </tr>
-          <tr>
-            <td><span class="rank">2</span></td>
-            <td><span class="stn-chip"><span class="d" style="background:#1f6f4a"></span>Station B</span></td>
-            <td class="num">$75K <span class="delta up">+8%</span></td>
-            <td class="num">1,542</td>
-            <td class="num">$680 <span class="delta down">−12%</span></td>
-            <td class="num">45.6%</td>
-            <td class="num">100%</td>
-            <td>A</td>
-          </tr>
-          <tr style="background:#fafbf8">
-            <td></td>
-            <td><b data-i18n="stations.combined">Combined</b></td>
-            <td class="num"><b>$193K</b> <span class="delta up">+12%</span></td>
-            <td class="num"><b>3,952</b></td>
-            <td class="num"><b>$1,820</b></td>
-            <td class="num"><b>44.0%</b></td>
-            <td class="num"><b>96%</b></td>
-            <td>—</td>
-          </tr>
-        </tbody>
-      </table>
+    <template id="tpl-station-card">
+      <div class="stn">
+        <div class="stripe" data-f="stripe"></div>
+        <div class="hd">
+          <div class="ic" data-f="ic">⛽</div>
+          <div>
+            <h3><span data-f="name"></span> <span class="badge-st" data-f="status-badge"></span></h3>
+            <div class="subd" data-f="subd"></div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="row" style="grid-template-columns:repeat(2,1fr)">
+            <div class="stat"><div class="l" data-i18n="stations.stat.uploads">Uploads</div><div class="v" data-f="uploads"></div></div>
+            <div class="stat"><div class="l" data-i18n="stations.created">Created</div><div class="v" data-f="created"></div></div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div class="add-card" id="add-station-card">
+      <div class="plus">＋</div>
+      <h4 data-i18n="stations.addCard.title">Add a new station</h4>
+      <p data-i18n="stations.addCard.desc">Create a location and choose a color.</p>
     </div>
 
   </main>
@@ -189,40 +85,35 @@
   <div class="modal">
     <div class="ic">⛽</div>
     <h3 data-i18n="stations.addCard.title">Add a new station</h3>
-    <p data-i18n="stations.modal.desc">Give it a name and set defaults. You can invite the accountant next.</p>
+    <p data-i18n="stations.modal.desc">Give it a name and set defaults.</p>
 
     <div class="field2">
-      <div><label data-i18n="stations.field.name">Station name</label><input type="text" placeholder="e.g. Station D · Tân Bình" data-i18n-placeholder="stations.field.namePlaceholder"/></div>
-      <div><label data-i18n="stations.field.shortCode">Short code</label><input type="text" placeholder="STN-D" data-i18n-placeholder="stations.field.shortCodePlaceholder"/></div>
+      <div><label data-i18n="stations.field.name">Station name</label><input type="text" id="stn-name" placeholder="e.g. Station D · Tân Bình" data-i18n-placeholder="stations.field.namePlaceholder"/></div>
+      <div><label data-i18n="stations.field.shortCode">Short code</label><input type="text" id="stn-code" placeholder="STN-D" data-i18n-placeholder="stations.field.shortCodePlaceholder"/></div>
     </div>
-    <div class="field2">
-      <div><label data-i18n="stations.field.address">Address</label><input type="text" placeholder="Street, ward, city" data-i18n-placeholder="stations.field.addressPlaceholder"/></div>
-      <div><label data-i18n="stations.field.timezone">Timezone</label><select><option data-i18n="stations.tz.hcm">Asia/Ho_Chi_Minh (UTC+7)</option><option data-i18n="stations.tz.utc">UTC</option></select></div>
-    </div>
-    <div class="field2">
-      <div><label data-i18n="stations.field.currency">Currency</label><select><option data-i18n="stations.currency.vnd">₫ VND</option><option data-i18n="stations.currency.usd">$ USD</option><option data-i18n="stations.currency.eur">€ EUR</option></select></div>
-      <div><label data-i18n="stations.field.accountant">Primary accountant</label><select><option data-i18n="stations.accountant.inviteLater">Invite later…</option><option>Anna Nguyễn</option><option>Bình Trần</option></select></div>
+    <div style="margin-bottom:14px">
+      <label data-i18n="stations.field.address">Address</label>
+      <input type="text" id="stn-address" placeholder="Street, ward, city" data-i18n-placeholder="stations.field.addressPlaceholder"/>
     </div>
     <div style="margin-bottom:12px">
       <label data-i18n="stations.field.color">Color</label>
-      <div class="colors">
-        <div class="sw" style="background:#3455b3"></div>
-        <div class="sw active" style="background:#1f6f4a"></div>
-        <div class="sw" style="background:#f0a545"></div>
-        <div class="sw" style="background:#7c5cff"></div>
-        <div class="sw" style="background:#c94141"></div>
-        <div class="sw" style="background:#b7f04a"></div>
+      <div class="colors" id="stn-colors">
+        <div class="sw active" data-color="#3455b3" style="background:#3455b3"></div>
+        <div class="sw" data-color="#1f6f4a" style="background:#1f6f4a"></div>
+        <div class="sw" data-color="#f0a545" style="background:#f0a545"></div>
+        <div class="sw" data-color="#7c5cff" style="background:#7c5cff"></div>
+        <div class="sw" data-color="#c94141" style="background:#c94141"></div>
+        <div class="sw" data-color="#b7f04a" style="background:#b7f04a"></div>
       </div>
     </div>
+    <div class="note" id="stn-error" style="display:none;color:var(--red)"></div>
     <div class="actions">
-      <button class="ghost" onclick="document.getElementById('new-stn').style.display='none'" data-i18n="common.cancel">Cancel</button>
-      <button class="pri" onclick="document.getElementById('new-stn').style.display='none'" data-i18n="stations.createStation">Create station</button>
+      <button class="ghost" id="stn-cancel" data-i18n="common.cancel">Cancel</button>
+      <button class="pri" id="stn-submit" data-i18n="stations.createStation">Create station</button>
     </div>
   </div>
 </div>
 
-<script>
-  document.querySelectorAll('.sw').forEach(s=>s.addEventListener('click',()=>{document.querySelectorAll('.modal .sw').forEach(x=>x.classList.remove('active'));s.classList.add('active');}));
-</script>
+<script type="module" src="assets/js/stations.js"></script>
 </body>
 </html>

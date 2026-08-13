@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="assets/js/theme-init.js"></script>
 <meta name="viewport" content="width=1280" />
 <title>Demo_CSV — Statistics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,10 +34,10 @@
 .warn-box .tx{font-size:12.5px;color:#7a2020;line-height:1.55}
 .warn-box .tx b{color:#5e1414}
 
-.seg-period{display:inline-flex;background:#f2f4f0;border-radius:10px;padding:3px}
+.seg-period{display:inline-flex;background:var(--chip);border-radius:10px;padding:3px}
 .seg-period button{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:700;color:var(--ink-2)}
-.seg-period button.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(15,26,20,.10)}
-input.pick{padding:7px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:12.5px;background:#fff}
+.seg-period button.active{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(15,26,20,.10)}
+input.pick{padding:7px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:12.5px;background:var(--panel);color:var(--ink)}
 
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
 .kpi{background:var(--panel);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
@@ -67,9 +68,9 @@ table.vt th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:u
   font-weight:700;padding:7px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
 table.vt td{padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
 table.vt td.n{text-align:right}
-table.vt tr:hover td{background:#fafbf8}
+table.vt tr:hover td{background:var(--surface-soft-2)}
 table.vt tr.missing td{color:var(--down);font-weight:700;background:#fdf1f1}
-table.vt tr.focus td{background:#f4f8fd}
+table.vt tr.focus td{background:var(--surface-soft)}
 .scroll{max-height:340px;overflow:auto}
 .swatch{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:7px;vertical-align:middle}
 

@@ -18,6 +18,56 @@ export async function listStations() {
   return data;
 }
 
+// Fuller column set for the Stations page itself (identity fields + archived
+// state) -- kept separate from listStations() rather than widening it, since
+// that one's narrower shape is already relied on by scope.js/scope-ui.js for
+// the header switcher and there's no reason to risk that.
+export async function listStationsFull({ includeArchived = true } = {}) {
+  let q = supabase
+    .from('stations')
+    .select('id, name, code, address, color, timezone, currency, archived_at, created_at')
+    .order('name');
+  if (!includeArchived) q = q.is('archived_at', null);
+  const { data, error } = await q;
+  if (error) {
+    console.error('listStationsFull failed:', error);
+    return [];
+  }
+  return data;
+}
+
+// Creates a station. RLS ("stations: owner all") restricts this to the
+// Owner -- an Accountant's insert attempt comes back as a normal RLS-denial
+// error here, not a thrown exception. `code` is unique, so a duplicate
+// surfaces as a distinct error the caller can show inline rather than a
+// generic failure message.
+export async function createStation({ name, code, address, timezone, currency, color }) {
+  const { data, error } = await supabase
+    .from('stations')
+    .insert({ name, code: code || null, address: address || null, timezone, currency, color })
+    .select('id, name, code, address, color, timezone, currency, archived_at, created_at')
+    .single();
+  if (error) {
+    console.error('createStation failed:', error);
+    return { station: null, code: error.code === '23505' ? 'duplicate_code' : 'failed' };
+  }
+  return { station: data, code: null };
+}
+
+// One upload count per station, same reduce-client-side pattern as
+// categoryUploadCounts() below -- the only real, derivable per-station stat
+// available anywhere in this app today.
+export async function stationUploadCounts() {
+  const { data, error } = await supabase.from('uploads').select('station_id');
+  if (error) {
+    console.error('stationUploadCounts failed:', error);
+    return {};
+  }
+  const counts = {};
+  for (const row of data) counts[row.station_id] = (counts[row.station_id] || 0) + 1;
+  return counts;
+}
+
 // Global category registry, same shape as the metrics registry below: any
 // signed-in user can read and create one, so an accountant can name a new
 // category on the spot without waiting on the Owner.

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script src="assets/js/theme-init.js"></script>
 <meta name="viewport" content="width=1280" />
 <title>Demo_CSV — Insights</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -414,24 +415,24 @@
               <b>Station A outperformed Station B on weekends by 22%</b> in revenue this week. Weekday performance was even, so the gap is entirely weekend-driven — likely tied to A's higher foot traffic in Q1. Losses tell the opposite story: <b>A's losses are running +18%</b> while <b>B has trimmed −12%</b>. Bình's data-quality score is A vs A− for Anna at Station A — three missing inventory days on the Station A side.
             </div>
             <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.helpfulBtn">👍 Helpful</button>
-              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)">👎</button>
-              <button style="padding:6px 12px;border-radius:8px;background:#f6f8f4;font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.pin">📌 Pin</button>
+              <button style="padding:6px 12px;border-radius:8px;background:var(--surface-soft);font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.helpfulBtn">👍 Helpful</button>
+              <button style="padding:6px 12px;border-radius:8px;background:var(--surface-soft);font-size:11px;font-weight:600;color:var(--ink-2)">👎</button>
+              <button style="padding:6px 12px;border-radius:8px;background:var(--surface-soft);font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="insights.pin">📌 Pin</button>
               <button style="padding:6px 12px;border-radius:8px;background:var(--sidebar);color:#fff;font-size:11px;font-weight:600" data-i18n="insights.askFollowUp">Ask a follow-up</button>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px">
-            <div style="background:#f6f8f4;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
+            <div style="background:var(--surface-soft);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
               <span style="width:10px;height:10px;border-radius:50%;background:#3455b3"></span>
               <div style="flex:1"><div style="font-size:11px;color:var(--muted)">Station A · Quận 1</div><div style="font-size:16px;font-weight:700">$118K</div></div>
               <div style="color:#1f8f4a;font-weight:700;font-size:12px">+14%</div>
             </div>
-            <div style="background:#f6f8f4;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
+            <div style="background:var(--surface-soft);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
               <span style="width:10px;height:10px;border-radius:50%;background:#1f6f4a"></span>
               <div style="flex:1"><div style="font-size:11px;color:var(--muted)">Station B · Thủ Đức</div><div style="font-size:16px;font-weight:700">$75K</div></div>
               <div style="color:#1f8f4a;font-weight:700;font-size:12px">+8%</div>
             </div>
-            <div style="background:linear-gradient(135deg,#eaf7d3,#fff);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink)" data-i18n-html="insights.crossStation.recommendation">
+            <div style="background:linear-gradient(135deg,var(--success-bg),var(--panel));border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--ink)" data-i18n-html="insights.crossStation.recommendation">
               <b>Recommendation</b>: try Station A's weekend playbook (extended hours + fresh-goods restock) at Station B.
             </div>
           </div>
@@ -444,10 +445,10 @@
       <div class="card-head"><h3 data-i18n="insights.comparePeriods.title">Compare periods · narratively</h3><span class="kebab">•••</span></div>
       <div class="row-in">
         <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="insights.comparePeriods.periodA">Period A</label>
-          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option data-i18n="insights.comparePeriods.thisWeekRange">This week (Jul 22–28)</option><option data-i18n="insights.comparePeriods.thisMonth">This month</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
+          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:var(--panel)"><option data-i18n="insights.comparePeriods.thisWeekRange">This week (Jul 22–28)</option><option data-i18n="insights.comparePeriods.thisMonth">This month</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
         </div>
         <div><label style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em" data-i18n="insights.comparePeriods.periodB">Period B</label>
-          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:#fff"><option data-i18n="insights.comparePeriods.lastWeekRange">Last week (Jul 15–21)</option><option data-i18n="insights.comparePeriods.sameWeekLastYear">Same week last year</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
+          <select style="width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:var(--panel)"><option data-i18n="insights.comparePeriods.lastWeekRange">Last week (Jul 15–21)</option><option data-i18n="insights.comparePeriods.sameWeekLastYear">Same week last year</option><option data-i18n="insights.comparePeriods.custom">Custom…</option></select>
         </div>
         <div style="align-self:end"><button class="btn" style="background:var(--sidebar);color:#fff;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:600" data-i18n="insights.comparePeriods.explainDifference">Explain difference ✨</button></div>
       </div>

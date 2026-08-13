@@ -41,6 +41,16 @@ export function stations() {
   return _stations;
 }
 
+// Re-fetches the accessible station list and notifies listeners -- called
+// after creating a station so the header switcher picks it up immediately,
+// without needing a full page reload.
+export async function refresh() {
+  _stations = await listStations();
+  const value = current();
+  _listeners.forEach((cb) => cb(value));
+  return value;
+}
+
 export function current() {
   const station = _current.stationId ? _stations.find((s) => s.id === _current.stationId) : null;
   return { ..._current, station };

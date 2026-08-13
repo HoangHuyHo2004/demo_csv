@@ -123,7 +123,7 @@ function renderRevenueCard(currentRows, previousRows, registry) {
     const byStation = byStationTotal(currentRows, 'revenue');
     const chips = stations
       .filter((s) => byStation[s.id])
-      .map((s) => `<div style="background:#f6f8f4;border-radius:10px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)"><span style="width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${escapeHtml(s.name)} · <b style="color:var(--ink)">${formatCurrencyCompact(byStation[s.id])}</b></div>`);
+      .map((s) => `<div style="background:var(--surface-soft);border-radius:10px;padding:6px 10px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-2)"><span style="width:8px;height:8px;border-radius:50%;background:${s.color}"></span>${escapeHtml(s.name)} · <b style="color:var(--ink)">${formatCurrencyCompact(byStation[s.id])}</b></div>`);
     chipsEl.innerHTML = chips.join('') || `<span style="font-size:11px;color:var(--muted)">${t('index.revenue.noStationBreakdown')}</span>`;
   }
 
