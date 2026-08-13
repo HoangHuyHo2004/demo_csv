@@ -34,10 +34,6 @@ export const en = {
   'index.donut.tips': 'Share of tracked activity by metric, last 30 days.',
   'index.donut.seeFullStatistics': 'See full statistics',
 
-  'index.upsell.heading': 'Level up your business tracking to the next level.',
-  'index.upsell.body': 'An easy way to manage sales, inventory, and losses with care and precision.',
-  'index.upsell.cta': 'Upgrade to Demo_CSV+',
-
   'firstRun.step1.heading': 'Set up Demo_CSV',
   'firstRun.step1.body': 'No one owns this workspace yet. Become the Owner to get full access and create your first station.',
   'firstRun.step1.cta': 'Become the Owner',
@@ -93,10 +89,6 @@ export const vi = {
   'index.donut.centerLabel': 'Bản ghi (30 ngày)',
   'index.donut.tips': 'Tỷ trọng hoạt động được ghi nhận theo từng chỉ số, trong 30 ngày qua.',
   'index.donut.seeFullStatistics': 'Xem đầy đủ thống kê',
-
-  'index.upsell.heading': 'Nâng tầm việc theo dõi kinh doanh của bạn.',
-  'index.upsell.body': 'Cách đơn giản để quản lý doanh số, tồn kho và hao hụt một cách cẩn thận và chính xác.',
-  'index.upsell.cta': 'Nâng cấp lên Demo_CSV+',
 
   'firstRun.step1.heading': 'Thiết lập Demo_CSV',
   'firstRun.step1.body': 'Chưa có ai sở hữu không gian làm việc này. Hãy trở thành Chủ sở hữu để có toàn quyền truy cập và tạo trạm đầu tiên của bạn.',
