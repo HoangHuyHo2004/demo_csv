@@ -4,8 +4,9 @@
     {
       "name": "demo-csv-static",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8000"],
-      "port": 8000
+      "runtimeArgs": ["tools/serve_static.py"],
+      "port": 8000,
+      "autoPort": true
     }
   ]
 }
