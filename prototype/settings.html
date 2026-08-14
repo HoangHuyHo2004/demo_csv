@@ -247,35 +247,23 @@
 
         <!-- Team members -->
         <div class="card" id="team">
-          <div class="card-head"><h3 data-i18n="settings.team.title">Team members · 2</h3><span class="kebab">•••</span></div>
+          <div class="card-head"><h3 data-i18n="settings.team.title">Team members</h3><span class="kebab">•••</span></div>
           <div class="sub" data-i18n="settings.team.sub">Invite people and set what they can see.</div>
           <div class="body">
             <table class="team">
               <thead>
-                <tr><th data-i18n="settings.team.user">User</th><th data-i18n="settings.team.role">Role</th><th data-i18n="settings.account.email.label">Email</th><th data-i18n="settings.team.lastActive">Last active</th><th></th></tr>
+                <tr><th data-i18n="settings.team.user">User</th><th data-i18n="settings.team.role">Role</th><th data-i18n="settings.account.email.label">Email</th><th data-i18n="settings.team.created">Created</th><th></th></tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td><span class="avatar-sm own"></span>Hoàng Huy Hồ</td>
-                  <td><span class="role-pill owner" data-i18n="common.owner">Owner</span></td>
-                  <td>hoanghuyho2810@gmail.com</td>
-                  <td data-i18n="settings.team.activeNow">Active now</td>
-                  <td style="text-align:right"><button style="padding:5px 10px;border-radius:6px;background:var(--surface-soft);font-size:11px;font-weight:600;color:var(--ink-2)">•••</button></td>
-                </tr>
-                <tr>
-                  <td><span class="avatar-sm acc"></span>Anna Nguyễn</td>
-                  <td><span class="role-pill acc" data-i18n="common.accountant">Accountant</span></td>
-                  <td>anna@demo-csv.app</td>
-                  <td data-i18n="settings.team.threeHoursAgo">3h ago</td>
-                  <td style="text-align:right"><button style="padding:5px 10px;border-radius:6px;background:var(--surface-soft);font-size:11px;font-weight:600;color:var(--ink-2)" data-i18n="settings.team.revoke">Revoke</button></td>
-                </tr>
+              <tbody id="team-tbody">
+                <tr><td colspan="5" data-i18n="common.loading">Loading…</td></tr>
               </tbody>
             </table>
-            <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-              <input type="email" data-i18n-placeholder="settings.team.emailPlaceholder" placeholder="teammate@email.com" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--surface-soft-2)"/>
-              <select style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--panel)"><option data-i18n="common.accountant">Accountant</option><option data-i18n="common.owner">Owner</option></select>
-              <button class="btn primary" data-i18n="settings.team.sendInvite">Send invite</button>
+            <div id="invite-row" style="margin-top:12px;display:flex;gap:8px;align-items:center">
+              <input type="email" id="invite-email" data-i18n-placeholder="settings.team.emailPlaceholder" placeholder="teammate@email.com" style="flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--surface-soft-2)"/>
+              <select id="invite-role" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13px;background:var(--panel)"><option value="accountant" data-i18n="common.accountant">Accountant</option><option value="owner" data-i18n="common.owner">Owner</option></select>
+              <button class="btn primary" id="invite-submit" data-i18n="settings.team.sendInvite">Send invite</button>
             </div>
+            <div class="note" id="invite-error" style="display:none;color:var(--red);margin-top:8px"></div>
           </div>
         </div>
 
@@ -349,5 +337,6 @@
   render();
   buttons.forEach((b) => b.addEventListener('click', () => { theme.setMode(b.dataset.themeChoice); render(); }));
 </script>
+<script type="module" src="assets/js/settings.js"></script>
 </body>
 </html>

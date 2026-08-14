@@ -76,7 +76,7 @@ export const en = {
   'settings.notif.quietHours.hint': "Don't send during these times.",
   'settings.notif.to': 'to',
 
-  'settings.team.title': 'Team members · 2',
+  'settings.team.title': 'Team members',
   'settings.team.sub': 'Invite people and set what they can see.',
   'settings.team.user': 'User',
   'settings.team.role': 'Role',
@@ -84,8 +84,16 @@ export const en = {
   'settings.team.activeNow': 'Active now',
   'settings.team.threeHoursAgo': '3h ago',
   'settings.team.revoke': 'Revoke',
+  'settings.team.created': 'Created',
+  'settings.team.pending': 'Pending',
+  'settings.team.cancelInvite': 'Cancel',
+  'settings.team.empty': 'No team members yet.',
   'settings.team.emailPlaceholder': 'teammate@email.com',
   'settings.team.sendInvite': 'Send invite',
+  'settings.team.errorInvalidEmail': 'Enter a valid email address.',
+  'settings.team.errorAlreadyMember': 'This person already has an account.',
+  'settings.team.errorAlreadyInvited': 'That email has already been invited.',
+  'settings.team.errorInviteFailed': 'Could not send the invite — try again.',
 
   'settings.unsavedChanges': 'You have 3 unsaved changes',
 
@@ -174,7 +182,7 @@ export const vi = {
   'settings.notif.quietHours.hint': 'Không gửi thông báo trong khoảng thời gian này.',
   'settings.notif.to': 'đến',
 
-  'settings.team.title': 'Thành viên nhóm · 2',
+  'settings.team.title': 'Thành viên nhóm',
   'settings.team.sub': 'Mời người dùng và thiết lập quyền xem của họ.',
   'settings.team.user': 'Người dùng',
   'settings.team.role': 'Vai trò',
@@ -182,8 +190,16 @@ export const vi = {
   'settings.team.activeNow': 'Đang hoạt động',
   'settings.team.threeHoursAgo': '3 giờ trước',
   'settings.team.revoke': 'Thu hồi',
+  'settings.team.created': 'Tạo lúc',
+  'settings.team.pending': 'Đang chờ',
+  'settings.team.cancelInvite': 'Hủy',
+  'settings.team.empty': 'Chưa có thành viên nào.',
   'settings.team.emailPlaceholder': 'teammate@email.com',
   'settings.team.sendInvite': 'Gửi lời mời',
+  'settings.team.errorInvalidEmail': 'Nhập một địa chỉ email hợp lệ.',
+  'settings.team.errorAlreadyMember': 'Người này đã có tài khoản.',
+  'settings.team.errorAlreadyInvited': 'Email này đã được mời trước đó.',
+  'settings.team.errorInviteFailed': 'Không thể gửi lời mời — hãy thử lại.',
 
   'settings.unsavedChanges': 'Bạn có 3 thay đổi chưa lưu',
 

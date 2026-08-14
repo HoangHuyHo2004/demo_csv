@@ -1450,7 +1450,7 @@ body[data-shell-active="security"]{
 }
 .auth-submit:disabled{opacity:.6;cursor:default}
 .auth-error{
-  background:var(--danger-bg);color:#a02c2c;border-radius:10px;padding:10px 12px;
+  background:var(--danger-bg);color:var(--danger-ink);border-radius:10px;padding:10px 12px;
   font-size:12px;margin-bottom:14px;display:none;
 }
 .auth-error.show{display:block}
@@ -1461,6 +1461,38 @@ body[data-shell-active="security"]{
 .auth-notice.show{display:block}
 .auth-hint{font-size:11px;color:var(--muted);margin-top:14px;text-align:center;display:none}
 .auth-hint.show{display:block}
+
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:42px !important}
+.pw-toggle{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+.pw-toggle:hover{background:var(--chip);color:var(--ink-2)}
+.pw-toggle svg{width:17px;height:17px}
+.pw-strength{margin-top:10px}
+.pw-strength-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin-bottom:6px}
+.pw-strength-head b{font-weight:700}
+.pw-strength-head b.weak{color:var(--danger-ink)}
+.pw-strength-head b.fair{color:var(--warn-ink)}
+.pw-strength-head b.strong{color:var(--success-ink)}
+.pw-strength-head b.very-strong{color:var(--success-ink)}
+.pw-strength-track{height:5px;border-radius:999px;background:var(--chip);overflow:hidden}
+.pw-strength-fill{height:100%;width:0%;border-radius:999px;background:var(--danger-ink);transition:width .15s,background-color .15s}
+.pw-strength-fill.weak{background:var(--danger-ink)}
+.pw-strength-fill.fair{background:var(--warn-ink)}
+.pw-strength-fill.strong,.pw-strength-fill.very-strong{background:var(--success-ink)}
+.pw-rules{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pw-rules li{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-2)}
+.pw-rule-ic{
+  width:16px;height:16px;border-radius:50%;flex:0 0 16px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--chip);color:transparent;font-size:10px;font-weight:800;transition:background-color .15s,color .15s;
+}
+.pw-rules li.met{color:var(--ink)}
+.pw-rules li.met .pw-rule-ic{background:var(--success-ink);color:#fff}
+.pw-mismatch{font-size:11px;color:var(--danger-ink);margin-top:6px;display:none}
+.pw-mismatch.show{display:block}
 
 /* ---------- Station scope switcher (header) ---------- */
 .scope-switcher{position:relative}

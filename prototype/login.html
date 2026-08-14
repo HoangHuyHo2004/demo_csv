@@ -37,7 +37,32 @@
       </div>
       <div class="auth-field">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" autocomplete="current-password" required minlength="6" />
+        <div class="pw-wrap">
+          <input type="password" id="password" name="password" autocomplete="current-password" required minlength="8" />
+          <button type="button" class="pw-toggle" id="password-toggle" aria-label="Show password">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-strength" id="pw-strength" style="display:none">
+          <div class="pw-strength-head"><span>Password strength</span><b id="pw-strength-label"></b></div>
+          <div class="pw-strength-track"><div class="pw-strength-fill" id="pw-strength-fill"></div></div>
+          <ul class="pw-rules" id="pw-rules">
+            <li data-rule="length"><span class="pw-rule-ic">✓</span>A minimum of 8 characters</li>
+            <li data-rule="case"><span class="pw-rule-ic">✓</span>Lower and uppercase case letters</li>
+            <li data-rule="number"><span class="pw-rule-ic">✓</span>At least 1 number</li>
+            <li data-rule="symbol"><span class="pw-rule-ic">✓</span>At least 1 symbol</li>
+          </ul>
+        </div>
+      </div>
+      <div class="auth-field" id="field-confirm" style="display:none">
+        <label for="confirm-password">Confirm password</label>
+        <div class="pw-wrap">
+          <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" />
+          <button type="button" class="pw-toggle" id="confirm-password-toggle" aria-label="Show password">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="pw-mismatch" id="pw-mismatch">Passwords don't match.</div>
       </div>
       <button type="submit" class="auth-submit" id="auth-submit">Sign in</button>
       <div class="auth-hint" id="auth-hint">Still waking up the database — free-tier projects pause after inactivity. Hang tight…</div>

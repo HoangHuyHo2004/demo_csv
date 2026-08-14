@@ -113,6 +113,55 @@ export async function categoryUploadCounts() {
   return counts;
 }
 
+// Real team members. RLS ("profiles: owner reads") means an Owner sees
+// everyone, anyone else only their own row -- there's no separate
+// "am I allowed to see the team" check needed client-side.
+export async function listProfiles() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, display_name, email, role, created_at')
+    .order('created_at');
+  if (error) {
+    console.error('listProfiles failed:', error);
+    return [];
+  }
+  return data;
+}
+
+// Pending invites. RLS is owner-only ("invites: owner all"), so a
+// non-owner gets an empty list back here, not an error.
+export async function listInvites() {
+  const { data, error } = await supabase
+    .from('invites')
+    .select('email, role, created_at')
+    .order('created_at');
+  if (error) {
+    console.error('listInvites failed:', error);
+    return [];
+  }
+  return data;
+}
+
+// `email` is the invites table's primary key, so a second invite to the
+// same address surfaces as a distinct, expected error rather than a
+// generic failure -- same pattern as createStation's duplicate `code`.
+export async function createInvite({ email, role, invitedBy }) {
+  const { error } = await supabase
+    .from('invites')
+    .insert({ email, role, invited_by: invitedBy });
+  if (error) {
+    console.error('createInvite failed:', error);
+    return { ok: false, code: error.code === '23505' ? 'duplicate_email' : 'failed' };
+  }
+  return { ok: true, code: null };
+}
+
+export async function cancelInvite(email) {
+  const { error } = await supabase.from('invites').delete().eq('email', email);
+  if (error) console.error('cancelInvite failed:', error);
+  return !error;
+}
+
 // One query for an entire dashboard page -- every widget derives from
 // this same in-memory dataset, which is what guarantees every tile agrees
 // with every other. Station filtering only happens when a specific
